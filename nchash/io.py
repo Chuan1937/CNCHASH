@@ -5,9 +5,10 @@ Handles reading various input file formats (phase data, station files,
 velocity models) and writing mechanism output files.
 """
 
-import numpy as np
-from collections import defaultdict
 import re
+from collections import defaultdict
+
+import numpy as np
 
 
 def read_phase_file(filename):
@@ -40,10 +41,10 @@ def read_phase_file(filename):
     # Try to read with different encodings
     lines = []
     try:
-        with open(filename, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(filename, encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
-    except:
-        with open(filename, 'r', encoding='latin-1', errors='ignore') as f:
+    except UnicodeDecodeError:
+        with open(filename, encoding="latin-1", errors="ignore") as f:
             lines = f.readlines()
 
     # Detect format from first non-empty line
@@ -54,19 +55,19 @@ def read_phase_file(filename):
             continue
 
         # Check for format 2 (4-digit year at start)
-        if re.match(r'^\d{4}\s+\d{5}', line):
+        if re.match(r"^\d{4}\s+\d{5}", line):
             format_type = 2
             break
         # Check for format 3 (8-digit date at start)
-        elif re.match(r'^\d{8}\d+', line):
+        elif re.match(r"^\d{8}\d+", line):
             format_type = 3
             break
         # Check for format 4 (SIMUL2000 format - has "DATE" header)
-        elif 'DATE' in line and 'ORIGIN' in line:
+        elif "DATE" in line and "ORIGIN" in line:
             format_type = 4
             break
         # Check for format 1 (2-digit year) - both continuous and split time formats
-        elif re.match(r'^\d{2}\s+\d{1,3}', line):
+        elif re.match(r"^\d{2}\s+\d{1,3}", line):
             format_type = 1
             break
 
@@ -77,15 +78,15 @@ def read_phase_file(filename):
             if not line:
                 continue
             # Format 1 pattern (both continuous and split time)
-            if re.match(r'^\d{2}\s+\d{1,3}', line):
+            if re.match(r"^\d{2}\s+\d{1,3}", line):
                 format_type = 1
                 break
             # Format 2 pattern
-            elif re.match(r'^\d{4}\s+\d{5}', line):
+            elif re.match(r"^\d{4}\s+\d{5}", line):
                 format_type = 2
                 break
             # Format 3 pattern
-            elif re.match(r'^\d{16}', line):
+            elif re.match(r"^\d{16}", line):
                 format_type = 3
                 break
 
@@ -125,7 +126,7 @@ def _parse_phase_format1(lines):
 
         # Check for event header (starts with 2-digit year)
         # Match both formats: continuous time and split time
-        if re.match(r'^\d{2}\s+\d{1,3}', line):
+        if re.match(r"^\d{2}\s+\d{1,3}", line):
             parts = line.split()
 
             if len(parts) < 8:  # Need minimum parts for both formats
@@ -173,10 +174,10 @@ def _parse_phase_format1(lines):
                         # Default to M D format if parts[1] is 1-99
                         month = parts1_val
                         day = int(parts[2]) if len(parts) > 2 else 1
-                        time_str = parts[3] if len(parts) > 3 else '0'
-                        lat_str = parts[4] if len(parts) > 4 else '0'
-                        lon_str = parts[5] if len(parts) > 5 else '0'
-                        dep_str = parts[6] if len(parts) > 6 else '0'
+                        time_str = parts[3] if len(parts) > 3 else "0"
+                        lat_str = parts[4] if len(parts) > 4 else "0"
+                        lon_str = parts[5] if len(parts) > 5 else "0"
+                        dep_str = parts[6] if len(parts) > 6 else "0"
                         mag_idx = 7
                 else:
                     # Continuous time format: YY MDDhhmmsssss...
@@ -203,13 +204,21 @@ def _parse_phase_format1(lines):
                         hour = int(time_str[0]) if len(time_str) > 0 else 0
                         minute = int(time_str[1:3]) if len(time_str) >= 3 else 0
                         sec_str = time_str[3:]
-                        sec = float(sec_str[0:2] + '.' + sec_str[2:]) if len(sec_str) > 2 else float(sec_str)
+                        sec = (
+                            float(sec_str[0:2] + "." + sec_str[2:])
+                            if len(sec_str) > 2
+                            else float(sec_str)
+                        )
                     else:
                         # Continuous format: double-digit hour
                         hour = potential_hour
                         minute = int(time_str[2:4]) if len(time_str) >= 4 else 0
                         sec_str = time_str[4:]
-                        sec = float(sec_str[0:2] + '.' + sec_str[2:]) if len(sec_str) > 2 else float(sec_str)
+                        sec = (
+                            float(sec_str[0:2] + "." + sec_str[2:])
+                            if len(sec_str) > 2
+                            else float(sec_str)
+                        )
                 else:
                     # Handle short time strings
                     if len(time_str) >= 4:
@@ -238,27 +247,31 @@ def _parse_phase_format1(lines):
 
                 # Magnitude
                 mag_str = parts[mag_idx] if mag_idx < len(parts) else parts[5]
-                if '.' in mag_str:
+                if "." in mag_str:
                     mag = float(mag_str)
                 else:
                     mag = float(mag_str) / 10.0
 
                 # Event ID (second to last part)
-                event_id = parts[-2] if len(parts) > 10 else f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
+                event_id = (
+                    parts[-2]
+                    if len(parts) > 10
+                    else f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
+                )
 
                 event = {
-                    'year': year,
-                    'month': month,
-                    'day': day,
-                    'hour': hour,
-                    'min': minute,
-                    'sec': sec,
-                    'lat': lat,
-                    'lon': lon,
-                    'depth': depth,
-                    'mag': mag,
-                    'id': event_id,
-                    'stations': [],
+                    "year": year,
+                    "month": month,
+                    "day": day,
+                    "hour": hour,
+                    "min": minute,
+                    "sec": sec,
+                    "lat": lat,
+                    "lon": lon,
+                    "depth": depth,
+                    "mag": mag,
+                    "id": event_id,
+                    "stations": [],
                 }
 
                 # Read station lines
@@ -267,12 +280,12 @@ def _parse_phase_format1(lines):
                     line = lines[i].strip()
 
                     # Check for event ID line (end of event data)
-                    if line == event_id or (re.match(r'^\d{7}', line) and line == event_id):
+                    if line == event_id or (re.match(r"^\d{7}", line) and line == event_id):
                         i += 1
                         break
 
                     # Check for next event header (also end of event data)
-                    if re.match(r'^\d{2}\s+\d{1,3}', line):
+                    if re.match(r"^\d{2}\s+\d{1,3}", line):
                         # Don't increment i, so the next iteration will process this header
                         break
 
@@ -285,27 +298,29 @@ def _parse_phase_format1(lines):
                     parts = line.split()
                     if len(parts) >= 3:
                         station = parts[0]
-                        pol_code = parts[1] if len(parts) > 1 else ''
+                        pol_code = parts[1] if len(parts) > 1 else ""
 
                         # Parse polarity code (e.g., "IPU0", "EPD1")
                         if len(pol_code) >= 3:
                             onset = pol_code[0].upper()  # I or E
                             polarity = pol_code[2].upper()  # U or D
                         else:
-                            onset = 'I'
-                            polarity = pol_code[0].upper() if pol_code else 'U'
+                            onset = "I"
+                            polarity = pol_code[0].upper() if pol_code else "U"
 
                         # Channel is usually the last part
-                        channel = parts[-1] if len(parts) > 5 else 'VHZ'
-                        network = 'CI'
+                        channel = parts[-1] if len(parts) > 5 else "VHZ"
+                        network = "CI"
 
-                        event['stations'].append({
-                            'name': station,
-                            'network': network,
-                            'component': channel,
-                            'onset': onset,
-                            'polarity': polarity,
-                        })
+                        event["stations"].append(
+                            {
+                                "name": station,
+                                "network": network,
+                                "component": channel,
+                                "onset": onset,
+                                "polarity": polarity,
+                            }
+                        )
 
                     i += 1
 
@@ -339,7 +354,7 @@ def _parse_phase_format2(lines):
         # - YYYY MDDHHMM.SSSS... (combined date/time, parts[1] has 9+ digits)
         # - YYYY MDDD HHMM.SSSS... (separate MDDD date, parts[1] has 4-5 digits)
         # - YYYY M D HHMM.SSSS... (separate month and day, parts[1] has 1-2 digits)
-        if re.match(r'^\d{4}\s+\d+', line):
+        if re.match(r"^\d{4}\s+\d+", line):
             parts = line.split()
 
             if len(parts) < 5:
@@ -375,7 +390,7 @@ def _parse_phase_format2(lines):
                         lat_str = parts[4]
                         lon_str = parts[5]
 
-                    elif '.' in parts[1] and len(parts) == 9:
+                    elif "." in parts[1] and len(parts) == 9:
                         # Format 2: combined date/time
                         # Example: 128154720.6834 = January 28, 15:47:20.6834
                         datetime_str = parts[1]
@@ -392,8 +407,8 @@ def _parse_phase_format2(lines):
                         sec = int(datetime_padded[7:9])
 
                         # Get fractional seconds
-                        if '.' in datetime_str:
-                            frac_sec = float('0.' + datetime_str.split('.')[1])
+                        if "." in datetime_str:
+                            frac_sec = float("0." + datetime_str.split(".")[1])
                             sec += frac_sec
 
                         # Time string is already parsed, so lat/lon are at different positions
@@ -463,7 +478,7 @@ def _parse_phase_format2(lines):
                 # For example: "37.0618.13" = 37.06 (lon) + 18.13 (depth)
                 try:
                     # Split by dots and parse
-                    dot_parts = lon_str.split('.')
+                    dot_parts = lon_str.split(".")
                     if len(dot_parts) >= 3:
                         # Format: XX.XXXX.DD.DD or similar
                         # For "37.0618.13":
@@ -473,9 +488,11 @@ def _parse_phase_format2(lines):
                         # This means dot_parts[1] = '0618' contains both lon fraction (06) and depth integer (18)
                         lon_frac = dot_parts[1][:2]  # First 2 digits are lon fraction
                         depth_int = dot_parts[1][2:]  # Next digits are depth integer
-                        depth_frac = dot_parts[2] if len(dot_parts) > 2 else '0'
+                        depth_frac = dot_parts[2] if len(dot_parts) > 2 else "0"
                         lon_enc = float(f"{dot_parts[0]}.{lon_frac}")
-                        depth = float(f"{depth_int}.{depth_frac}" if depth_frac else float(depth_int))
+                        depth = float(
+                            f"{depth_int}.{depth_frac}" if depth_frac else float(depth_int)
+                        )
                     else:
                         lon_enc = float(lon_str)
                         depth = 18.0  # Default
@@ -488,7 +505,7 @@ def _parse_phase_format2(lines):
                 # Find magnitude in the line
                 mag = 0.0
                 for part in parts:
-                    if '.' in part:
+                    if "." in part:
                         try:
                             if 0 < float(part) < 10:
                                 mag_val = float(part)
@@ -507,18 +524,18 @@ def _parse_phase_format2(lines):
                     event_id = f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
 
                 event = {
-                    'year': year,
-                    'month': month,
-                    'day': day,
-                    'hour': hour,
-                    'min': minute,
-                    'sec': sec,
-                    'lat': lat,
-                    'lon': lon,
-                    'depth': depth,
-                    'mag': mag,
-                    'id': event_id,
-                    'stations': [],
+                    "year": year,
+                    "month": month,
+                    "day": day,
+                    "hour": hour,
+                    "min": minute,
+                    "sec": sec,
+                    "lat": lat,
+                    "lon": lon,
+                    "depth": depth,
+                    "mag": mag,
+                    "id": event_id,
+                    "stations": [],
                 }
 
                 # Read station lines
@@ -527,7 +544,7 @@ def _parse_phase_format2(lines):
                     line = lines[i].strip()
 
                     # Check for next event header or event ID line
-                    if re.match(r'^\d{4}\s+\d{5}', line):
+                    if re.match(r"^\d{4}\s+\d{5}", line):
                         break
                     if line == event_id:
                         i += 1
@@ -543,18 +560,20 @@ def _parse_phase_format2(lines):
                     parts = line.split()
                     if len(parts) >= 5:
                         station = parts[0].strip()
-                        network = parts[1].strip() if len(parts) > 1 else 'CI'
-                        component = parts[2].strip() if len(parts) > 2 else 'HHZ'
-                        onset = parts[3].strip().upper() if len(parts) > 3 else 'I'
-                        polarity = parts[4].strip().upper() if len(parts) > 4 else 'U'
+                        network = parts[1].strip() if len(parts) > 1 else "CI"
+                        component = parts[2].strip() if len(parts) > 2 else "HHZ"
+                        onset = parts[3].strip().upper() if len(parts) > 3 else "I"
+                        polarity = parts[4].strip().upper() if len(parts) > 4 else "U"
 
-                        event['stations'].append({
-                            'name': station,
-                            'network': network,
-                            'component': component,
-                            'onset': onset,
-                            'polarity': polarity,
-                        })
+                        event["stations"].append(
+                            {
+                                "name": station,
+                                "network": network,
+                                "component": component,
+                                "onset": onset,
+                                "polarity": polarity,
+                            }
+                        )
 
                     i += 1
 
@@ -580,10 +599,10 @@ def _parse_phase_format3(lines):
     i = 0
 
     while i < len(lines):
-        line = lines[i].rstrip('\n\r')
+        line = lines[i].rstrip("\n\r")
 
         # Check for event header (8-digit date followed by more digits)
-        if re.match(r'^\d{8}\d+', line):
+        if re.match(r"^\d{8}\d+", line):
             try:
                 # Parse event header
                 date_str = line[0:8]
@@ -595,7 +614,9 @@ def _parse_phase_format3(lines):
 
                 hour = int(time_str[0:2])
                 minute = int(time_str[2:4])
-                sec = float(time_str[4:6]) + float("0." + time_str[6:]) if len(time_str) > 6 else 0.0
+                sec = (
+                    float(time_str[4:6]) + float("0." + time_str[6:]) if len(time_str) > 6 else 0.0
+                )
 
                 # The line has fixed-width fields
                 # After time: lat (positions 19-26), lon (27-34), depth (35-40)
@@ -626,38 +647,38 @@ def _parse_phase_format3(lines):
                 event_id = f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
 
                 parts = line.split()
-                for j, part in enumerate(parts):
+                for _j, part in enumerate(parts):
                     # Look for magnitude (typically 1-3 digits with decimal)
-                    if re.match(r'^\d\.\d+$', part):
+                    if re.match(r"^\d\.\d+$", part):
                         mag_val = float(part)
                         if 0 < mag_val < 10:
                             mag = mag_val
                     # Look for 7-digit event ID (may have suffix like 'c230')
-                    if re.match(r'^\d{7}', part):
+                    if re.match(r"^\d{7}", part):
                         event_id = part[:7]  # Take first 7 digits only
 
                 event = {
-                    'year': year,
-                    'month': month,
-                    'day': day,
-                    'hour': hour,
-                    'min': minute,
-                    'sec': sec,
-                    'lat': lat,
-                    'lon': lon,
-                    'depth': depth,
-                    'mag': mag,
-                    'id': event_id,
-                    'stations': [],
+                    "year": year,
+                    "month": month,
+                    "day": day,
+                    "hour": hour,
+                    "min": minute,
+                    "sec": sec,
+                    "lat": lat,
+                    "lon": lon,
+                    "depth": depth,
+                    "mag": mag,
+                    "id": event_id,
+                    "stations": [],
                 }
 
                 # Read station lines
                 i += 1
                 while i < len(lines):
-                    line = lines[i].rstrip('\n\r')
+                    line = lines[i].rstrip("\n\r")
 
                     # Check for next event header or event ID line
-                    if re.match(r'^\d{8}\d+', line):
+                    if re.match(r"^\d{8}\d+", line):
                         break
                     if line.strip() == event_id:
                         i += 1
@@ -680,8 +701,8 @@ def _parse_phase_format3(lines):
                             continue
 
                         # Network and component
-                        network = 'CI'
-                        component = 'HHZ'
+                        network = "CI"
+                        component = "HHZ"
                         if len(parts) > 1:
                             net_comp = parts[1]
                             if len(net_comp) >= 2:
@@ -689,35 +710,37 @@ def _parse_phase_format3(lines):
                                 component = net_comp[2:] if len(net_comp) > 2 else component
 
                         # Polarity code (e.g., "iPU0", "ePD1", "eP .6")
-                        pol_code = parts[2] if len(parts) > 2 else ''
+                        pol_code = parts[2] if len(parts) > 2 else ""
 
-                        onset = 'I'
-                        polarity = 'U'
+                        onset = "I"
+                        polarity = "U"
 
                         if len(pol_code) >= 3:
                             onset = pol_code[0].upper()  # i or e
-                            pol_char = pol_code[2].upper() if len(pol_code) > 2 else 'U'
-                            if pol_char in 'UD':
+                            pol_char = pol_code[2].upper() if len(pol_code) > 2 else "U"
+                            if pol_char in "UD":
                                 polarity = pol_char
-                        elif pol_code and '.' in pol_code:
+                        elif pol_code and "." in pol_code:
                             # Format like "eP .6" - emergent, poor quality
-                            onset = 'E'
-                            polarity = 'U'  # Default for poor quality
+                            onset = "E"
+                            polarity = "U"  # Default for poor quality
 
-                        event['stations'].append({
-                            'name': station,
-                            'network': network,
-                            'component': component,
-                            'onset': onset,
-                            'polarity': polarity,
-                        })
+                        event["stations"].append(
+                            {
+                                "name": station,
+                                "network": network,
+                                "component": component,
+                                "onset": onset,
+                                "polarity": polarity,
+                            }
+                        )
 
                     i += 1
 
                 events.append(event)
 
             except (ValueError, IndexError) as e:
-                print(f'DEBUG format4: Exception at line {i}: {e}')  # DEBUG
+                print(f"DEBUG format4: Exception at line {i}: {e}")  # DEBUG
                 i += 1
                 continue
         else:
@@ -742,7 +765,7 @@ def _parse_phase_format4(lines):
         line = lines[i].strip()
 
         # Check for event line (starts with 2-digit year)
-        if re.match(r'^\d{2}\s+\d{2,3}\s+\d+\s+\d+', line):
+        if re.match(r"^\d{2}\s+\d{2,3}\s+\d+\s+\d+", line):
             parts = line.split()
 
             if len(parts) < 10:
@@ -760,7 +783,7 @@ def _parse_phase_format4(lines):
 
                 # Parse time - two possible formats
                 # Check if parts[3] has decimal point (HMM SS format)
-                if '.' in parts[3]:
+                if "." in parts[3]:
                     # HMM SS format: parts[2]=hmm, parts[3]=ss.ss
                     # Event ID is at parts[9] for this format
                     hmm = int(parts[2])
@@ -786,40 +809,44 @@ def _parse_phase_format4(lines):
 
                 # Parse latitude (e.g., "34N13.89")
                 lat = 0.0
-                if lat_str and ('N' in lat_str or 'S' in lat_str):
-                    parts_lat = re.split(r'[NS]', lat_str)
+                if lat_str and ("N" in lat_str or "S" in lat_str):
+                    parts_lat = re.split(r"[NS]", lat_str)
                     deg = float(parts_lat[0]) if parts_lat[0] else 0
                     min_val = float(parts_lat[1]) if len(parts_lat) > 1 else 0
                     lat = deg + min_val / 60.0
-                    if 'S' in lat_str:
+                    if "S" in lat_str:
                         lat = -lat
 
                 # Parse longitude (e.g., "118W36.53")
                 lon = 0.0
-                if lon_str and ('E' in lon_str or 'W' in lon_str):
-                    parts_lon = re.split(r'[EW]', lon_str)
+                if lon_str and ("E" in lon_str or "W" in lon_str):
+                    parts_lon = re.split(r"[EW]", lon_str)
                     deg = float(parts_lon[0]) if parts_lon[0] else 0
                     min_val = float(parts_lon[1]) if len(parts_lon) > 1 else 0
                     lon = deg + min_val / 60.0
-                    if 'W' in lon_str:
+                    if "W" in lon_str:
                         lon = -lon
 
                 # Parse event ID
-                event_id = parts[event_id_idx] if len(parts) > event_id_idx and parts[event_id_idx].isdigit() else f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
+                event_id = (
+                    parts[event_id_idx]
+                    if len(parts) > event_id_idx and parts[event_id_idx].isdigit()
+                    else f"{year}{month:02d}{day:02d}{hour:02d}{minute:02d}"
+                )
 
                 event = {
-                    'year': year,
-                    'month': month,
-                    'day': day,
-                    'hour': hour,
-                    'min': minute,
-                    'sec': sec,
-                    'lat': lat,
-                    'lon': lon,
-                    'depth': depth,
-                    'mag': mag,
-                    'id': event_id,
-                    'stations': [],
+                    "year": year,
+                    "month": month,
+                    "day": day,
+                    "hour": hour,
+                    "min": minute,
+                    "sec": sec,
+                    "lat": lat,
+                    "lon": lon,
+                    "depth": depth,
+                    "mag": mag,
+                    "id": event_id,
+                    "stations": [],
                 }
 
                 # Read station lines
@@ -828,50 +855,52 @@ def _parse_phase_format4(lines):
                     line = lines[i].strip()
 
                     # Check for next event or header
-                    if line.startswith('DATE') or line.startswith('  DATE'):
+                    if line.startswith("DATE") or line.startswith("  DATE"):
                         break
-                    if re.match(r'^\d{2}\s+\d{2,3}\s+\d+\s+\d+', line):
+                    if re.match(r"^\d{2}\s+\d{2,3}\s+\d+\s+\d+", line):
                         break
 
                     # Skip empty lines and header lines
-                    if not line or line.startswith('STN') or line.startswith('  STN'):
+                    if not line or line.startswith("STN") or line.startswith("  STN"):
                         i += 1
                         continue
 
                     # Parse station line
                     stn_parts = line.split()
-                    if len(stn_parts) >= 5 and stn_parts[0] and not stn_parts[0].startswith('STN'):
+                    if len(stn_parts) >= 5 and stn_parts[0] and not stn_parts[0].startswith("STN"):
                         station = stn_parts[0].strip()
 
                         # Parse polarity from PRMK field (e.g., "P0", "P1")
-                        prmk = stn_parts[4] if len(stn_parts) > 4 else ''
-                        onset = 'I'
-                        polarity = 'U'
+                        prmk = stn_parts[4] if len(stn_parts) > 4 else ""
+                        onset = "I"
+                        polarity = "U"
 
-                        if len(prmk) >= 2 and prmk[0] == 'P':
+                        if len(prmk) >= 2 and prmk[0] == "P":
                             # Check residual sign from PRES column (second to last)
                             if len(stn_parts) > 8:
                                 try:
                                     pres = float(stn_parts[-3])
-                                    polarity = 'D' if pres < 0 else 'U'
+                                    polarity = "D" if pres < 0 else "U"
                                 except ValueError:
-                                    polarity = 'U'
-                            onset = 'E' if len(prmk) > 1 and prmk[1] == '1' else 'I'
+                                    polarity = "U"
+                            onset = "E" if len(prmk) > 1 and prmk[1] == "1" else "I"
 
-                        event['stations'].append({
-                            'name': station,
-                            'network': 'CI',
-                            'component': 'HHZ',
-                            'onset': onset,
-                            'polarity': polarity,
-                        })
+                        event["stations"].append(
+                            {
+                                "name": station,
+                                "network": "CI",
+                                "component": "HHZ",
+                                "onset": onset,
+                                "polarity": polarity,
+                            }
+                        )
 
                     i += 1
 
                 # Add event to events list
                 events.append(event)
 
-            except (ValueError, IndexError) as e:
+            except (ValueError, IndexError):
                 i += 1
                 continue
         else:
@@ -909,10 +938,10 @@ def read_station_file(filename):
     stations = {}
     by_name = {}  # Fast lookup by station name only
 
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         for line in f:
-            line_stripped = line.rstrip('\n\r')
-            if not line_stripped or line_stripped.startswith('#'):
+            line_stripped = line.rstrip("\n\r")
+            if not line_stripped or line_stripped.startswith("#"):
                 continue
 
             if len(line_stripped) < 60:
@@ -929,7 +958,7 @@ def read_station_file(filename):
                 lat = None
                 lon = None
                 elev = None
-                network = 'CI'
+                network = "CI"
 
                 for part in parts:
                     part = part.strip()
@@ -972,7 +1001,7 @@ def read_station_file(filename):
                 continue
 
     # Add fast lookup index
-    stations['_byname'] = by_name
+    stations["_byname"] = by_name
 
     return stations
 
@@ -994,10 +1023,10 @@ def read_polarity_reversal_file(filename):
     """
     reversals = defaultdict(list)
 
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         for line in f:
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
             parts = line.split()
@@ -1038,10 +1067,10 @@ def read_velocity_model(filename):
     depths = []
     velocities = []
 
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         for line in f:
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
             parts = line.split()
@@ -1069,7 +1098,7 @@ def read_hash_input_file(filename):
     dict
         Input parameters
     """
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         lines = f.readlines()
 
     params = {}
@@ -1082,63 +1111,63 @@ def read_hash_input_file(filename):
     # Format 5 (example5): polfile, simulfile, phasefile, outfile1, outfile2, params...
 
     # Check if first line is a station file (contains 'station' or ends with '.stations')
-    first_line = lines[0].strip() if lines else ''
+    first_line = lines[0].strip() if lines else ""
 
-    if 'station' in first_line.lower() or first_line.endswith('.stations'):
+    if "station" in first_line.lower() or first_line.endswith(".stations"):
         # Format 2, 3, or 4: has stationfile
-        params['station_file'] = lines[0].strip()
-        params['polfile'] = lines[1].strip() if len(lines) > 1 else ''
+        params["station_file"] = lines[0].strip()
+        params["polfile"] = lines[1].strip() if len(lines) > 1 else ""
 
         # Check if there are additional files before phasefile (format 3 has statcor and amp)
-        third_line = lines[2].strip() if len(lines) > 2 else ''
-        if third_line.endswith('.statcor') or third_line.endswith('.amp'):
+        third_line = lines[2].strip() if len(lines) > 2 else ""
+        if third_line.endswith(".statcor") or third_line.endswith(".amp"):
             # Format 3: stationfile, polfile, statcor, amp, phasefile, outfile1, params...
-            params['statcor_file'] = lines[2].strip() if len(lines) > 2 else ''
-            params['amp_file'] = lines[3].strip() if len(lines) > 3 else ''
-            params['phasefile'] = lines[4].strip() if len(lines) > 4 else ''
-            params['outfile1'] = lines[5].strip() if len(lines) > 5 else ''
-            params['outfile2'] = lines[6].strip() if len(lines) > 6 else ''
+            params["statcor_file"] = lines[2].strip() if len(lines) > 2 else ""
+            params["amp_file"] = lines[3].strip() if len(lines) > 3 else ""
+            params["phasefile"] = lines[4].strip() if len(lines) > 4 else ""
+            params["outfile1"] = lines[5].strip() if len(lines) > 5 else ""
+            params["outfile2"] = lines[6].strip() if len(lines) > 6 else ""
             param_idx = 7
         else:
             # Format 2 or 4: stationfile, polfile, phasefile, outfile1, outfile2, params...
-            params['phasefile'] = lines[2].strip() if len(lines) > 2 else ''
-            params['outfile1'] = lines[3].strip() if len(lines) > 3 else ''
-            params['outfile2'] = lines[4].strip() if len(lines) > 4 else ''
+            params["phasefile"] = lines[2].strip() if len(lines) > 2 else ""
+            params["outfile1"] = lines[3].strip() if len(lines) > 3 else ""
+            params["outfile2"] = lines[4].strip() if len(lines) > 4 else ""
             param_idx = 5
-    elif first_line.endswith('.simul'):
+    elif first_line.endswith(".simul"):
         # Format 5: polfile, simulfile, phasefile, outfile1, outfile2, params...
-        params['polfile'] = lines[0].strip()
-        params['simul_file'] = lines[1].strip() if len(lines) > 1 else ''
-        params['phasefile'] = lines[2].strip() if len(lines) > 2 else ''
-        params['outfile1'] = lines[3].strip() if len(lines) > 3 else ''
-        params['outfile2'] = lines[4].strip() if len(lines) > 4 else ''
+        params["polfile"] = lines[0].strip()
+        params["simul_file"] = lines[1].strip() if len(lines) > 1 else ""
+        params["phasefile"] = lines[2].strip() if len(lines) > 2 else ""
+        params["outfile1"] = lines[3].strip() if len(lines) > 3 else ""
+        params["outfile2"] = lines[4].strip() if len(lines) > 4 else ""
         param_idx = 5
     else:
         # Format 1: polfile, phasefile, outfile1, outfile2, params...
-        params['polfile'] = lines[0].strip()
-        params['phasefile'] = lines[1].strip() if len(lines) > 1 else ''
-        params['outfile1'] = lines[2].strip() if len(lines) > 2 else ''
-        params['outfile2'] = lines[3].strip() if len(lines) > 3 else ''
+        params["polfile"] = lines[0].strip()
+        params["phasefile"] = lines[1].strip() if len(lines) > 1 else ""
+        params["outfile1"] = lines[2].strip() if len(lines) > 2 else ""
+        params["outfile2"] = lines[3].strip() if len(lines) > 3 else ""
         param_idx = 4
 
     # Remaining lines are parameters (position-based, not all files have same format)
     # Try to parse parameters by looking for numeric values
 
     # Default values
-    params['npolmin'] = 8
-    params['max_agap'] = 90.0
-    params['max_pgap'] = 60.0
-    params['dang'] = 10.0
-    params['nmc'] = 30
-    params['maxout'] = 500
-    params['badfrac'] = 0.1
-    params['delmax'] = 120.0
-    params['cangle'] = 45.0
-    params['prob_max'] = 0.1
-    params['qextra'] = 0.0
-    params['qtotal'] = 0.0
-    params['nextra'] = 0.0
-    params['ntotal'] = 0.0
+    params["npolmin"] = 8
+    params["max_agap"] = 90.0
+    params["max_pgap"] = 60.0
+    params["dang"] = 10.0
+    params["nmc"] = 30
+    params["maxout"] = 500
+    params["badfrac"] = 0.1
+    params["delmax"] = 120.0
+    params["cangle"] = 45.0
+    params["prob_max"] = 0.1
+    params["qextra"] = 0.0
+    params["qtotal"] = 0.0
+    params["nextra"] = 0.0
+    params["ntotal"] = 0.0
 
     # Parse remaining lines (param_idx is set above)
 
@@ -1154,7 +1183,7 @@ def read_hash_input_file(filename):
             continue
 
         # Check if it's a velocity model file (starts with 'vz.')
-        if line.startswith('vz.') or line.startswith('/'):
+        if line.startswith("vz.") or line.startswith("/"):
             break
 
         # Try to parse as number
@@ -1169,87 +1198,87 @@ def read_hash_input_file(filename):
     # npolmin, max_agap, max_pgap, dang, nmc, maxout, badfrac, delmax, cangle, prob_max
     # For other formats, use heuristics based on value ranges
 
-    if first_line.endswith('.simul'):
+    if first_line.endswith(".simul"):
         # Format 5: same order as Format 1
         if len(param_values) >= 1:
-            params['npolmin'] = int(param_values[0]) if param_values[0] >= 1 else params['npolmin']
+            params["npolmin"] = int(param_values[0]) if param_values[0] >= 1 else params["npolmin"]
         if len(param_values) >= 2:
-            params['max_agap'] = param_values[1]
+            params["max_agap"] = param_values[1]
         if len(param_values) >= 3:
-            params['max_pgap'] = param_values[2]
+            params["max_pgap"] = param_values[2]
         if len(param_values) >= 4:
-            params['dang'] = param_values[3]
+            params["dang"] = param_values[3]
         if len(param_values) >= 5:
-            params['nmc'] = int(param_values[4])
+            params["nmc"] = int(param_values[4])
         if len(param_values) >= 6:
-            params['maxout'] = int(param_values[5])
+            params["maxout"] = int(param_values[5])
         if len(param_values) >= 7:
-            params['badfrac'] = param_values[6]
+            params["badfrac"] = param_values[6]
         if len(param_values) >= 8:
-            params['delmax'] = param_values[7]
+            params["delmax"] = param_values[7]
         if len(param_values) >= 9:
-            params['cangle'] = param_values[8]
+            params["cangle"] = param_values[8]
         if len(param_values) >= 10:
-            params['prob_max'] = param_values[9]
-    elif 'station' in first_line.lower() or first_line.endswith('.stations'):
+            params["prob_max"] = param_values[9]
+    elif "station" in first_line.lower() or first_line.endswith(".stations"):
         # Format 2, 3, or 4: use heuristics based on value ranges
         for val in param_values:
             # npolmin: small integer (1-20)
-            if 1 <= val <= 20 and 'npolmin' not in params:
-                params['npolmin'] = int(val)
+            if 1 <= val <= 20 and "npolmin" not in params:
+                params["npolmin"] = int(val)
             # max_agap: 30-180 degrees (check first)
-            elif 30 <= val <= 180 and params['max_agap'] == 90.0:
-                params['max_agap'] = val
+            elif 30 <= val <= 180 and params["max_agap"] == 90.0:
+                params["max_agap"] = val
             # max_pgap: 30-180 degrees (check after max_agap)
-            elif 30 <= val <= 180 and params['max_pgap'] == 60.0:
-                params['max_pgap'] = val
+            elif 30 <= val <= 180 and params["max_pgap"] == 60.0:
+                params["max_pgap"] = val
             # dang: grid angle (1-30 degrees, smaller range)
-            elif 1 <= val <= 20 and params['dang'] == 10.0:
-                params['dang'] = val
+            elif 1 <= val <= 20 and params["dang"] == 10.0:
+                params["dang"] = val
             # nmc: number of trials (5-1000)
-            elif 5 <= val <= 1000 and params['nmc'] == 30:
-                params['nmc'] = int(val)
+            elif 5 <= val <= 1000 and params["nmc"] == 30:
+                params["nmc"] = int(val)
             # maxout: max output (10-10000)
-            elif 10 <= val <= 10000 and params['maxout'] == 500:
-                params['maxout'] = int(val)
+            elif 10 <= val <= 10000 and params["maxout"] == 500:
+                params["maxout"] = int(val)
             # badfrac: 0.0-1.0
-            elif 0.0 <= val <= 1.0 and params['badfrac'] == 0.1:
-                params['badfrac'] = val
+            elif 0.0 <= val <= 1.0 and params["badfrac"] == 0.1:
+                params["badfrac"] = val
             # delmax: max distance (50-1000 km)
-            elif 50 <= val <= 1000 and params['delmax'] == 120.0:
-                params['delmax'] = val
+            elif 50 <= val <= 1000 and params["delmax"] == 120.0:
+                params["delmax"] = val
             # cangle: angle cutoff (15-90 degrees)
-            elif 15 <= val <= 90 and params['cangle'] == 45.0:
-                params['cangle'] = val
+            elif 15 <= val <= 90 and params["cangle"] == 45.0:
+                params["cangle"] = val
             # prob_max: 0.0-1.0 (second 0-1 value)
-            elif 0.0 <= val <= 1.0 and params['prob_max'] == 0.1:
-                params['prob_max'] = val
+            elif 0.0 <= val <= 1.0 and params["prob_max"] == 0.1:
+                params["prob_max"] = val
     else:
         # Format 1: fixed order
         if len(param_values) >= 1:
-            params['npolmin'] = int(param_values[0])
+            params["npolmin"] = int(param_values[0])
         if len(param_values) >= 2:
-            params['max_agap'] = param_values[1]
+            params["max_agap"] = param_values[1]
         if len(param_values) >= 3:
-            params['max_pgap'] = param_values[2]
+            params["max_pgap"] = param_values[2]
         if len(param_values) >= 4:
-            params['dang'] = param_values[3]
+            params["dang"] = param_values[3]
         if len(param_values) >= 5:
-            params['nmc'] = int(param_values[4])
+            params["nmc"] = int(param_values[4])
         if len(param_values) >= 6:
-            params['maxout'] = int(param_values[5])
+            params["maxout"] = int(param_values[5])
         if len(param_values) >= 7:
-            params['badfrac'] = param_values[6]
+            params["badfrac"] = param_values[6]
         if len(param_values) >= 8:
-            params['delmax'] = param_values[7]
+            params["delmax"] = param_values[7]
         if len(param_values) >= 9:
-            params['cangle'] = param_values[8]
+            params["cangle"] = param_values[8]
         if len(param_values) >= 10:
-            params['prob_max'] = param_values[9]
+            params["prob_max"] = param_values[9]
 
     # Calculate derived parameters
-    params['nextra'] = max(int(params['npolmin'] * params['badfrac'] * 0.5), 2)
-    params['ntotal'] = max(int(params['npolmin'] * params['badfrac']), 2)
+    params["nextra"] = max(int(params["npolmin"] * params["badfrac"] * 0.5), 2)
+    params["ntotal"] = max(int(params["npolmin"] * params["badfrac"]), 2)
 
     return params
 
@@ -1267,9 +1296,9 @@ def write_mechanism_output(filename, events, mechanisms):
     mechanisms : list
         List of mechanism results (one per event)
     """
-    with open(filename, 'w') as f:
-        for event, mech in zip(events, mechanisms):
-            if mech is None or mech.get('quality') == 'F':
+    with open(filename, "w") as f:
+        for event, mech in zip(events, mechanisms, strict=True):
+            if mech is None or mech.get("quality") == "F":
                 # Failed event
                 write_failed_event(f, event, mech)
             else:
@@ -1280,16 +1309,16 @@ def write_failed_event(f, event, mech):
     """Write a failed event to output file."""
     if mech is None:
         mech = {
-            'strike': 999,
-            'dip': 99,
-            'rake': 999,
-            'var_est': [99, 99],
-            'mfrac': 0.99,
-            'quality': 'F',
-            'prob': 0.0,
-            'stdr': 0.0,
-            'nplt': 0,
-            'nout2': 0,
+            "strike": 999,
+            "dip": 99,
+            "rake": 999,
+            "var_est": [99, 99],
+            "mfrac": 0.99,
+            "quality": "F",
+            "prob": 0.0,
+            "stdr": 0.0,
+            "nplt": 0,
+            "nout2": 0,
         }
 
     fmt = (
@@ -1304,70 +1333,70 @@ def write_failed_event(f, event, mech):
     )
 
     line = fmt.format(
-        id=event.get('id', ''),
-        year=event.get('year', 0),
-        month=event.get('month', 0),
-        day=event.get('day', 0),
-        hour=event.get('hour', 0),
-        min=event.get('min', 0),
-        sec=event.get('sec', 0.0),
-        etype=event.get('etype', 'L'),
-        mag=event.get('mag', 0.0),
-        magtype=event.get('magtype', 'X'),
-        lat=event.get('lat', 0.0),
-        lon=event.get('lon', 0.0),
-        depth=event.get('depth', 0.0),
-        locqual=event.get('locqual', 'X'),
-        rms=event.get('rms', -9.0),
-        seh=event.get('seh', -9.0),
-        sez=event.get('sez', -9.0),
-        terr=event.get('terr', -9.0),
-        nppick=event.get('nppick', -9),
-        nspick=event.get('nspick', -9),
-        strike=int(mech.get('strike', 999)),
-        dip=int(mech.get('dip', 99)),
-        rake=int(mech.get('rake', 999)),
-        var1=int(mech.get('var_est', [99, 99])[0]),
-        var2=int(mech.get('var_est', [99, 99])[1]),
-        npol=event.get('npol', 0),
-        mfrac=int(mech.get('mfrac', 0.99) * 100),
-        quality=mech.get('quality', 'F'),
-        prob=int(mech.get('prob', 0.0) * 100),
-        stdr=int(mech.get('stdr', 0.0) * 100),
-        mflag=mech.get('mflag', ' '),
+        id=event.get("id", ""),
+        year=event.get("year", 0),
+        month=event.get("month", 0),
+        day=event.get("day", 0),
+        hour=event.get("hour", 0),
+        min=event.get("min", 0),
+        sec=event.get("sec", 0.0),
+        etype=event.get("etype", "L"),
+        mag=event.get("mag", 0.0),
+        magtype=event.get("magtype", "X"),
+        lat=event.get("lat", 0.0),
+        lon=event.get("lon", 0.0),
+        depth=event.get("depth", 0.0),
+        locqual=event.get("locqual", "X"),
+        rms=event.get("rms", -9.0),
+        seh=event.get("seh", -9.0),
+        sez=event.get("sez", -9.0),
+        terr=event.get("terr", -9.0),
+        nppick=event.get("nppick", -9),
+        nspick=event.get("nspick", -9),
+        strike=int(mech.get("strike", 999)),
+        dip=int(mech.get("dip", 99)),
+        rake=int(mech.get("rake", 999)),
+        var1=int(mech.get("var_est", [99, 99])[0]),
+        var2=int(mech.get("var_est", [99, 99])[1]),
+        npol=event.get("npol", 0),
+        mfrac=int(mech.get("mfrac", 0.99) * 100),
+        quality=mech.get("quality", "F"),
+        prob=int(mech.get("prob", 0.0) * 100),
+        stdr=int(mech.get("stdr", 0.0) * 100),
+        mflag=mech.get("mflag", " "),
     )
 
-    f.write(line + '\n')
+    f.write(line + "\n")
 
 
 def write_successful_event(f, event, mech):
     """Write a successful event to output file."""
-    nmult = mech.get('nmult', 1)
+    nmult = mech.get("nmult", 1)
 
     for imult in range(nmult):
         # Extract values for this solution (if multiple)
         if nmult > 1:
-            strike = mech['strike_avg'][imult]
-            dip = mech['dip_avg'][imult]
-            rake = mech['rake_avg'][imult]
-            var1 = mech['rms_diff'][0, imult]
-            var2 = mech['rms_diff'][1, imult]
-            prob = mech['prob'][imult]
-            quality = mech['quality'][imult]
-            stdr = mech['stdr'][imult]
-            mfrac = mech['mfrac'][imult]
+            strike = mech["strike_avg"][imult]
+            dip = mech["dip_avg"][imult]
+            rake = mech["rake_avg"][imult]
+            var1 = mech["rms_diff"][0, imult]
+            var2 = mech["rms_diff"][1, imult]
+            prob = mech["prob"][imult]
+            quality = mech["quality"][imult]
+            stdr = mech["stdr"][imult]
+            mfrac = mech["mfrac"][imult]
         else:
-            strike = mech.get('strike_avg', mech.get('strike', 0))
-            dip = mech.get('dip_avg', mech.get('dip', 0))
-            rake = mech.get('rake_avg', mech.get('rake', 0))
-            var1 = mech.get('var_est', [0, 0])[0]
-            var2 = mech.get('var_est', [0, 0])[1]
-            prob = mech.get('prob', 0.0)
-            quality = mech.get('quality', 'D')
-            stdr = mech.get('stdr', 0.0)
-            mfrac = mech.get('mfrac', 0.0)
+            strike = mech.get("strike_avg", mech.get("strike", 0))
+            dip = mech.get("dip_avg", mech.get("dip", 0))
+            rake = mech.get("rake_avg", mech.get("rake", 0))
+            var1 = mech.get("var_est", [0, 0])[0]
+            var2 = mech.get("var_est", [0, 0])[1]
+            prob = mech.get("prob", 0.0)
+            quality = mech.get("quality", "D")
+            stdr = mech.get("stdr", 0.0)
+            mfrac = mech.get("mfrac", 0.0)
 
-        mflag = '*' if nmult > 1 else ' '
+        mflag = "*" if nmult > 1 else " "
 
         fmt = (
             "{id:16s} {year:4d} {month:2d} {day:2d} {hour:2d} {min:2d} {sec:6.3f} {etype:1s} "
@@ -1381,32 +1410,32 @@ def write_successful_event(f, event, mech):
         )
 
         line = fmt.format(
-            id=event.get('id', ''),
-            year=event.get('year', 0),
-            month=event.get('month', 0),
-            day=event.get('day', 0),
-            hour=event.get('hour', 0),
-            min=event.get('min', 0),
-            sec=event.get('sec', 0.0),
-            etype=event.get('etype', 'L'),
-            mag=event.get('mag', 0.0),
-            magtype=event.get('magtype', 'X'),
-            lat=event.get('lat', 0.0),
-            lon=event.get('lon', 0.0),
-            depth=event.get('depth', 0.0),
-            locqual=event.get('locqual', 'X'),
-            rms=event.get('rms', -9.0),
-            seh=event.get('seh', -9.0),
-            sez=event.get('sez', -9.0),
-            terr=event.get('terr', -9.0),
-            nppick=event.get('nppick', -9),
-            nspick=event.get('nspick', -9),
+            id=event.get("id", ""),
+            year=event.get("year", 0),
+            month=event.get("month", 0),
+            day=event.get("day", 0),
+            hour=event.get("hour", 0),
+            min=event.get("min", 0),
+            sec=event.get("sec", 0.0),
+            etype=event.get("etype", "L"),
+            mag=event.get("mag", 0.0),
+            magtype=event.get("magtype", "X"),
+            lat=event.get("lat", 0.0),
+            lon=event.get("lon", 0.0),
+            depth=event.get("depth", 0.0),
+            locqual=event.get("locqual", "X"),
+            rms=event.get("rms", -9.0),
+            seh=event.get("seh", -9.0),
+            sez=event.get("sez", -9.0),
+            terr=event.get("terr", -9.0),
+            nppick=event.get("nppick", -9),
+            nspick=event.get("nspick", -9),
             strike=int(strike),
             dip=int(dip),
             rake=int(rake),
             var1=int(var1),
             var2=int(var2),
-            npol=event.get('npol', 0),
+            npol=event.get("npol", 0),
             mfrac=int(mfrac * 100),
             quality=quality,
             prob=int(prob * 100),
@@ -1414,7 +1443,7 @@ def write_successful_event(f, event, mech):
             mflag=mflag,
         )
 
-        f.write(line + '\n')
+        f.write(line + "\n")
 
 
 def write_acceptable_planes(filename, event, mech):
@@ -1430,7 +1459,7 @@ def write_acceptable_planes(filename, event, mech):
     mech : dict
         Mechanism results
     """
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         # Write event header
         fmt1 = (
             "{year:4d} {month:2d} {day:2d} {hour:2d} {min:2d} {sec:6.3f} "
@@ -1440,42 +1469,44 @@ def write_acceptable_planes(filename, event, mech):
             "{mfrac:7.3f} {quality:2s} {prob:7.3f} {stdr:5.2f}"
         )
 
-        f.write(fmt1.format(
-            year=event.get('year', 0),
-            month=event.get('month', 0),
-            day=event.get('day', 0),
-            hour=event.get('hour', 0),
-            min=event.get('min', 0),
-            sec=event.get('sec', 0.0),
-            mag=event.get('mag', 0.0),
-            lat=event.get('lat', 0.0),
-            lon=event.get('lon', 0.0),
-            depth=event.get('depth', 0.0),
-            sez=event.get('sez', 0.0),
-            seh=event.get('seh', 0.0),
-            npol=event.get('npol', 0),
-            nout2=mech.get('nout2', 0),
-            id=event.get('id', ''),
-            strike=mech.get('strike_avg', 0),
-            dip=mech.get('dip_avg', 0),
-            rake=mech.get('rake_avg', 0),
-            var1=mech.get('var_est', [0, 0])[0],
-            var2=mech.get('var_est', [0, 0])[1],
-            mfrac=mech.get('mfrac', 0.0),
-            quality=mech.get('quality', 'D'),
-            prob=mech.get('prob', 0.0),
-            stdr=mech.get('stdr', 0.0),
-        ))
-        f.write('\n')
+        f.write(
+            fmt1.format(
+                year=event.get("year", 0),
+                month=event.get("month", 0),
+                day=event.get("day", 0),
+                hour=event.get("hour", 0),
+                min=event.get("min", 0),
+                sec=event.get("sec", 0.0),
+                mag=event.get("mag", 0.0),
+                lat=event.get("lat", 0.0),
+                lon=event.get("lon", 0.0),
+                depth=event.get("depth", 0.0),
+                sez=event.get("sez", 0.0),
+                seh=event.get("seh", 0.0),
+                npol=event.get("npol", 0),
+                nout2=mech.get("nout2", 0),
+                id=event.get("id", ""),
+                strike=mech.get("strike_avg", 0),
+                dip=mech.get("dip_avg", 0),
+                rake=mech.get("rake_avg", 0),
+                var1=mech.get("var_est", [0, 0])[0],
+                var2=mech.get("var_est", [0, 0])[1],
+                mfrac=mech.get("mfrac", 0.0),
+                quality=mech.get("quality", "D"),
+                prob=mech.get("prob", 0.0),
+                stdr=mech.get("stdr", 0.0),
+            )
+        )
+        f.write("\n")
 
         # Write individual planes
-        faults = mech.get('faults', np.zeros((3, 0)))
-        slips = mech.get('slips', np.zeros((3, 0)))
-        strikes = mech.get('strike', np.zeros(0))
-        dips = mech.get('dip', np.zeros(0))
-        rakes = mech.get('rake', np.zeros(0))
+        faults = mech.get("faults", np.zeros((3, 0)))
+        slips = mech.get("slips", np.zeros((3, 0)))
+        strikes = mech.get("strike", np.zeros(0))
+        dips = mech.get("dip", np.zeros(0))
+        rakes = mech.get("rake", np.zeros(0))
 
-        nout = min(len(strikes), mech.get('nout1', len(strikes)))
+        nout = min(len(strikes), mech.get("nout1", len(strikes)))
 
         for i in range(nout):
             fmt2 = (
@@ -1484,18 +1515,20 @@ def write_acceptable_planes(filename, event, mech):
                 "{sl1:9.4f} {sl2:9.4f} {sl3:9.4f}"
             )
 
-            f.write(fmt2.format(
-                strike=strikes[i],
-                dip=dips[i],
-                rake=rakes[i],
-                fn1=faults[0, i] if faults.shape[1] > i else 0.0,
-                fn2=faults[1, i] if faults.shape[1] > i else 0.0,
-                fn3=faults[2, i] if faults.shape[1] > i else 0.0,
-                sl1=slips[0, i] if slips.shape[1] > i else 0.0,
-                sl2=slips[1, i] if slips.shape[1] > i else 0.0,
-                sl3=slips[2, i] if slips.shape[1] > i else 0.0,
-            ))
-            f.write('\n')
+            f.write(
+                fmt2.format(
+                    strike=strikes[i],
+                    dip=dips[i],
+                    rake=rakes[i],
+                    fn1=faults[0, i] if faults.shape[1] > i else 0.0,
+                    fn2=faults[1, i] if faults.shape[1] > i else 0.0,
+                    fn3=faults[2, i] if faults.shape[1] > i else 0.0,
+                    sl1=slips[0, i] if slips.shape[1] > i else 0.0,
+                    sl2=slips[1, i] if slips.shape[1] > i else 0.0,
+                    sl3=slips[2, i] if slips.shape[1] > i else 0.0,
+                )
+            )
+            f.write("\n")
 
 
 # Export all functions

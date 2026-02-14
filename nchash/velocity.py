@@ -5,11 +5,12 @@ Implements 1D ray tracing through layered velocity models
 and table-based interpolation for takeoff angles.
 """
 
-import numpy as np
-from numba import njit, float64, int32
 import math
 
-from .utils import DEG_TO_RAD, RAD_TO_DEG, PI
+import numpy as np
+from numba import njit
+
+from .utils import RAD_TO_DEG
 
 # Velocity table cache
 _VELOCITY_TABLES = {}
@@ -19,14 +20,14 @@ _TABLE_PARAMS = {}
 def _default_table_params():
     """Get default table generation parameters."""
     return {
-        'del1': 0.0,     # Minimum distance (km)
-        'del2': 120.0,   # Maximum distance (km)
-        'del3': 1.0,     # Distance step (km)
-        'dep1': 0.0,     # Minimum depth (km)
-        'dep2': 35.0,    # Maximum depth (km)
-        'dep3': 1.0,     # Depth step (km)
-        'pmin': 0.0,     # Minimum ray parameter
-        'nump': 1000,    # Number of ray parameters
+        "del1": 0.0,  # Minimum distance (km)
+        "del2": 120.0,  # Maximum distance (km)
+        "del3": 1.0,  # Distance step (km)
+        "dep1": 0.0,  # Minimum depth (km)
+        "dep2": 35.0,  # Maximum depth (km)
+        "dep3": 1.0,  # Depth step (km)
+        "pmin": 0.0,  # Minimum ray parameter
+        "nump": 1000,  # Number of ray parameters
     }
 
 
@@ -172,14 +173,14 @@ def make_table_from_model(depth, velocity, params=None):
     if params is None:
         params = _default_table_params()
 
-    del1 = params.get('del1', 0.0)
-    del2 = params.get('del2', 120.0)
-    del3 = params.get('del3', 1.0)
-    dep1 = params.get('dep1', 0.0)
-    dep2 = params.get('dep2', 35.0)
-    dep3 = params.get('dep3', 1.0)
-    pmin = params.get('pmin', 0.0)
-    nump = params.get('nump', 1000)
+    del1 = params.get("del1", 0.0)
+    del2 = params.get("del2", 120.0)
+    del3 = params.get("del3", 1.0)
+    dep1 = params.get("dep1", 0.0)
+    dep2 = params.get("dep2", 35.0)
+    dep3 = params.get("dep3", 1.0)
+    pmin = params.get("pmin", 0.0)
+    nump = params.get("nump", 1000)
 
     # Set up depth grid
     ndep = int((dep2 - dep1) / dep3) + 1
@@ -196,7 +197,7 @@ def make_table_from_model(depth, velocity, params=None):
     slow = 1.0 / alpha
 
     # Extend model to include all table depths
-    for idep, dep in enumerate(deptab):
+    for _idep, dep in enumerate(deptab):
         if dep > 0.1:
             # Check if we need to insert a point
             need_insert = True
@@ -343,11 +344,11 @@ def make_table_from_model(depth, velocity, params=None):
             table[0, idep] = 0.0
 
     return {
-        'table': table,
-        'delttab': delttab,
-        'deptab': deptab,
-        'ndel': ndel,
-        'ndep': ndep,
+        "table": table,
+        "delttab": delttab,
+        "deptab": deptab,
+        "ndel": ndel,
+        "ndep": ndep,
     }
 
 
@@ -384,10 +385,10 @@ def make_table(vmodel_files, params=None):
         depth = []
         velocity = []
 
-        with open(vmodel_file, 'r') as f:
+        with open(vmodel_file) as f:
             for line in f:
                 line = line.strip()
-                if not line or line.startswith('#'):
+                if not line or line.startswith("#"):
                     continue
                 parts = line.split()
                 if len(parts) >= 2:
@@ -429,11 +430,11 @@ def get_tts(ip, del_dist, qdep):
         return 999.0, -1
 
     table = _VELOCITY_TABLES[ip]
-    delttab = table['delttab']
-    deptab = table['deptab']
-    tt = table['table']
-    ndel = table['ndel']
-    ndep = table['ndep']
+    delttab = table["delttab"]
+    deptab = table["deptab"]
+    tt = table["table"]
+    ndel = table["ndel"]
+    ndep = table["ndep"]
 
     # Check depth range
     if qdep < deptab[0] or qdep > deptab[-1]:
@@ -456,9 +457,13 @@ def get_tts(ip, del_dist, qdep):
             break
 
     # Check for valid table values
-    if (tt[ix1, id1] == 0.0 or tt[ix1, id2] == 0.0 or
-        tt[ix2, id1] == 0.0 or tt[ix2, id2] == 0.0 or
-        delttab[ix2] < del_dist):
+    if (
+        tt[ix1, id1] == 0.0
+        or tt[ix1, id2] == 0.0
+        or tt[ix2, id1] == 0.0
+        or tt[ix2, id2] == 0.0
+        or delttab[ix2] < del_dist
+    ):
         # Need extrapolation
         iflag = 1
 

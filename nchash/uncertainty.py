@@ -6,17 +6,16 @@ rotation angles between mechanisms, and probability estimates.
 Optimized with numba JIT compilation.
 """
 
-import numpy as np
-from numba import njit, float64, int32
 import math
 
+import numpy as np
+from numba import njit
+
 from .utils import (
-    cross_product,
-    fp_coord_vectors_to_angles,
-    normalize_vector,
     DEG_TO_RAD,
-    RAD_TO_DEG,
     PI,
+    RAD_TO_DEG,
+    fp_coord_vectors_to_angles,
 )
 
 # Maximum number of mechanisms to process
@@ -227,7 +226,7 @@ def mech_rot(norm1, slip1, norm2, slip2):
         np.asarray(norm1, dtype=np.float64),
         np.asarray(slip1, dtype=np.float64),
         np.asarray(norm2, dtype=np.float64),
-        np.asarray(slip2, dtype=np.float64)
+        np.asarray(slip2, dtype=np.float64),
     )
 
 
@@ -296,8 +295,8 @@ def mech_average_numba(nf, norm1, norm2):
         norm2_avg += best_n2
 
     # Normalize
-    l1 = math.sqrt(norm1_avg[0]**2 + norm1_avg[1]**2 + norm1_avg[2]**2)
-    l2 = math.sqrt(norm2_avg[0]**2 + norm2_avg[1]**2 + norm2_avg[2]**2)
+    l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+    l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
 
     if l1 > 0:
         norm1_avg /= l1
@@ -306,7 +305,9 @@ def mech_average_numba(nf, norm1, norm2):
 
     # Make orthogonal (iterative adjustment)
     for _ in range(100):
-        dot = norm1_avg[0] * norm2_avg[0] + norm1_avg[1] * norm2_avg[1] + norm1_avg[2] * norm2_avg[2]
+        dot = (
+            norm1_avg[0] * norm2_avg[0] + norm1_avg[1] * norm2_avg[1] + norm1_avg[2] * norm2_avg[2]
+        )
         misf = 90.0 - math.acos(max(-1.0, min(1.0, dot))) * RAD_TO_DEG
 
         if abs(misf) <= 0.01:
@@ -330,8 +331,8 @@ def mech_average_numba(nf, norm1, norm2):
         norm2_avg[2] = n2_2 - n1_2 * math.sin(theta2)
 
         # Renormalize
-        l1 = math.sqrt(norm1_avg[0]**2 + norm1_avg[1]**2 + norm1_avg[2]**2)
-        l2 = math.sqrt(norm2_avg[0]**2 + norm2_avg[1]**2 + norm2_avg[2]**2)
+        l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+        l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
 
         if l1 > 0:
             norm1_avg /= l1
@@ -438,7 +439,7 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
                 idx += 1
 
         # Iteratively find average and remove outliers
-        for icount in range(nf):
+        for _icount in range(nf):
             # Compute average directly without extra function call
             norm1_avg = np.zeros(3, dtype=np.float64)
             norm2_avg = np.zeros(3, dtype=np.float64)
@@ -500,8 +501,8 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
                 norm2_avg[2] += best_n2_2
 
             # Normalize
-            l1 = math.sqrt(norm1_avg[0]**2 + norm1_avg[1]**2 + norm1_avg[2]**2)
-            l2 = math.sqrt(norm2_avg[0]**2 + norm2_avg[1]**2 + norm2_avg[2]**2)
+            l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+            l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
             if l1 > 0:
                 norm1_avg[0] /= l1
                 norm1_avg[1] /= l1
@@ -513,7 +514,11 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
 
             # Make orthogonal
             for _ in range(10):
-                dot = norm1_avg[0] * norm2_avg[0] + norm1_avg[1] * norm2_avg[1] + norm1_avg[2] * norm2_avg[2]
+                dot = (
+                    norm1_avg[0] * norm2_avg[0]
+                    + norm1_avg[1] * norm2_avg[1]
+                    + norm1_avg[2] * norm2_avg[2]
+                )
                 misf = 90.0 - math.acos(max(-1.0, min(1.0, dot))) * RAD_TO_DEG
                 if abs(misf) <= 0.1:
                     break
@@ -526,8 +531,8 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
                 norm2_avg[0] = n2_0 - n1_0 * math.sin(theta)
                 norm2_avg[1] = n2_1 - n1_1 * math.sin(theta)
                 norm2_avg[2] = n2_2 - n1_2 * math.sin(theta)
-                l1 = math.sqrt(norm1_avg[0]**2 + norm1_avg[1]**2 + norm1_avg[2]**2)
-                l2 = math.sqrt(norm2_avg[0]**2 + norm2_avg[1]**2 + norm2_avg[2]**2)
+                l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+                l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
                 if l1 > 0:
                     norm1_avg[0] /= l1
                     norm1_avg[1] /= l1
@@ -543,8 +548,16 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
             for k in range(nc):
                 idx_k = active_idx[k]
                 # Quick rotation estimate
-                dot_n = norm1_avg[0] * norm1in[0, idx_k] + norm1_avg[1] * norm1in[1, idx_k] + norm1_avg[2] * norm1in[2, idx_k]
-                dot_s = norm2_avg[0] * norm2in[0, idx_k] + norm2_avg[1] * norm2in[1, idx_k] + norm2_avg[2] * norm2in[2, idx_k]
+                dot_n = (
+                    norm1_avg[0] * norm1in[0, idx_k]
+                    + norm1_avg[1] * norm1in[1, idx_k]
+                    + norm1_avg[2] * norm1in[2, idx_k]
+                )
+                dot_s = (
+                    norm2_avg[0] * norm2in[0, idx_k]
+                    + norm2_avg[1] * norm2in[1, idx_k]
+                    + norm2_avg[2] * norm2in[2, idx_k]
+                )
                 dot_n = abs(dot_n)
                 dot_s = abs(dot_s)
                 dot_n = max(-1.0, min(1.0, dot_n))
@@ -586,8 +599,16 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
         rms1 = 0.0
         rms2 = 0.0
         for i in range(nf):
-            d11 = abs(norm1in[0, i] * norm1_avg[0] + norm1in[1, i] * norm1_avg[1] + norm1in[2, i] * norm1_avg[2])
-            d22 = abs(norm2in[0, i] * norm2_avg[0] + norm2in[1, i] * norm2_avg[1] + norm2in[2, i] * norm2_avg[2])
+            d11 = abs(
+                norm1in[0, i] * norm1_avg[0]
+                + norm1in[1, i] * norm1_avg[1]
+                + norm1in[2, i] * norm1_avg[2]
+            )
+            d22 = abs(
+                norm2in[0, i] * norm2_avg[0]
+                + norm2in[1, i] * norm2_avg[1]
+                + norm2in[2, i] * norm2_avg[2]
+            )
             d11 = max(-1.0, min(1.0, d11))
             d22 = max(-1.0, min(1.0, d22))
             a11 = math.acos(d11)
@@ -657,18 +678,17 @@ def mech_prob(nf, norm1, norm2, cangle, prob_max):
         norm2 = norm2.T
 
     nsltn, str_avg, dip_avg, rak_avg, prob, rms_diff = mech_probability_numba(
-        nf, norm1.astype(np.float64), norm2.astype(np.float64),
-        cangle, prob_max
+        nf, norm1.astype(np.float64), norm2.astype(np.float64), cangle, prob_max
     )
 
     # Trim to actual number of solutions
     return {
-        'nsltn': nsltn,
-        'strike_avg': str_avg[:nsltn],
-        'dip_avg': dip_avg[:nsltn],
-        'rake_avg': rak_avg[:nsltn],
-        'prob': prob[:nsltn],
-        'rms_diff': rms_diff[:, :nsltn],
+        "nsltn": nsltn,
+        "strike_avg": str_avg[:nsltn],
+        "dip_avg": dip_avg[:nsltn],
+        "rake_avg": rak_avg[:nsltn],
+        "prob": prob[:nsltn],
+        "rms_diff": rms_diff[:, :nsltn],
     }
 
 

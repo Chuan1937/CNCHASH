@@ -6,21 +6,14 @@ for finding acceptable focal mechanisms from polarity data.
 Optimized with numba JIT compilation.
 """
 
-import numpy as np
-from numba import njit, float64, int32, int8, boolean
 import math
 
+import numpy as np
+from numba import njit
+
 from .utils import (
-    cross_product,
-    cross_product_array,
-    to_cartesian_array,
-    fp_coord_vectors_to_angles,
-    normal_distribution_random_numba,
-    normalize_vectors_array,
-    dot_product,
     DEG_TO_RAD,
-    RAD_TO_DEG,
-    PI,
+    fp_coord_vectors_to_angles,
 )
 
 # Constants for grid rotation
@@ -159,12 +152,7 @@ def get_rotation_grid(dang):
 
 
 @njit(cache=True)
-def _count_misfits_single_trial(
-    p_a1, p_a2, p_a3,
-    p_pol, p_qual,
-    b1, b2, b3, nrot,
-    npol
-):
+def _count_misfits_single_trial(p_a1, p_a2, p_a3, p_pol, p_qual, b1, b2, b3, nrot, npol):
     """
     Count polarity misfits for all rotations for a single trial.
 
@@ -231,11 +219,7 @@ def _count_misfits_single_trial(
 
 @njit(cache=True)
 def _find_best_mechanisms_all_trials(
-    p_azi_mc, p_the_mc,
-    p_pol, p_qual,
-    b1, b2, b3, nrot,
-    npol, nmc,
-    nextra, ntotal
+    p_azi_mc, p_the_mc, p_pol, p_qual, b1, b2, b3, nrot, npol, nmc, nextra, ntotal
 ):
     """
     Find acceptable focal mechanisms across all Monte Carlo trials.
@@ -323,8 +307,7 @@ def _find_best_mechanisms_all_trials(
     return irotgood
 
 
-def focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc,
-            dang, maxout, nextra, ntotal):
+def focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc, dang, maxout, nextra, ntotal):
     """
     Perform grid search to find acceptable focal mechanisms.
 
@@ -371,8 +354,7 @@ def focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc,
 
     # Find good rotations across all trials
     irotgood = _find_best_mechanisms_all_trials(
-        p_azi_mc, p_the_mc, p_pol, p_qual,
-        b1, b2, b3, nrot, npol, nmc, nextra, ntotal
+        p_azi_mc, p_the_mc, p_pol, p_qual, b1, b2, b3, nrot, npol, nmc, nextra, ntotal
     )
 
     # Count good rotations
@@ -418,20 +400,17 @@ def focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc,
         rake[i] = r
 
     return {
-        'nf': nf,
-        'strike': strike,
-        'dip': dip,
-        'rake': rake,
-        'faults': faults,
-        'slips': slips,
+        "nf": nf,
+        "strike": strike,
+        "dip": dip,
+        "rake": rake,
+        "faults": faults,
+        "slips": slips,
     }
 
 
 @njit(cache=True)
-def get_misfit_numba(
-    npol, p_azi, p_the, p_pol, p_qual,
-    strike, dip, rake
-):
+def get_misfit_numba(npol, p_azi, p_the, p_pol, p_qual, strike, dip, rake):
     """
     Calculate the fraction of misfit polarities for a given mechanism.
 
@@ -510,7 +489,7 @@ def get_misfit_numba(
         p_a3 = -math.cos(theta)
 
         # Project onto mechanism
-        p_b1 = sl1 * p_a1 + sl2 * p_a2 + sl3 * p_a3
+        _p_b1 = sl1 * p_a1 + sl2 * p_a2 + sl3 * p_a3  # noqa: F841 - kept for Fortran consistency
         p_b3 = fn1 * p_a1 + fn2 * p_a2 + fn3 * p_a3
 
         # Project onto plane perpendicular to fault normal
@@ -597,10 +576,7 @@ def get_misfit(npol, p_azi, p_the, p_pol, p_qual, strike, dip, rake):
     tuple
         (mfrac, stdr) - weighted fraction misfit and station distribution ratio
     """
-    return get_misfit_numba(
-        npol, p_azi, p_the, p_pol, p_qual,
-        strike, dip, rake
-    )
+    return get_misfit_numba(npol, p_azi, p_the, p_pol, p_qual, strike, dip, rake)
 
 
 @njit(cache=True)

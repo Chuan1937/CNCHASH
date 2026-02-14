@@ -6,6 +6,7 @@ Python implementation of HASH v1.2 for earthquake focal mechanism determination 
 ![License](https://img.shields.io/badge/license-BSD%203--blue.svg)
 ![Numba](https://img.shields.io/badge/numba-0.53+-red.svg)
 ![Numpy](https://img.shields.io/badge/numpy-1.19+-yellow.svg)
+![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
 Python uses Numba JIT compilation optimization and vectorization, achieving speed improvements while maintaining complete consistency with the core Fortran algorithm.
 

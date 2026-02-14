@@ -12,31 +12,18 @@ License: BSD 3-Clause
 __version__ = "1.0.0"
 __author__ = "Xingchen He"
 
-from .core import (
-    focalmc,
-    get_misfit,
-    get_gap,
-)
 from .amp_subs import (
     focalamp_mc,
     get_misf_amp,
 )
-from .uncertainty import (
-    mech_prob,
-    mech_avg,
-    mech_rot,
+from .core import (
+    focalmc,
+    get_gap,
+    get_misfit,
 )
-from .velocity import (
-    make_table,
-    get_tts,
-)
-from .utils import (
-    cross_product,
-    to_cartesian,
-    fp_coord,
-    normal_distribution_random,
-    strike_dip_rake_to_vectors,
-    vectors_to_strike_dip_rake,
+from .driver import (
+    run_hash,
+    run_hash_with_amp,
 )
 from .io import (
     read_phase_file,
@@ -44,9 +31,22 @@ from .io import (
     read_velocity_model,
     write_mechanism_output,
 )
-from .driver import (
-    run_hash,
-    run_hash_with_amp,
+from .uncertainty import (
+    mech_avg,
+    mech_prob,
+    mech_rot,
+)
+from .utils import (
+    cross_product,
+    fp_coord,
+    normal_distribution_random,
+    strike_dip_rake_to_vectors,
+    to_cartesian,
+    vectors_to_strike_dip_rake,
+)
+from .velocity import (
+    get_tts,
+    make_table,
 )
 
 __all__ = [

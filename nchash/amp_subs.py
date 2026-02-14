@@ -7,17 +7,17 @@ focal mechanisms using both P-wave polarities and S/P amplitude ratios.
 Optimized with numba JIT compilation.
 """
 
-import numpy as np
-from numba import njit, float64, int32
 import math
 
+import numpy as np
+from numba import njit
+
+from .core import get_rotation_grid
 from .utils import (
     DEG_TO_RAD,
-    RAD_TO_DEG,
     PI,
     fp_coord_vectors_to_angles,
 )
-from .core import get_rotation_grid
 
 # Table size for amplitude lookup
 NTAB = 180
@@ -83,9 +83,9 @@ def get_amplitude_tables():
     tuple
         (amptable, phitable, thetable)
     """
-    if 'tables' not in _AMP_TABLE_CACHE:
-        _AMP_TABLE_CACHE['tables'] = _setup_amplitude_tables()
-    return _AMP_TABLE_CACHE['tables']
+    if "tables" not in _AMP_TABLE_CACHE:
+        _AMP_TABLE_CACHE["tables"] = _setup_amplitude_tables()
+    return _AMP_TABLE_CACHE["tables"]
 
 
 @njit(cache=True)
@@ -118,12 +118,23 @@ def _compute_sp_ratio(p_amp, s_amp):
 
 @njit(cache=True)
 def _find_best_mechanisms_with_amp(
-    p_azi_mc, p_the_mc,
-    sp_amp, p_pol,
-    b1, b2, b3, nrot,
-    npsta, nmc,
-    nextra, ntotal, qextra, qtotal,
-    amptable, phitable, thetable
+    p_azi_mc,
+    p_the_mc,
+    sp_amp,
+    p_pol,
+    b1,
+    b2,
+    b3,
+    nrot,
+    npsta,
+    nmc,
+    nextra,
+    ntotal,
+    qextra,
+    qtotal,
+    amptable,
+    phitable,
+    thetable,
 ):
     """
     Find acceptable focal mechanisms using both polarities and S/P ratios.
@@ -192,8 +203,12 @@ def _find_best_mechanisms_with_amp(
         for irot in range(nrot):
             for ista in range(npsta):
                 # Project ray direction onto fault frame
-                p_b1 = b1[0, irot] * p_a1[ista] + b1[1, irot] * p_a2[ista] + b1[2, irot] * p_a3[ista]
-                p_b3 = b3[0, irot] * p_a1[ista] + b3[1, irot] * p_a2[ista] + b3[2, irot] * p_a3[ista]
+                p_b1 = (
+                    b1[0, irot] * p_a1[ista] + b1[1, irot] * p_a2[ista] + b1[2, irot] * p_a3[ista]
+                )
+                p_b3 = (
+                    b3[0, irot] * p_a1[ista] + b3[1, irot] * p_a2[ista] + b3[2, irot] * p_a3[ista]
+                )
 
                 # S/P amplitude ratio misfit
                 if sp_amp[ista] != 0.0:
@@ -291,8 +306,9 @@ def _find_best_mechanisms_with_amp(
     return irotgood
 
 
-def focalamp_mc(p_azi_mc, p_the_mc, sp_amp, p_pol, npsta, nmc,
-                dang, maxout, nextra, ntotal, qextra, qtotal):
+def focalamp_mc(
+    p_azi_mc, p_the_mc, sp_amp, p_pol, npsta, nmc, dang, maxout, nextra, ntotal, qextra, qtotal
+):
     """
     Perform grid search to find acceptable focal mechanisms using
     both P-wave polarities and S/P amplitude ratios.
@@ -345,10 +361,23 @@ def focalamp_mc(p_azi_mc, p_the_mc, sp_amp, p_pol, npsta, nmc,
 
     # Find good rotations
     irotgood = _find_best_mechanisms_with_amp(
-        p_azi_mc, p_the_mc, sp_amp, p_pol,
-        b1, b2, b3, nrot, npsta, nmc,
-        nextra, ntotal, qextra, qtotal,
-        amptable, phitable, thetable
+        p_azi_mc,
+        p_the_mc,
+        sp_amp,
+        p_pol,
+        b1,
+        b2,
+        b3,
+        nrot,
+        npsta,
+        nmc,
+        nextra,
+        ntotal,
+        qextra,
+        qtotal,
+        amptable,
+        phitable,
+        thetable,
     )
 
     # Count good rotations
@@ -392,20 +421,17 @@ def focalamp_mc(p_azi_mc, p_the_mc, sp_amp, p_pol, npsta, nmc,
         rake[i] = r
 
     return {
-        'nf': nf,
-        'strike': strike,
-        'dip': dip,
-        'rake': rake,
-        'faults': faults,
-        'slips': slips,
+        "nf": nf,
+        "strike": strike,
+        "dip": dip,
+        "rake": rake,
+        "faults": faults,
+        "slips": slips,
     }
 
 
 @njit(cache=True)
-def get_misf_amp_numba(
-    npol, p_azi, p_the, sp_ratio, p_pol,
-    strike, dip, rake
-):
+def get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
     """
     Calculate misfit for a given mechanism using polarities and S/P ratios.
 
@@ -485,7 +511,7 @@ def get_misf_amp_numba(
         p_a3 = -math.cos(theta)
 
         # Project onto mechanism
-        p_b1 = sl1 * p_a1 + sl2 * p_a2 + sl3 * p_a3
+        _p_b1 = sl1 * p_a1 + sl2 * p_a2 + sl3 * p_a3  # noqa: F841 - kept for Fortran consistency
         p_b3 = fn1 * p_a1 + fn2 * p_a2 + fn3 * p_a3
 
         # Project onto plane perpendicular to fault normal
@@ -581,10 +607,7 @@ def get_misf_amp(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
         (mfrac, mavg, stdr) - weighted fraction misfit polarities,
         average S/P misfit (log10), and station distribution ratio
     """
-    return get_misf_amp_numba(
-        npol, p_azi, p_the, sp_ratio, p_pol,
-        strike, dip, rake
-    )
+    return get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake)
 
 
 # Export functions

@@ -5,9 +5,10 @@ Includes coordinate transformations, vector operations, and random number genera
 Optimized with numba JIT compilation.
 """
 
-import numpy as np
-from numba import njit, float64, int32
 import math
+
+import numpy as np
+from numba import float64, njit
 
 # Constants
 PI = 3.14159265358979323846
@@ -41,7 +42,7 @@ def cross_product_array(v1, v2):
     return result
 
 
-@njit([float64[:] (float64[:], float64[:])], cache=True)
+@njit([float64[:](float64[:], float64[:])], cache=True)
 def cross_product(v1, v2):
     """
     Compute cross product of two 3D vectors.
@@ -221,8 +222,12 @@ def fp_coord_angles_to_vectors(strike, dip, rake):
     faultnorm[1] = math.sin(del_angle) * math.cos(phi)
     faultnorm[2] = -math.cos(del_angle)
 
-    slip_vec[0] = math.cos(lam) * math.cos(phi) + math.cos(del_angle) * math.sin(lam) * math.sin(phi)
-    slip_vec[1] = math.cos(lam) * math.sin(phi) - math.cos(del_angle) * math.sin(lam) * math.cos(phi)
+    slip_vec[0] = math.cos(lam) * math.cos(phi) + math.cos(del_angle) * math.sin(lam) * math.sin(
+        phi
+    )
+    slip_vec[1] = math.cos(lam) * math.sin(phi) - math.cos(del_angle) * math.sin(lam) * math.cos(
+        phi
+    )
     slip_vec[2] = -math.sin(lam) * math.sin(del_angle)
 
     return faultnorm, slip_vec
@@ -284,10 +289,7 @@ def vectors_to_strike_dip_rake(faultnorm, slip):
 
 
 # Random number generator state
-_random_state = {
-    'jran': 314159,
-    'initialized': False
-}
+_random_state = {"jran": 314159, "initialized": False}
 
 
 @njit(cache=True)
@@ -330,11 +332,11 @@ def normal_distribution_random():
         Normally-distributed random number with mean=0, std=1
     """
     global _random_state
-    if not _random_state['initialized']:
-        _random_state['jran'] = 314159
-        _random_state['initialized'] = True
+    if not _random_state["initialized"]:
+        _random_state["jran"] = 314159
+        _random_state["initialized"] = True
 
-    fran, _random_state['jran'] = normal_distribution_random_numba(_random_state['jran'])
+    fran, _random_state["jran"] = normal_distribution_random_numba(_random_state["jran"])
     return fran
 
 
@@ -348,8 +350,8 @@ def reset_random_seed(seed=314159):
         Seed value (default: 314159 to match Fortran)
     """
     global _random_state
-    _random_state['jran'] = seed
-    _random_state['initialized'] = True
+    _random_state["jran"] = seed
+    _random_state["initialized"] = True
 
 
 @njit(cache=True)
