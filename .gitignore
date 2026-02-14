@@ -3,3 +3,17 @@
 *.pyc
 *.nbi
 *.nbc
+
+# Sphinx build output
+docs/_build/
+
+# Python cache
+__pycache__/
+*.pyo
+.pytest_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp

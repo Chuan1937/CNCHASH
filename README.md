@@ -10,7 +10,7 @@ Python implementation of HASH for earthquake focal mechanism determination from 
 
 Python uses Numba JIT compilation optimization and vectorization, achieving speed improvements while maintaining complete consistency with the core Fortran algorithm.
 
-![Speed Comparison](docs/speed_comparison.png)
+![Speed Comparison](docs/images/speed_comparison.png)
 
 ## Performance
 
@@ -22,11 +22,11 @@ Python uses Numba JIT compilation optimization and vectorization, achieving spee
 
 ### For comprehensive benchmarks and analysis:
 
-![Comprehensive Comparison](docs/comprehensive_comparison.png)
+![Comprehensive Comparison](docs/images/comprehensive_comparison.png)
 
 ## Accuracy Verification
 
-![Accuracy Verification](docs/accuracy_verification.png)
+![Accuracy Verification](docs/images/accuracy_verification.png)
 
 **Key Results:**
 - Dip error median: < 10° 
