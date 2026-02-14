@@ -30,6 +30,6 @@ pip install -e ".[dev]"
 ## Verify Installation
 
 ```python
-from nchash import run_hash
+from cnchash import run_hash
 print("CNCHASH installed successfully!")
 ```

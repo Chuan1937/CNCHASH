@@ -18,8 +18,7 @@ def main():
     parser.add_argument("input_file", help="HASH input file (like example.inp)")
 
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
-
-        parser.add_argument("--version", action="version", version="CNCHASH 1.0.0")
+    parser.add_argument("--version", action="version", version="CNCHASH 1.0.0")
 
     args = parser.parse_args()
 

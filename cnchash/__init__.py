@@ -23,8 +23,8 @@ from .core import (
 )
 from .driver import (
     run_hash,
-    run_hash_with_amp,
     run_hash_from_file,
+    run_hash_with_amp,
 )
 from .io import (
     read_phase_file,

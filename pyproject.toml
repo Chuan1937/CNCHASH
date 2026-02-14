@@ -58,14 +58,14 @@ Repository = "https://github.com/Chuan1937/CNCHASH"
 Issues = "https://github.com/Chuan1937/CNCHASH/issues"
 
 [project.scripts]
-nchash = "nchash.cli:main"
+cnchash = "cnchash.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["nchash*"]
+include = ["cnchash*"]
 
 [tool.setuptools.package-data]
-nchash = ["py.typed"]
+cnchash = ["py.typed"]
 
 # Ruff configuration
 [tool.ruff]
@@ -88,7 +88,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["nchash"]
+known-first-party = ["cnchash"]
 
 [tool.ruff.format]
 quote-style = "double"

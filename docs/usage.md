@@ -5,7 +5,7 @@
 Determine focal mechanism from P-wave polarities:
 
 ```python
-from nchash import run_hash
+from cnchash import run_hash
 import numpy as np
 
 # Station data
@@ -29,7 +29,7 @@ print(f"Quality: {result['quality']}")
 Add S/P amplitude ratios for better constraint:
 
 ```python
-from nchash import run_hash_with_amp
+from cnchash import run_hash_with_amp
 
 # S/P ratios in log10 scale
 # 0.0 = no data, typical range: -1.0 to 2.0
@@ -46,7 +46,7 @@ print(f"Amplitude misfit: {result['mavg']:.2f}")
 Process multiple events from HASH input file:
 
 ```python
-from nchash import run_hash_from_file
+from cnchash import run_hash_from_file
 
 results = run_hash_from_file("example.inp")
 
@@ -160,7 +160,7 @@ Different HASH formats supported:
 ### Reading Files Directly
 
 ```python
-from nchash.io import (
+from cnchash.io import (
     read_phase_file,
     read_station_file,
     read_polarity_reversal_file,
