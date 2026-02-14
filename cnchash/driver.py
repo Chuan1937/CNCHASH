@@ -1,5 +1,5 @@
 """
-Main driver program for NCHASH (HASH v1.2 in Python).
+Main driver program for CNCHASH (HASH v1.2 in Python).
 
 This module provides high-level functions for running the HASH
 algorithm on earthquake polarity data.

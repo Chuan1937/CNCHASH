@@ -1,5 +1,5 @@
 """
-Command-line interface for NCHASH.
+Command-line interface for CNCHASH.
 """
 
 import argparse
@@ -12,14 +12,14 @@ from . import driver
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="NCHASH - Earthquake focal mechanism inversion (Python version of HASH v1.2)"
+        description="CNCHASH - Earthquake focal mechanism inversion (Python version of HASH v1.2)"
     )
 
     parser.add_argument("input_file", help="HASH input file (like example.inp)")
 
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
 
-    parser.add_argument("--version", action="version", version="NCHASH 1.0.0")
+        parser.add_argument("--version", action="version", version="CNCHASH 1.0.0")
 
     args = parser.parse_args()
 

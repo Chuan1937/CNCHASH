@@ -1,5 +1,5 @@
 """
-NCHASH - Python implementation of HASH v1.2 for earthquake focal mechanism inversion.
+CNCHASH - Python implementation of HASH v1.2 for earthquake focal mechanism inversion.
 
 This package provides a pure Python implementation of the HASH algorithm for
 determining earthquake focal mechanisms from polarities, with performance

@@ -1,9 +1,9 @@
 # Configuration file for the Sphinx documentation builder.
 # See https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-project = "NCHASH"
-copyright = "2024, NCHASH Authors"
-author = "NCHASH Authors"
+project = "CNCHASH"
+copyright = "2024, He XingChen"
+author = "He XingChen"
 
 # Extensions
 extensions = [

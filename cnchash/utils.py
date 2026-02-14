@@ -1,5 +1,5 @@
 """
-Utility functions for NCHASH implementation.
+Utility functions for CNCHASH implementation.
 
 Includes coordinate transformations, vector operations, and random number generation.
 Optimized with numba JIT compilation.

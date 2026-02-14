@@ -10,19 +10,26 @@
 ## Install
 
 ```bash
+pip install cnchash
+```
+
+## Install from Source
+
+```bash
 pip install -r requirements.txt
+pip install .
 ```
 
 ## Development Setup
 
 ```bash
 pip install -r requirements.txt
-pip install ruff pytest
+pip install -e ".[dev]"
 ```
 
 ## Verify Installation
 
 ```python
 from nchash import run_hash
-print("NCHASH installed successfully!")
+print("CNCHASH installed successfully!")
 ```

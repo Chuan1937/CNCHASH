@@ -1,5 +1,5 @@
 """
-Input/output functions for NCHASH.
+Input/output functions for CNCHASH.
 
 Handles reading various input file formats (phase data, station files,
 velocity models) and writing mechanism output files.

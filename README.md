@@ -1,4 +1,4 @@
-# NCHASH
+# CNCHASH
 
 Python implementation of HASH for earthquake focal mechanism determination from P-wave polarities.
 
@@ -38,7 +38,7 @@ Python uses Numba JIT compilation optimization and vectorization, achieving spee
 ## Quick Start
 
 ```bash
-pip install -r requirements.txt
+pip install cnchash
 ```
 
 ### Basic Usage (P-wave polarities only)
