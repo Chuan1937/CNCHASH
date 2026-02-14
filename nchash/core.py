@@ -35,9 +35,7 @@ def _setup_rotation_grid(dang):
     """
     Set up the rotation grid for focal mechanism search.
 
-    This creates a pre-computed grid of coordinate transformations
-    covering the focal sphere. The grid uses Fibonacci sphere-like
-    distribution for uniform coverage.
+    This exactly matches the Fortran FOCALMC grid setup (lines 60-110).
 
     Parameters
     ----------
@@ -51,8 +49,9 @@ def _setup_rotation_grid(dang):
         and nrot is the number of rotations
     """
     # Maximum number of rotations (adjust based on dang)
+    # Match Fortran: ithe=0,int(90.1/dang) and izeta=0,int(179.9/dang)
     max_the = int(90.1 / dang)
-    max_zeta = int(180.0 / dang)
+    max_zeta = int(179.9 / dang)
     max_rot = (max_the + 1) * (360 + 1) * (max_zeta + 1)
 
     # Pre-allocate arrays
@@ -68,31 +67,33 @@ def _setup_rotation_grid(dang):
         costhe = np.cos(rthe)
         sinthe = np.sin(rthe)
 
+        # Match Fortran: fnumang=360./dang; numphi=nint(fnumang*sin(rthe))
         fnumang = 360.0 / dang
-        numphi = int(np.round(fnumang * sinthe))
+        numphi = int(np.round(fnumang * np.sin(rthe)))
 
         if numphi != 0:
             dphi = 360.0 / float(numphi)
         else:
             dphi = 10000.0
 
-        for iphi in range(int(360.0 / dphi) + 1):
+        # Match Fortran: do 4 iphi=0,int(359.9/dphi)
+        for iphi in range(int(359.9 / dphi) + 1):
             phi = float(iphi) * dphi
             rphi = phi * DEG_TO_RAD
             cosphi = np.cos(rphi)
             sinphi = np.sin(rphi)
 
-            # bb3 is the fault normal direction
+            # bb3 is the fault normal direction (matches Fortran lines 79-81)
             bb3_3 = costhe
             bb3_1 = sinthe * cosphi
             bb3_2 = sinthe * sinphi
 
-            # bb1 is the slip direction
+            # bb1 is the slip direction (matches Fortran lines 82-84)
             bb1_3 = -sinthe
             bb1_1 = costhe * cosphi
             bb1_2 = costhe * sinphi
 
-            # bb2 is orthogonal (cross product)
+            # bb2 is orthogonal (cross product bb3 x bb1, matches Fortran line 85)
             bb2_1 = bb3_2 * bb1_3 - bb3_3 * bb1_2
             bb2_2 = bb3_3 * bb1_1 - bb3_1 * bb1_3
             bb2_3 = bb3_1 * bb1_2 - bb3_2 * bb1_1
@@ -106,17 +107,17 @@ def _setup_rotation_grid(dang):
                 if irot >= max_rot:
                     break
 
-                # Store b3 (fault normal)
+                # Store b3 (fault normal) - matches Fortran lines 96-98
                 b3[0, irot] = bb3_1
                 b3[1, irot] = bb3_2
                 b3[2, irot] = bb3_3
 
-                # Store b1 (slip, rotated by zeta)
+                # Store b1 (slip, rotated by zeta) - matches Fortran lines 99-101
                 b1[0, irot] = bb1_1 * coszeta + bb2_1 * sinzeta
                 b1[1, irot] = bb1_2 * coszeta + bb2_2 * sinzeta
                 b1[2, irot] = bb1_3 * coszeta + bb2_3 * sinzeta
 
-                # Store b2 (orthogonal, rotated by zeta)
+                # Store b2 (orthogonal, rotated by zeta) - matches Fortran lines 102-104
                 b2[0, irot] = bb2_1 * coszeta - bb1_1 * sinzeta
                 b2[1, irot] = bb2_2 * coszeta - bb1_2 * sinzeta
                 b2[2, irot] = bb2_3 * coszeta - bb1_3 * sinzeta
@@ -239,6 +240,8 @@ def _find_best_mechanisms_all_trials(
     """
     Find acceptable focal mechanisms across all Monte Carlo trials.
 
+    This exactly matches the Fortran FOCALMC algorithm.
+
     Parameters
     ----------
     p_azi_mc : ndarray, shape (npol, nmc)
@@ -289,21 +292,16 @@ def _find_best_mechanisms_all_trials(
             p_a1, p_a2, p_a3, p_pol, p_qual, b1, b2, b3, nrot, npol
         )
 
-        # Find minimums
+        # Find minimums - exactly matching Fortran logic
         nmiss0min = 999
         nmissmin = 999
-        for i in range(npol + 1):
-            if nmiss01min[i] < nmissmin:
-                if i < nmiss0min or nmiss0min == 999:
-                    nmissmin = nmiss01min[i]
-
         for irot in range(nrot):
             if fit0[irot] < nmiss0min:
                 nmiss0min = fit0[irot]
             if fit[irot] < nmissmin:
                 nmissmin = fit[irot]
 
-        # Choose fit criteria
+        # Choose fit criteria - exactly matching Fortran
         if nmiss0min == 0:
             nmiss0max = ntotal
             nmissmax = ntotal
@@ -313,8 +311,9 @@ def _find_best_mechanisms_all_trials(
 
         if nmiss0max < nmiss0min + nextra:
             nmiss0max = nmiss0min + nextra
-        if nmissmax < nmissmin + nextra:
-            nmissmax = nmissmin + nextra
+        # CRITICAL: Use nmiss01min(nmiss0min) not nmissmin - matches Fortran line 169-171
+        if nmissmax < nmiss01min[nmiss0min] + nextra:
+            nmissmax = nmiss01min[nmiss0min] + nextra
 
         # Mark good rotations
         for irot in range(nrot):

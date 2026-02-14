@@ -10,6 +10,7 @@ from numba import njit
 import math
 
 from . import core
+from . import amp_subs
 from . import uncertainty
 from . import velocity
 from . import io
@@ -245,6 +246,247 @@ def run_hash(
     return output
 
 
+def run_hash_with_amp(
+    p_azi,
+    p_the,
+    p_pol,
+    sp_amp,
+    dang=5.0,
+    nmc=30,
+    maxout=500,
+    nmismax=None,
+    qbadfac=0.3,
+    cangle=45.0,
+    prob_max=0.1,
+    npolmin=8,
+    max_agap=90.0,
+    max_pgap=60.0,
+):
+    """
+    Run HASH algorithm with both P-wave polarities and S/P amplitude ratios.
+
+    This implements the FOCALAMP_MC algorithm from Hardebeck and Shearer (2003).
+
+    Parameters
+    ----------
+    p_azi : ndarray, shape (npsta,) or (npsta, nmc)
+        Azimuths (degrees, East of North)
+    p_the : ndarray, shape (npsta,) or (npsta, nmc)
+        Takeoff angles (degrees)
+    p_pol : ndarray, shape (npsta,)
+        Polarity observations: 1=up, -1=down, 0=no polarity
+    sp_amp : ndarray, shape (npsta,)
+        S/P amplitude ratios (log10 scale, 0 if no ratio)
+    dang : float
+        Grid angle for focal mechanism search (degrees)
+    nmc : int
+        Number of Monte Carlo trials
+    maxout : int
+        Maximum number of acceptable mechanisms
+    nmismax : int or None
+        Maximum number of polarity misfits (default: max(npsta*0.1, 2))
+    qbadfac : float
+        Assumed noise in amplitude ratios, log10 (0.3 = factor of 2)
+    cangle : float
+        Angle cutoff for mechanism probability (degrees)
+    prob_max : float
+        Probability threshold for multiple solutions
+    npolmin : int
+        Minimum number of polarities
+    max_agap : float
+        Maximum azimuthal gap (degrees)
+    max_pgap : float
+        Maximum takeoff angle gap (degrees)
+
+    Returns
+    -------
+    dict
+        Result containing:
+        - 'success': bool, whether inversion succeeded
+        - 'strike_avg', 'dip_avg', 'rake_avg': preferred mechanism
+        - 'quality': quality rating (A-D, E, F)
+        - 'prob': probability
+        - 'var_est': estimated variance
+        - 'mfrac': polarity misfit fraction
+        - 'mavg': average S/P amplitude misfit (log10)
+        - 'stdr': station distribution ratio
+        - 'nmult': number of solutions
+        - 'nout2': number of acceptable mechanisms
+        - And optionally multiple solutions if nmult > 1
+    """
+    global _RANDOM_SEED
+    reset_random_seed(_RANDOM_SEED)
+
+    npsta = len(p_pol)
+
+    # Count valid polarities and S/P ratios
+    npol = np.sum(p_pol != 0)
+    nspr = np.sum(sp_amp != 0.0)
+
+    # Convert to arrays if needed
+    p_azi = np.asarray(p_azi, dtype=np.float64)
+    p_the = np.asarray(p_the, dtype=np.float64)
+    p_pol = np.asarray(p_pol, dtype=np.int32)
+    sp_amp = np.asarray(sp_amp, dtype=np.float64)
+
+    # Ensure shape is (npsta, nmc)
+    if p_azi.ndim == 1:
+        p_azi = p_azi.reshape(-1, 1)
+        p_the = p_the.reshape(-1, 1)
+        if nmc > 1:
+            p_azi = np.repeat(p_azi, nmc, axis=1)
+            p_the = np.repeat(p_the, nmc, axis=1)
+
+    # Check minimum polarities
+    if npol < npolmin:
+        return {
+            'success': False,
+            'strike_avg': 999.0,
+            'dip_avg': 99.0,
+            'rake_avg': 999.0,
+            'var_est': [99.0, 99.0],
+            'mfrac': 0.99,
+            'mavg': 0.99,
+            'quality': 'F',
+            'prob': 0.0,
+            'stdr': 0.0,
+            'nmult': 0,
+            'nout2': 0,
+            'nout1': 0,
+        }
+
+    # Check gaps
+    magap, mpgap = core.get_gap(npsta, p_azi[:, 0], p_the[:, 0])
+
+    if magap > max_agap or mpgap > max_pgap:
+        return {
+            'success': False,
+            'strike_avg': 999.0,
+            'dip_avg': 99.0,
+            'rake_avg': 999.0,
+            'var_est': [99.0, 99.0],
+            'mfrac': 0.99,
+            'mavg': 0.99,
+            'quality': 'E',
+            'prob': 0.0,
+            'stdr': 0.0,
+            'nmult': 0,
+            'nout2': 0,
+            'nout1': 0,
+        }
+
+    # Calculate acceptance criteria
+    if nmismax is None:
+        nmismax = max(int(npol * 0.1), 2)
+    nextra = max(int(npol * 0.05), 0)
+
+    # S/P amplitude ratio criteria
+    qmismax = nspr * qbadfac
+    qextra = max(nspr * qbadfac * 0.5, 2.0)
+
+    # Find acceptable mechanisms using both polarities and S/P ratios
+    result = amp_subs.focalamp_mc(
+        p_azi, p_the, sp_amp, p_pol, npsta, nmc,
+        dang, maxout, nextra, nmismax, qextra, qmismax
+    )
+
+    nf = result['nf']
+
+    if nf == 0:
+        return {
+            'success': False,
+            'strike_avg': 999.0,
+            'dip_avg': 99.0,
+            'rake_avg': 999.0,
+            'var_est': [99.0, 99.0],
+            'mfrac': 0.99,
+            'mavg': 0.99,
+            'quality': 'F',
+            'prob': 0.0,
+            'stdr': 0.0,
+            'nmult': 0,
+            'nout2': 0,
+            'nout1': 0,
+        }
+
+    # Find preferred mechanism
+    prob_result = uncertainty.mech_prob(
+        nf, result['faults'], result['slips'], cangle, prob_max
+    )
+
+    nsltn = prob_result['nsltn']
+    strike_avg = prob_result['strike_avg']
+    dip_avg = prob_result['dip_avg']
+    rake_avg = prob_result['rake_avg']
+    prob = prob_result['prob']
+    rms_diff = prob_result['rms_diff']
+
+    # Calculate misfit for preferred solution
+    if nsltn > 0:
+        mfrac, mavg, stdr = amp_subs.get_misf_amp(
+            npsta, p_azi[:, 0], p_the[:, 0], sp_amp, p_pol,
+            strike_avg[0], dip_avg[0], rake_avg[0]
+        )
+    else:
+        mfrac = 0.99
+        mavg = 0.99
+        stdr = 0.0
+
+    # Determine quality rating (using both polarity and amplitude criteria)
+    quality = 'D'
+    var_avg = (rms_diff[0, 0] + rms_diff[1, 0]) / 2.0 if nsltn > 0 else 99.0
+
+    if nsltn > 0:
+        if (prob[0] > 0.8 and var_avg <= 25.0 and
+            mfrac <= 0.15 and mavg <= 0.2 and stdr >= 0.5):
+            quality = 'A'
+        elif (prob[0] > 0.6 and var_avg <= 35.0 and
+              mfrac <= 0.2 and mavg <= 0.3 and stdr >= 0.4):
+            quality = 'B'
+        elif (prob[0] > 0.5 and var_avg <= 45.0 and
+              mfrac <= 0.3 and mavg <= 0.4 and stdr >= 0.3):
+            quality = 'C'
+        else:
+            quality = 'D'
+
+    # Build result
+    output = {
+        'success': True,
+        'strike_avg': strike_avg[0] if nsltn > 0 else result['strike'][0],
+        'dip_avg': dip_avg[0] if nsltn > 0 else result['dip'][0],
+        'rake_avg': rake_avg[0] if nsltn > 0 else result['rake'][0],
+        'var_est': [rms_diff[0, 0], rms_diff[1, 0]] if nsltn > 0 else [99.0, 99.0],
+        'mfrac': mfrac,
+        'mavg': mavg,
+        'quality': quality,
+        'prob': prob[0] if nsltn > 0 else 0.0,
+        'stdr': stdr,
+        'nmult': nsltn,
+        'nout2': nf,
+        'nout1': min(nf, maxout),
+        'npol': npol,
+        'nspr': nspr,
+    }
+
+    # Add multiple solutions if present
+    if nsltn > 1:
+        output['strike_avg'] = strike_avg[:nsltn]
+        output['dip_avg'] = dip_avg[:nsltn]
+        output['rake_avg'] = rake_avg[:nsltn]
+        output['prob'] = prob[:nsltn]
+        output['rms_diff'] = rms_diff[:, :nsltn]
+        output['quality'] = [quality] * nsltn
+
+    # Also store raw results
+    output['faults'] = result['faults']
+    output['slips'] = result['slips']
+    output['strike'] = result['strike']
+    output['dip'] = result['dip']
+    output['rake'] = result['rake']
+
+    return output
+
+
 def run_hash_from_file(input_file):
     """
     Run HASH from an input file.
@@ -467,6 +709,7 @@ def process_event(event, stations, reversals, params):
 # Export all functions
 __all__ = [
     "run_hash",
+    "run_hash_with_amp",
     "run_hash_from_file",
     "process_event",
 ]

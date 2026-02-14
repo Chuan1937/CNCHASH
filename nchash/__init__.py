@@ -17,6 +17,10 @@ from .core import (
     get_misfit,
     get_gap,
 )
+from .amp_subs import (
+    focalamp_mc,
+    get_misf_amp,
+)
 from .uncertainty import (
     mech_prob,
     mech_avg,
@@ -40,13 +44,19 @@ from .io import (
     read_velocity_model,
     write_mechanism_output,
 )
+from .driver import (
+    run_hash,
+    run_hash_with_amp,
+)
 
 __all__ = [
     "focalmc",
+    "focalamp_mc",
     "mech_prob",
     "mech_avg",
     "mech_rot",
     "get_misfit",
+    "get_misf_amp",
     "get_gap",
     "make_table",
     "get_tts",
@@ -60,4 +70,6 @@ __all__ = [
     "read_station_file",
     "read_velocity_model",
     "write_mechanism_output",
+    "run_hash",
+    "run_hash_with_amp",
 ]
