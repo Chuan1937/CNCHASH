@@ -44,7 +44,7 @@ pip install cnchash
 ### Basic Usage (P-wave polarities only)
 
 ```python
-from nchash import run_hash
+from cnchash import run_hash
 import numpy as np
 
 # Azimuths, takeoff angles, polarities, quality
@@ -64,7 +64,7 @@ print(f"Quality: {result['quality']}")
 ### With S/P Amplitude Ratio
 
 ```python
-from nchash import run_hash_with_amp
+from cnchash import run_hash_with_amp
 import numpy as np
 
 # Same inputs as above, plus S/P amplitude ratios (log10 scale)
@@ -107,7 +107,7 @@ jupyter notebook HASH_Tests.ipynb
 ## Project Structure
 
 ```
-nchash/
+cnchash/
 ├── core.py        # Grid search algorithm (focalmc)
 ├── amp_subs.py    # S/P amplitude ratio (focalamp_mc)
 ├── uncertainty.py # Uncertainty analysis (mech_prob)
