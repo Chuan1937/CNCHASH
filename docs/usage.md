@@ -56,26 +56,42 @@ for result in results:
               f"R={result['rake_avg']:.0f}° Q={result['quality']}")
 ```
 
-### Input File Format
+### HASH Input File (Original Fortran Format)
 
-HASH input file (`example.inp`) specifies files and parameters:
+The original Fortran HASH program uses a fixed-format input file (`example.inp`) with one value per line. No comments are supported.
 
-```
-scsn.pol           # Polarity reversal file
-north1.phase       # Phase data file
-output.out         # Output file 1 (mechanisms)
-out2.out           # Output file 2 (acceptable planes)
-8                  # npolmin: minimum polarities
-90                 # max_agap: max azimuth gap (degrees)
-60                 # max_pgap: max plunge gap (degrees)
-5                  # dang: grid angle increment
-30                 # nmc: Monte Carlo trials
-500                # maxout: max output mechanisms
-0.1                # badfrac: allowed bad fraction
-120                # delmax: max distance (km)
-45                 # cangle: clustering angle
-0.1                # prob_max: probability threshold
-```
+**Format 1 Structure:**
+
+| Line | Content | Description |
+|------|---------|-------------|
+| 1 | polfile | Polarity reversal file |
+| 2 | phasefile | Phase data file |
+| 3 | outfile1 | Output file (mechanisms) |
+| 4 | outfile2 | Output file (acceptable planes) |
+| 5-14 | parameters | Algorithm parameters (see below) |
+
+**Algorithm Parameters (Lines 5-14):**
+
+| Line | Parameter | Description |
+|------|-----------|-------------|
+| 5 | npolmin | Minimum polarities required |
+| 6 | max_agap | Max azimuth gap (degrees) |
+| 7 | max_pgap | Max plunge gap (degrees) |
+| 8 | dang | Grid angle increment (degrees) |
+| 9 | nmc | Monte Carlo trials |
+| 10 | maxout | Max output mechanisms |
+| 11 | badfrac | Allowed bad polarity fraction |
+| 12 | delmax | Max distance (km) |
+| 13 | cangle | Clustering angle (degrees) |
+| 14 | prob_max | Probability threshold |
+
+**Other Format Variants:**
+
+| Format | File Structure |
+|--------|----------------|
+| 2/4 | stationfile, polfile, phasefile, out1, out2, params |
+| 3 | stationfile, polfile, statcor, amp, phasefile, out1, params |
+| 5 | polfile, simulfile, phasefile, out1, out2, params |
 
 ### Supported File Formats
 
