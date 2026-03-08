@@ -92,7 +92,7 @@ print(f"Amplitude misfit: {result['mavg']:.2f}")
 
 ## Documentation
 
-See [docs/README.md](docs/README.md) for full documentation including:
+See https://cnchash.readthedocs.io/ for full documentation including:
 - API reference
 - Algorithm details
 - File format specifications
