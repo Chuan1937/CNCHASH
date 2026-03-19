@@ -2,10 +2,22 @@
 
 {% block body %}
 {% if author or last_updated %}
-<p>
-  {% if author %}<strong>Author:</strong> {{ author }}{% endif %}
-  {% if last_updated %}<strong>Last Updated:</strong> {{ last_updated }}{% endif %}
-</p>
+<div class="document-wrapper" style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2980b9;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        {% if author %}
+        <div style="font-size: 14px; color: #555;">
+            <strong>Author:</strong> {{ author }}
+        </div>
+        {% endif %}
+        {% if last_updated %}
+        <div style="font-size: 14px; color: #555;">
+            <strong>Last Updated:</strong> {{ last_updated }}
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endif %}
 {{ super() }}
 {% endblock %}
+
+
