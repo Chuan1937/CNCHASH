@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 project = "CNCHASH"
-copyright = "2024, He XingChen"
+copyright = "2026, He XingChen"
 author = "He XingChen"
 
 # Extensions
@@ -34,3 +34,11 @@ source_suffix = {
 # HTML theme
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+# Last updated format
+html_last_updated_fmt = "%Y-%m-%d"
+
+# Extra context for templates
+html_context = {
+    "display_author": True,
+}

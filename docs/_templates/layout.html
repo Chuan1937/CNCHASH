@@ -1,0 +1,16 @@
+{% extends "!layout.html" %}
+
+{% block footer %}
+<div class="footer" role="contentinfo">
+  <p>
+    Author: {{ author }}
+    <br>
+    Last Updated: {{ last_updated|default("N/A") }}
+  </p>
+  <p>
+    {{ copyright }}
+    <br>
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a theme provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  </p>
+</div>
+{% endblock %}
