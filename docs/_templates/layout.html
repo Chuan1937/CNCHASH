@@ -1,19 +1,11 @@
 {% extends "!layout.html" %}
 
 {% block body %}
+{% if author or last_updated %}
 <p>
-  <strong>Author:</strong> {{ author }}
-  <strong>Last Updated:</strong> {{ last_updated|default("N/A") }}
+  {% if author %}<strong>Author:</strong> {{ author }}{% endif %}
+  {% if last_updated %}<strong>Last Updated:</strong> {{ last_updated }}{% endif %}
 </p>
+{% endif %}
 {{ super() }}
-{% endblock %}
-
-{% block footer %}
-<div class="footer" role="contentinfo">
-  <p>
-    {{ copyright }}
-    <br>
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a theme provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  </p>
-</div>
 {% endblock %}
