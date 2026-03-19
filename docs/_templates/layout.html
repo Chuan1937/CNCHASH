@@ -1,12 +1,15 @@
 {% extends "!layout.html" %}
 
+{% block body %}
+<p>
+  <strong>Author:</strong> {{ author }}
+  <strong>Last Updated:</strong> {{ last_updated|default("N/A") }}
+</p>
+{{ super() }}
+{% endblock %}
+
 {% block footer %}
 <div class="footer" role="contentinfo">
-  <p>
-    Author: {{ author }}
-    <br>
-    Last Updated: {{ last_updated|default("N/A") }}
-  </p>
   <p>
     {{ copyright }}
     <br>
