@@ -1,6 +1,6 @@
 {% extends "!layout.html" %}
 
-{% block body %}
+{% block document %}
 {% if author or last_updated %}
 <div class="document-wrapper" style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2980b9;">
     <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -19,5 +19,8 @@
 {% endif %}
 {{ super() }}
 {% endblock %}
+
+
+
 
 

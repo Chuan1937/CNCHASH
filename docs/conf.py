@@ -34,8 +34,6 @@ def get_git_last_updated(file_path):
 
 def setup(app):
     """Setup function to add custom configuration."""
-    app.add_config_value("author", author, "html")
-
     def html_page_context_handler(app, pagename, templatename, context, doctree):
         source_suffix = app.config.source_suffix
         if not isinstance(source_suffix, list):
@@ -52,6 +50,9 @@ def setup(app):
             last_updated_str = get_git_last_updated(source_file)
             if last_updated_str:
                 context["last_updated"] = last_updated_str
+
+        # Ensure author is in context
+        context["author"] = app.config.author
 
     app.connect("html-page-context", html_page_context_handler)
 
