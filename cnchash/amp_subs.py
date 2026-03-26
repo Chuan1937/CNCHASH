@@ -392,7 +392,7 @@ def focalamp_mc(
     if nfault <= maxout:
         selected_indices = good_indices
     else:
-        np.random.shuffle(good_indices)
+        # Deterministic truncation preserves reproducibility across runs.
         selected_indices = good_indices[:maxout]
         nf = len(selected_indices)
 

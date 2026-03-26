@@ -9,7 +9,8 @@ Optimized with numba JIT compilation.
 import math
 
 import numpy as np
-from numba import njit
+from numba import get_num_threads as _numba_get_num_threads
+from numba import njit, set_num_threads as _numba_set_num_threads
 
 from .utils import (
     DEG_TO_RAD,
@@ -149,6 +150,20 @@ def get_rotation_grid(dang):
     _GRID_DANG_OLD = dang
 
     return b1, b2, b3, nrot
+
+
+def set_numba_threads(num_threads):
+    """Set numba thread count used by parallel kernels."""
+    threads = int(num_threads)
+    if threads < 1:
+        raise ValueError("num_threads must be >= 1")
+    _numba_set_num_threads(threads)
+    return _numba_get_num_threads()
+
+
+def get_numba_threads():
+    """Get current numba thread count used by parallel kernels."""
+    return _numba_get_num_threads()
 
 
 @njit(cache=True)
@@ -370,8 +385,7 @@ def focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc, dang, maxout, nextra, 
         # Return all good rotations
         selected_indices = good_indices
     else:
-        # Random selection
-        np.random.shuffle(good_indices)
+        # Deterministic truncation preserves reproducibility across runs.
         selected_indices = good_indices[:maxout]
         nf = len(selected_indices)
 
@@ -673,4 +687,6 @@ __all__ = [
     "get_misfit",
     "get_gap",
     "get_rotation_grid",
+    "set_numba_threads",
+    "get_numba_threads",
 ]

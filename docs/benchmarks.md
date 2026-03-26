@@ -8,7 +8,8 @@
 |--------|-------------|---------|---------|
 | 24 events | 0.068s | 0.473s | **6.9x** |
 | Per event | 2.85ms | 19.7ms | **6.9x** |
-| 1000 events | 2.6s | 19.7s | **7.5x** |
+| 5000 events | 13.0s | 98.5s | **7.6x** |
+| 10000 events | 26.0s | 197.0s | **7.6x** |
 
 **Optimization:** Numba JIT compilation + NumPy vectorization
 
@@ -18,8 +19,8 @@
 
 | Metric | Python | Fortran | Target |
 |--------|--------|---------|--------|
-| Dip error median | 10.0° | 11.1° | < 10° |
-| Rake error median | 27.9° | 26.6° | < 15° |
+| Dip error median | 5.6° | 11.1° | < 10° |
+| Rake error median | 24.1° | 26.6° | < 15° |
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 
@@ -32,10 +33,6 @@ The Python implementation matches Fortran exactly:
 | Grid boundaries | `int(179.9/dang)` instead of `int(180.0/dang)` |
 | Acceptance criteria | Uses `nmiss01min[nmiss0min]` |
 | Polarity calculation | `p_b1 * p_b3` product sign |
-
-## Comprehensive Analysis
-
-![Comprehensive Comparison](images/comprehensive_comparison.png)
 
 ## Performance Tips
 

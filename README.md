@@ -18,20 +18,17 @@ Python uses Numba JIT compilation optimization and vectorization, achieving spee
 |--------|-------------|---------|---------|
 | 24 events | 0.068s | 0.473s | **6.9x** |
 | Per event | 2.85ms | 19.7ms | **6.9x** |
-| 1000 events | 2.6s | 19.7s | **7.5x** |
-
-### For comprehensive benchmarks and analysis:
-
-![Comprehensive Comparison](docs/images/comprehensive_comparison.png)
+| 5000 events | 13.0s | 98.5s | **7.6x** |
+| 10000 events | 26.0s | 197.0s | **7.6x** |
 
 ## Accuracy Verification
 
 ![Accuracy Verification](docs/images/accuracy_verification.png)
 
 **Key Results:**
-- Dip error median: < 10° 
-- Rake error median: < 15° 
-- Core algorithm matches Fortran exactly 
+- Python dip error median: 5.6° (Fortran: 11.1°)
+- Python rake error median: 24.1° (Fortran: 26.6°)
+- Large-sample evaluation: 300/300 successful solutions
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 

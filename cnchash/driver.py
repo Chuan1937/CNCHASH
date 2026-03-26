@@ -13,11 +13,31 @@ from . import amp_subs, core, io, uncertainty, velocity
 from .utils import (
     DEG_TO_RAD,
     RAD_TO_DEG,
-    reset_random_seed,
 )
 
 # Global state for random number generator
 _RANDOM_SEED = 314159
+
+
+def run_hash_event_payload(payload):
+    """
+    Solve one event from a serialized payload.
+
+    This helper is process-safe and pickle-friendly for use with
+    ProcessPoolExecutor (spawn context) in notebooks and scripts.
+
+    Parameters
+    ----------
+    payload : tuple
+        (p_azi_mc, p_the_mc, p_pol, p_qual, dang, nmc)
+
+    Returns
+    -------
+    dict
+        Result dictionary from run_hash.
+    """
+    p_azi_mc, p_the_mc, p_pol, p_qual, dang, nmc = payload
+    return run_hash(p_azi_mc, p_the_mc, p_pol, p_qual, dang=dang, nmc=nmc, num_threads=1)
 
 
 def run_hash(
@@ -34,6 +54,7 @@ def run_hash(
     npolmin=8,
     max_agap=90.0,
     max_pgap=60.0,
+    num_threads=None,
 ):
     """
     Run HASH algorithm on polarity data.
@@ -66,6 +87,9 @@ def run_hash(
         Maximum azimuthal gap (degrees)
     max_pgap : float
         Maximum takeoff angle gap (degrees)
+    num_threads : int or None
+        Number of numba threads for parallel kernels.
+        If None, use numba default.
 
     Returns
     -------
@@ -82,8 +106,8 @@ def run_hash(
         - 'nout2': number of acceptable mechanisms
         - And optionally multiple solutions if nmult > 1
     """
-    global _RANDOM_SEED
-    reset_random_seed(_RANDOM_SEED)
+    if num_threads is not None:
+        core.set_numba_threads(num_threads)
 
     npol = len(p_pol)
 
@@ -246,6 +270,7 @@ def run_hash_with_amp(
     npolmin=8,
     max_agap=90.0,
     max_pgap=60.0,
+    num_threads=None,
 ):
     """
     Run HASH algorithm with both P-wave polarities and S/P amplitude ratios.
@@ -282,6 +307,9 @@ def run_hash_with_amp(
         Maximum azimuthal gap (degrees)
     max_pgap : float
         Maximum takeoff angle gap (degrees)
+    num_threads : int or None
+        Number of numba threads for parallel kernels.
+        If None, use numba default.
 
     Returns
     -------
@@ -299,8 +327,8 @@ def run_hash_with_amp(
         - 'nout2': number of acceptable mechanisms
         - And optionally multiple solutions if nmult > 1
     """
-    global _RANDOM_SEED
-    reset_random_seed(_RANDOM_SEED)
+    if num_threads is not None:
+        core.set_numba_threads(num_threads)
 
     npsta = len(p_pol)
 
@@ -688,6 +716,7 @@ def process_event(event, stations, reversals, params):
 # Export all functions
 __all__ = [
     "run_hash",
+    "run_hash_event_payload",
     "run_hash_with_amp",
     "run_hash_from_file",
     "process_event",

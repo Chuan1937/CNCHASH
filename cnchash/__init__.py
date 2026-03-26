@@ -18,11 +18,14 @@ from .amp_subs import (
 )
 from .core import (
     focalmc,
+    get_numba_threads,
     get_gap,
     get_misfit,
+    set_numba_threads,
 )
 from .driver import (
     run_hash,
+    run_hash_event_payload,
     run_hash_from_file,
     run_hash_with_amp,
 )
@@ -53,6 +56,7 @@ from .velocity import (
 __all__ = [
     # Main functions
     "run_hash",
+    "run_hash_event_payload",
     "run_hash_with_amp",
     "run_hash_from_file",
     # Core algorithms
@@ -65,6 +69,8 @@ __all__ = [
     "get_misfit",
     "get_misf_amp",
     "get_gap",
+    "set_numba_threads",
+    "get_numba_threads",
     "make_table",
     "get_tts",
     "cross_product",
