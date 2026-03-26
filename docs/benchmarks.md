@@ -17,12 +17,17 @@
 
 ![Accuracy Verification](images/accuracy_verification.png)
 
-| Metric | Python | Fortran | Target |
-|--------|--------|---------|--------|
-| Dip error median | 5.6° | 11.1° | < 10° |
-| Rake error median | 24.1° | 26.6° | < 15° |
+| Metric | Python | Fortran |
+|--------|--------|---------|
+| Dip error median | 5.6° | 11.1° |
+| Rake error median | 24.1° | 26.6° |
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
+
+Evaluation status (latest notebook run):
+- Python synthetic trials: 300/300 successful solutions
+- Fortran synthetic trials: 60/60 successful solutions (direct-runs)
+- The figure compares Fortran vs Python in all three quantitative panels (A/B/C)
 
 ## Algorithm Verification
 

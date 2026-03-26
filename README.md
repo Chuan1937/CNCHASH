@@ -28,7 +28,9 @@ Python uses Numba JIT compilation optimization and vectorization, achieving spee
 **Key Results:**
 - Python dip error median: 5.6° (Fortran: 11.1°)
 - Python rake error median: 24.1° (Fortran: 26.6°)
-- Large-sample evaluation: 300/300 successful solutions
+- Python synthetic trials: 300/300 successful solutions
+- Fortran synthetic trials: 60/60 successful solutions (direct-runs)
+- The accuracy figure compares Fortran vs Python in all three quantitative panels (A/B/C)
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 
