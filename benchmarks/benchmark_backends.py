@@ -66,9 +66,7 @@ def main():
         ("high_mc", 30, 100, 5.0),
     ]
 
-    backends = [name for name in backend_mod.available_backends() if name != "fortran"]
-    if "fortran" in backend_mod.available_backends():
-        backends.insert(0, "fortran")
+    backends = backend_mod.available_backends()
     threads = [1, 4]
 
     print(f"{'config':<10} {'backend':<8} {'threads':<8} {'events/s':>12} {'ms/event':>10}")
@@ -77,8 +75,6 @@ def main():
         events = [make_event(nsta, nmc, seed=i) for i in range(10)]
         for backend in backends:
             for nt in threads:
-                if nt > 1 and backend == "numba":
-                    continue
                 eps = time_run_hash(backend, events, nt, args.seconds)
                 ms = 1000.0 / eps
                 print(f"{name:<10} {backend:<8} {nt:<8} {eps:>12.1f} {ms:>9.3f}")
@@ -87,8 +83,6 @@ def main():
     events = [make_event(30, 30, seed=i) for i in range(args.events)]
     for backend in backends:
         for nt in threads:
-            if nt > 1 and backend == "numba":
-                continue
             eps_b = time_run_batch(backend, events, nt, args.seconds)
             eps_s = time_run_hash(backend, events, nt, args.seconds)
             print(f"  {backend:<8} threads={nt}: batch {eps_b:>10.1f} ev/s, scalar {eps_s:>10.1f} ev/s, batch speedup {eps_b / max(eps_s, 1e-9):.2f}x")

@@ -1,22 +1,19 @@
 # CNCHASH
 
-High-performance Python implementation of HASH for earthquake focal-mechanism
-determination from P-wave polarities.
-
-It provides a **Modern Fortran/OpenMP native backend** for production-scale
-inversion and a **Numba reference backend** for portability and validation.
+High-performance implementation of HASH for earthquake focal-mechanism
+determination from P-wave polarities, built on a **Modern Fortran/OpenMP
+native backend** with a clean Python front-end.
 
 ![Python](https://img.shields.io/badge/python-3.10+-orange.svg)
 ![License](https://img.shields.io/badge/license-BSD%203--blue.svg)
-![Numba](https://img.shields.io/badge/numba-0.53+-red.svg)
-![Numpy](https://img.shields.io/badge/numpy-1.19+-yellow.svg)
+![Fortran](https://img.shields.io/badge/fortran-modern%20fortran-orange.svg)
+![Numpy](https://img.shields.io/badge/numpy-1.20+-yellow.svg)
 ![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
-Python uses Numba JIT compilation optimization and vectorization, achieving
-speed improvements while maintaining complete consistency with the core
-Fortran algorithm. The optional native backend (`backend="auto"` selects it
-when `libhashhp` is available) adds OpenMP threading and event-level batch
-parallelism.
+All computation runs in the Modern Fortran/OpenMP core (`libhashhp`): grid
+search, S/P amplitudes, uncertainty analysis, and velocity tables. The
+Python layer handles data, file formats, and the API. OpenMP threads and
+event-level batch parallelism scale across cores.
 
 ![Speed Comparison](docs/images/speed_comparison.png)
 
@@ -41,10 +38,10 @@ Native backend scaling (30 stations, 30 MC trials, see
 ![Accuracy Verification](docs/images/accuracy_verification.png)
 
 **Key Results:**
-- Python dip error median: 5.6° (Fortran: 11.1°)
-- Python rake error median: 24.1° (Fortran: 26.6°)
-- Python synthetic trials: 300/300 successful solutions
-- Fortran synthetic trials: 60/60 successful solutions (direct-runs)
+- CNCHASH dip error median: 5.6°
+- CNCHASH rake error median: 24.1°
+- CNCHASH synthetic trials: 300/300 successful solutions
+- HASH v1.2 synthetic trials: 60/60 successful solutions (direct-runs)
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 
@@ -105,7 +102,7 @@ result = run_hash(p_azi, p_the, p_pol, p_qual, backend="auto", num_threads=16)
 # Batch mode: many events in one native call (event-level OpenMP)
 results = run_hash_batch(events, backend="fortran", num_threads=16)
 
-print(available_backends())   # ['fortran', 'numba']
+print(available_backends())   # ['fortran']
 print(get_backend_info())
 ```
 
@@ -119,9 +116,9 @@ architecture, build instructions, and design rules.
 - S/P amplitude ratio constraint
 - Quality rating (A-D, E, F)
 - Multiple phase file formats
-- Modern Fortran/OpenMP native backend (optional)
+- Modern Fortran/OpenMP native backend
 - Event-level batch parallelism
-- Core algorithm matches Fortran exactly (parity-tested)
+- Core algorithm matches the original HASH v1.2 (golden-reference tested)
 
 ## Documentation
 
@@ -142,14 +139,10 @@ jupyter notebook HASH_Tests.ipynb
 
 ```
 cnchash/
-├── backend/       # backend dispatch (base, numba, fortran)
-├── core.py        # Numba reference grid search (focalmc)
-├── amp_subs.py    # Numba reference S/P amplitude (focalamp_mc)
-├── uncertainty.py # Numba reference uncertainty (mech_prob)
+├── backend/       # native backend binding (fortran via ctypes)
 ├── driver.py      # Main driver (run_hash, run_hash_batch)
 ├── io.py          # File I/O
-├── utils.py       # Utilities
-└── velocity.py    # velocity tables (reference)
+└── utils.py       # Utilities
 
 src/hash_hp/       # Modern Fortran/OpenMP core (libhashhp)
 HASH_complete/     # Original Fortran HASH v1.2 (immutable golden reference)

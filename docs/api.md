@@ -93,13 +93,10 @@ results = run_hash_from_file("example.inp")
 
 | Module | Functions | Description |
 |--------|-----------|-------------|
-| `driver.py` | `run_hash`, `run_hash_with_amp`, `run_hash_from_file` | Main entry points |
-| `core.py` | `focalmc`, `get_misfit`, `get_gap` | Grid search algorithm |
-| `amp_subs.py` | `focalamp_mc`, `get_misf_amp` | S/P amplitude ratio |
-| `uncertainty.py` | `mech_prob`, `mech_rot`, `mech_avg` | Uncertainty analysis |
+| `driver.py` | `run_hash`, `run_hash_with_amp`, `run_hash_batch`, `run_hash_from_file` | Main entry points |
+| `backend/fortran_backend.py` | `run_event`, `run_event_amp`, `run_batch`, `build_velocity_table`, `get_tts` | Native backend binding |
 | `io.py` | `read_phase_file`, `write_mechanism_output` | File I/O |
 | `utils.py` | `fp_coord_angles_to_vectors`, `fp_coord_vectors_to_angles` | Coordinate conversions |
-| `velocity.py` | `make_table`, `get_angle` | Velocity model tables |
 
 ---
 

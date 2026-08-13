@@ -170,7 +170,7 @@ class HashBackend(ABC):
             for azi, the, pol, amp in events
         ]
 
-    # ---- low-level pieces (used by tests and the numba reference) -----------
+    # ---- low-level pieces (used by tests) -----------------------------------
 
     def get_gap(self, npol, p_azi, p_the):
         """Maximum azimuthal and takeoff gaps (degrees)."""

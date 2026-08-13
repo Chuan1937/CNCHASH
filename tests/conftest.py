@@ -5,6 +5,8 @@ import pytest
 
 from cnchash import backend as backend_mod
 
+BACKEND = "fortran"
+
 
 def make_synthetic_event(nsta=25, seed=42, mechanism=(45.0, 60.0, 90.0)):
     """Build a realistic synthetic event with a known mechanism.
@@ -54,12 +56,8 @@ def make_amp_event(nsta=25, seed=7):
 
 
 @pytest.fixture(scope="session")
-def backends():
-    """All available backends (fortran first, then numba)."""
-    names = backend_mod.available_backends()
-    return {name: backend_mod.get_backend(name) for name in names}
-
-
-@pytest.fixture(scope="session")
-def has_fortran():
-    return "fortran" in backend_mod.available_backends()
+def backend():
+    """The native backend (skips the module when libhashhp is missing)."""
+    if not backend_mod.get_backend("fortran").available:
+        pytest.skip("fortran backend not available")
+    return backend_mod.get_backend("fortran")

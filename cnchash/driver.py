@@ -12,7 +12,7 @@ import math
 
 import numpy as np
 
-from . import backend, io, velocity
+from . import backend, io
 from .utils import (
     DEG_TO_RAD,
     RAD_TO_DEG,
@@ -100,7 +100,7 @@ def run_hash(
     num_threads : int or None
         Thread count for the backend (Numba threads or OpenMP threads).
     backend : str
-        "auto" (default), "fortran" or "numba".
+        "auto" (default) or "fortran".
     selection : int
         0 = deterministic solution selection (default), 1 = HASH-style
         random selection (reproduces the original Fortran behavior when
@@ -215,7 +215,7 @@ def run_hash_with_amp(
     num_threads : int or None
         Thread count for the backend (Numba threads or OpenMP threads).
     backend : str
-        "auto" (default), "fortran" or "numba".
+        "auto" (default) or "fortran".
     selection : int
         0 = deterministic solution selection (default), 1 = HASH-style
         random selection.
@@ -321,7 +321,7 @@ def run_hash_batch(
     num_threads : int or None
         Thread count for the backend.
     backend : str
-        "auto" (default), "fortran" or "numba".
+        "auto" (default) or "fortran".
     selection : int
         Solution selection mode (0 = deterministic, 1 = HASH random).
 
@@ -458,11 +458,9 @@ def run_hash_from_file(input_file):
     # Read polarity reversal file
     reversals = io.read_polarity_reversal_file(params["polfile"])
 
-    # Read velocity model if needed
-    vmodel_file = params.get("vmodel_file", "")
-    if vmodel_file and os.path.exists(vmodel_file):
-        depth, vel = io.read_velocity_model(vmodel_file)
-        velocity.make_table_from_model(depth, vel)
+    # Velocity-model takeoff tables are handled by the backend when the
+    # input format requests them; the file pipeline uses the geometric
+    # takeoff approximation (see process_event).
 
     results = []
 

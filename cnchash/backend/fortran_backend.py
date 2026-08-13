@@ -96,6 +96,16 @@ class FortranBackend(HashBackend):
         lib.cnchash_get_max_threads.argtypes = []
         lib.cnchash_get_max_threads.restype = ctypes.c_int32
 
+        lib.cnchash_get_rotation_grid.argtypes = [
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_int32),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            ctypes.c_int32,
+        ]
+        lib.cnchash_get_rotation_grid.restype = None
+
         lib.cnchash_get_gap.argtypes = [
             ctypes.c_int32,
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
@@ -608,6 +618,30 @@ class FortranBackend(HashBackend):
 
     # ---- low-level pieces ---------------------------------------------------
 
+    def get_rotation_grid(self, dang):
+        """Rotation grid (b1/b2/b3 column-major) for a grid spacing.
+
+        Returns a dict with keys nrot/b1/b2/b3 (arrays of shape (3, nrot)).
+        """
+        import math
+
+        # Size generously: nrot grows roughly as dang^-2 (31032 at dang=5).
+        max_rot = max(31032, int(math.ceil(31032 * (5.0 / dang) ** 2 * 2)))
+        nrot_out = ctypes.c_int32()
+        b1 = np.zeros(3 * max_rot, np.float64)
+        b2 = np.zeros(3 * max_rot, np.float64)
+        b3 = np.zeros(3 * max_rot, np.float64)
+        self._lib.cnchash_get_rotation_grid(
+            float(dang), ctypes.byref(nrot_out), b1, b2, b3, max_rot
+        )
+        n = int(nrot_out.value)
+        return {
+            "nrot": n,
+            "b1": b1.reshape(max_rot, 3)[:n, :].T.copy(),
+            "b2": b2.reshape(max_rot, 3)[:n, :].T.copy(),
+            "b3": b3.reshape(max_rot, 3)[:n, :].T.copy(),
+        }
+
     def get_gap(self, npol, p_azi, p_the):
         magap, mpgap = ctypes.c_double(), ctypes.c_double()
         self._lib.cnchash_get_gap(
@@ -669,8 +703,6 @@ class FortranBackend(HashBackend):
         }
 
     def build_velocity_table(self, depth, velocity, params=None):
-        from ..velocity import _default_table_params
-
         if params is None:
             params = _default_table_params()
         depth = _as_c_double_array(depth)
@@ -715,3 +747,17 @@ class FortranBackend(HashBackend):
             ctypes.byref(tt), ctypes.byref(iflag),
         )
         return float(tt.value), int(iflag.value)
+
+
+def _default_table_params():
+    """Default takeoff-table generation parameters (Python front-end)."""
+    return {
+        "del1": 0.0,  # Minimum distance (km)
+        "del2": 120.0,  # Maximum distance (km)
+        "del3": 1.0,  # Distance step (km)
+        "dep1": 0.0,  # Minimum depth (km)
+        "dep2": 35.0,  # Maximum depth (km)
+        "dep3": 1.0,  # Depth step (km)
+        "pmin": 0.0,  # Minimum ray parameter
+        "nump": 1000,  # Number of ray parameters
+    }

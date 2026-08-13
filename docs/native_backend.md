@@ -1,9 +1,10 @@
 # Native Fortran backend (HASH-HP)
 
-CNCHASH ships an optional Modern Fortran + OpenMP backend for
-production-scale inversion. When the compiled library is present it is
-used automatically (`backend="auto"`); otherwise the pure Python/Numba
-reference backend is used with no change to the public API.
+CNCHASH is built around a Modern Fortran + OpenMP backend. All numerical
+work (grid search, S/P amplitudes, uncertainty, velocity tables) runs in
+`libhashhp`; the Python layer provides the API, file handling, and batch
+dispatch. Without the compiled library the package raises a clear build
+error.
 
 ## Architecture
 
@@ -12,12 +13,10 @@ HASH_complete/            # original Fortran HASH v1.2 (immutable upstream)
 cnchash/                  # Python package
   ├── backend/
   │   ├── base.py         # HashBackend contract
-  │   ├── numba_backend.py    # reference/fallback backend
   │   └── fortran_backend.py  # ctypes binding to libhashhp
-  ├── core.py             # Numba FOCALMC (reference)
-  ├── amp_subs.py         # Numba FOCALAMP_MC (reference)
-  ├── uncertainty.py      # Numba MECH_PROB (reference)
-  └── velocity.py         # velocity tables (reference)
+  ├── driver.py           # run_hash / run_hash_batch
+  ├── io.py               # phase/station file handling
+  └── utils.py            # pure-Python helpers
 src/hash_hp/              # Modern Fortran core
   ├── hash_kinds.f90      # real64/int32 kinds
   ├── hash_geometry.f90   # TO_CAR/FPCOOR/cross
@@ -62,9 +61,8 @@ compiler, CNCHASH installs and runs on the Numba backend.
 ```python
 from cnchash import run_hash, available_backends, get_backend_info
 
-run_hash(az, the, pol, qual, backend="auto")     # best available
-run_hash(az, the, pol, qual, backend="fortran")  # force native
-run_hash(az, the, pol, qual, backend="numba")    # reference
+run_hash(az, the, pol, qual, backend="auto")     # default (fortran)
+run_hash(az, the, pol, qual, backend="fortran")  # explicit
 print(available_backends())
 print(get_backend_info())
 ```

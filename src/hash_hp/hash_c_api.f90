@@ -8,7 +8,7 @@ module hash_c_api
     use iso_c_binding, only: c_int32_t, c_double
     use hash_kinds, only: rk, ik
     use hash_runtime, only: hash_set_num_threads, hash_get_max_threads, &
-                            ensure_rotation_grid_cached
+                            ensure_rotation_grid_cached, grid_cache
     use hash_geometry, only: pi
     use hash_focalmc, only: focalmc, focalmc_workspace_t
     use hash_amplitude, only: focalamp_mc, get_misf_amp, amplitude_workspace_t
@@ -272,6 +272,32 @@ contains
             end do
         end do
     end subroutine cnchash_run_batch_amp
+
+    !> Build (if needed) and expose the cached rotation grid.
+    !> nrot is returned; b1/b2/b3 buffers (3, max_rot, column-major) are
+    !> filled up to nrot entries.
+    subroutine cnchash_get_rotation_grid(dang, nrot, b1, b2, b3, max_rot) &
+        bind(C, name="cnchash_get_rotation_grid")
+        real(c_double), value :: dang
+        integer(c_int32_t), intent(out) :: nrot
+        real(c_double), intent(out) :: b1(*), b2(*), b3(*)
+        integer(c_int32_t), value :: max_rot
+        integer(ik) :: i, n
+        call ensure_rotation_grid_cached(real(dang, rk))
+        n = min(grid_cache%nrot, int(max_rot, ik))
+        nrot = int(n, c_int32_t)
+        do i = 1, n
+            b1(3 * (i - 1) + 1) = real(grid_cache%b1(1, i), c_double)
+            b1(3 * (i - 1) + 2) = real(grid_cache%b1(2, i), c_double)
+            b1(3 * (i - 1) + 3) = real(grid_cache%b1(3, i), c_double)
+            b2(3 * (i - 1) + 1) = real(grid_cache%b2(1, i), c_double)
+            b2(3 * (i - 1) + 2) = real(grid_cache%b2(2, i), c_double)
+            b2(3 * (i - 1) + 3) = real(grid_cache%b2(3, i), c_double)
+            b3(3 * (i - 1) + 1) = real(grid_cache%b3(1, i), c_double)
+            b3(3 * (i - 1) + 2) = real(grid_cache%b3(2, i), c_double)
+            b3(3 * (i - 1) + 3) = real(grid_cache%b3(3, i), c_double)
+        end do
+    end subroutine cnchash_get_rotation_grid
 
     !> Maximum azimuthal/takeoff gaps (wraps GET_GAP).
     subroutine cnchash_get_gap(npol, p_azi, p_the, magap, mpgap) &

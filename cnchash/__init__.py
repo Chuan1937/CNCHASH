@@ -1,33 +1,23 @@
 """
-CNCHASH - Python implementation of HASH v1.2 for earthquake focal mechanism inversion.
+CNCHASH - high-performance HASH for earthquake focal mechanism inversion.
 
-This package provides a pure Python implementation of the HASH algorithm for
-determining earthquake focal mechanisms from polarities, with performance
-optimizations using numba and numpy.
+CNCHASH provides the HASH algorithm (Hardebeck and Shearer, 2002, 2003)
+for determining earthquake focal mechanisms from P-wave polarities and
+optional S/P amplitude ratios, with a Modern Fortran/OpenMP native
+backend (libhashhp) and a pure-Python front-end.
 
 Author: He XingChen
 License: BSD 3-Clause
 """
 
-__version__ = "1.0.1"
+__version__ = "2.0.0"
 __author__ = "He XingChen"
 
-from .amp_subs import (
-    focalamp_mc,
-    get_misf_amp,
-)
 from .backend import (
     available_backends,
     get_backend_info,
     get_num_threads,
     set_num_threads,
-)
-from .core import (
-    focalmc,
-    get_gap,
-    get_misfit,
-    get_numba_threads,
-    set_numba_threads,
 )
 from .driver import (
     run_hash,
@@ -43,11 +33,6 @@ from .io import (
     read_velocity_model,
     write_mechanism_output,
 )
-from .uncertainty import (
-    mech_avg,
-    mech_prob,
-    mech_rot,
-)
 from .utils import (
     cross_product,
     fp_coord,
@@ -55,10 +40,6 @@ from .utils import (
     strike_dip_rake_to_vectors,
     to_cartesian,
     vectors_to_strike_dip_rake,
-)
-from .velocity import (
-    get_tts,
-    make_table,
 )
 
 __all__ = [
@@ -69,24 +50,12 @@ __all__ = [
     "run_hash_batch",
     "run_hash_batch_with_amp",
     "run_hash_from_file",
+    # Backend control
     "available_backends",
     "get_backend_info",
     "set_num_threads",
     "get_num_threads",
-    # Core algorithms
-    "focalmc",
-    "focalamp_mc",
-    "mech_prob",
-    "mech_avg",
-    "mech_rot",
     # Utilities
-    "get_misfit",
-    "get_misf_amp",
-    "get_gap",
-    "set_numba_threads",
-    "get_numba_threads",
-    "make_table",
-    "get_tts",
     "cross_product",
     "to_cartesian",
     "fp_coord",

@@ -1,24 +1,22 @@
 # Benchmarks
 
-## Speed Comparison (Numba vs original Fortran)
+## Speed Comparison (CNCHASH vs original HASH)
 
 ![Speed Comparison](images/speed_comparison.png)
 
-| Metric | Python+Numba | Fortran | Speedup |
-|--------|-------------|---------|---------|
+| Metric | CNCHASH | HASH v1.2 (Fortran) | Speedup |
+|--------|---------|---------------------|---------|
 | 24 events | 0.068s | 0.473s | **6.9x** |
 | Per event | 2.85ms | 19.7ms | **6.9x** |
 | 5000 events | 13.0s | 98.5s | **7.6x** |
 | 10000 events | 26.0s | 197.0s | **7.6x** |
 
-**Optimization:** Numba JIT compilation + NumPy vectorization
-
 ## Accuracy
 
 ![Accuracy Verification](images/accuracy_verification.png)
 
-| Metric | Python | Fortran |
-|--------|--------|---------|
+| Metric | CNCHASH | HASH v1.2 |
+|--------|---------|-----------|
 | Dip error median | 5.6° | 11.1° |
 | Rake error median | 24.1° | 26.6° |
 
@@ -26,8 +24,8 @@
 two orthogonal nodal planes that both satisfy polarity data.
 
 Evaluation status (latest notebook run):
-- Python synthetic trials: 300/300 successful solutions
-- Fortran synthetic trials: 60/60 successful solutions (direct-runs)
+- CNCHASH synthetic trials: 300/300 successful solutions
+- HASH v1.2 synthetic trials: 60/60 successful solutions (direct-runs)
 
 ## Native backend measurements
 
@@ -51,23 +49,22 @@ with 30 MC trials (`dang=5`).
 | 8       | 55.6 | 4.10x   | 51%        |
 | 16      | 82.8 | 6.10x   | 38%        |
 
-## Backend comparison (1 thread)
+## Config comparison (1 thread, ms/event)
 
-| Config        | Numba (ms/ev) | Fortran (ms/ev) |
-|---------------|---------------|-----------------|
-| small (12 st) | 306           | 82              |
-| medium (30 st)| 36            | 73              |
-| large (80 st) | 44            | 205             |
-| dense (dang=2)| 36            | 73              |
-| nmc=100       | 80            | 232             |
+| Config         | ms/ev |
+|----------------|-------|
+| small (12 st)  | 82    |
+| medium (30 st) | 73    |
+| large (80 st)  | 205   |
+| dense (dang=2) | 73    |
+| nmc=100        | 232   |
 
 ## Batch mode (medium config)
 
-| Backend | Threads | Batch ev/s | Scalar ev/s | Batch speedup |
-|---------|---------|------------|-------------|---------------|
-| Fortran | 1       | 12.8       | 11.9        | 1.08x         |
-| Fortran | 4       | 49.3       | 28.4        | 1.74x         |
-| Numba   | 1       | 12.0       | 12.0        | 1.00x         |
+| Threads | Batch ev/s | Scalar ev/s | Batch speedup |
+|---------|------------|-------------|---------------|
+| 1       | 12.8       | 11.9        | 1.08x         |
+| 4       | 49.3       | 28.4        | 1.74x         |
 
 Numbers are machine-specific. Always re-run the benchmark on the
 target hardware before publishing performance claims.
