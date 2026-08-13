@@ -2,14 +2,17 @@
 Main driver program for CNCHASH (HASH v1.2 in Python).
 
 This module provides high-level functions for running the HASH
-algorithm on earthquake polarity data.
+algorithm on earthquake polarity data. Computation is dispatched to a
+backend: the Modern Fortran/OpenMP native backend (default when the
+compiled library is available) or the pure Python/Numba reference
+backend.
 """
 
 import math
 
 import numpy as np
 
-from . import amp_subs, core, io, uncertainty, velocity
+from . import backend, io, velocity
 from .utils import (
     DEG_TO_RAD,
     RAD_TO_DEG,
@@ -17,6 +20,11 @@ from .utils import (
 
 # Global state for random number generator
 _RANDOM_SEED = 314159
+
+
+def _resolve_backend(backend_name):
+    """Resolve a backend name ('auto' -> best available)."""
+    return backend.get_backend(backend_name)
 
 
 def run_hash_event_payload(payload):
@@ -40,6 +48,7 @@ def run_hash_event_payload(payload):
     return run_hash(p_azi_mc, p_the_mc, p_pol, p_qual, dang=dang, nmc=nmc, num_threads=1)
 
 
+
 def run_hash(
     p_azi,
     p_the,
@@ -55,9 +64,10 @@ def run_hash(
     max_agap=90.0,
     max_pgap=60.0,
     num_threads=None,
+    backend="auto",
+    selection=0,
 ):
-    """
-    Run HASH algorithm on polarity data.
+    """Run HASH algorithm on polarity data.
 
     Parameters
     ----------
@@ -88,8 +98,13 @@ def run_hash(
     max_pgap : float
         Maximum takeoff angle gap (degrees)
     num_threads : int or None
-        Number of numba threads for parallel kernels.
-        If None, use numba default.
+        Thread count for the backend (Numba threads or OpenMP threads).
+    backend : str
+        "auto" (default), "fortran" or "numba".
+    selection : int
+        0 = deterministic solution selection (default), 1 = HASH-style
+        random selection (reproduces the original Fortran behavior when
+        more than maxout mechanisms are found).
 
     Returns
     -------
@@ -106,153 +121,42 @@ def run_hash(
         - 'nout2': number of acceptable mechanisms
         - And optionally multiple solutions if nmult > 1
     """
+    solver = _resolve_backend(backend)
     if num_threads is not None:
-        core.set_numba_threads(num_threads)
+        solver.set_num_threads(num_threads)
 
     npol = len(p_pol)
 
-    # Convert to arrays if needed
     p_azi = np.asarray(p_azi, dtype=np.float64)
     p_the = np.asarray(p_the, dtype=np.float64)
     p_pol = np.asarray(p_pol, dtype=np.int32)
     p_qual = np.asarray(p_qual, dtype=np.int32)
 
-    # Ensure shape is (npol, nmc)
     if p_azi.ndim == 1:
         p_azi = p_azi.reshape(-1, 1)
         p_the = p_the.reshape(-1, 1)
         if nmc > 1:
-            # Need to add uncertainty - for now just duplicate
             p_azi = np.repeat(p_azi, nmc, axis=1)
             p_the = np.repeat(p_the, nmc, axis=1)
 
-    # Check minimum polarities
-    if npol < npolmin:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "quality": "F",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
+    return solver.run_event(
+        p_azi,
+        p_the,
+        p_pol,
+        p_qual,
+        npol,
+        p_azi.shape[1],
+        dang,
+        maxout,
+        badfrac,
+        cangle,
+        prob_max,
+        npolmin,
+        max_agap,
+        max_pgap,
+        selection,
+    )
 
-    # Check gaps
-    magap, mpgap = core.get_gap(npol, p_azi[:, 0], p_the[:, 0])
-
-    if magap > max_agap or mpgap > max_pgap:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "quality": "E",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
-
-    # Calculate acceptance criteria
-    nmismax = max(int(npol * badfrac), 2)
-    nextra = max(int(npol * badfrac * 0.5), 2)
-
-    # Find acceptable mechanisms
-    result = core.focalmc(p_azi, p_the, p_pol, p_qual, npol, nmc, dang, maxout, nextra, nmismax)
-
-    nf = result["nf"]
-
-    if nf == 0:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "quality": "F",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
-
-    # Find preferred mechanism
-    prob_result = uncertainty.mech_prob(nf, result["faults"], result["slips"], cangle, prob_max)
-
-    nsltn = prob_result["nsltn"]
-    strike_avg = prob_result["strike_avg"]
-    dip_avg = prob_result["dip_avg"]
-    rake_avg = prob_result["rake_avg"]
-    prob = prob_result["prob"]
-    rms_diff = prob_result["rms_diff"]
-
-    # Calculate misfit for preferred solution
-    if nsltn > 0:
-        mfrac, stdr = core.get_misfit(
-            npol, p_azi[:, 0], p_the[:, 0], p_pol, p_qual, strike_avg[0], dip_avg[0], rake_avg[0]
-        )
-    else:
-        mfrac = 0.99
-        stdr = 0.0
-
-    # Determine quality rating
-    quality = "D"
-    var_avg = (rms_diff[0, 0] + rms_diff[1, 0]) / 2.0 if nsltn > 0 else 99.0
-
-    if nsltn > 0:
-        if prob[0] > 0.8 and var_avg <= 25.0 and mfrac <= 0.15 and stdr >= 0.5:
-            quality = "A"
-        elif prob[0] > 0.6 and var_avg <= 35.0 and mfrac <= 0.2 and stdr >= 0.4:
-            quality = "B"
-        elif prob[0] > 0.5 and var_avg <= 45.0 and mfrac <= 0.3 and stdr >= 0.3:
-            quality = "C"
-        else:
-            quality = "D"
-
-    # Build result
-    output = {
-        "success": True,
-        "strike_avg": strike_avg[0] if nsltn > 0 else result["strike"][0],
-        "dip_avg": dip_avg[0] if nsltn > 0 else result["dip"][0],
-        "rake_avg": rake_avg[0] if nsltn > 0 else result["rake"][0],
-        "var_est": [rms_diff[0, 0], rms_diff[1, 0]] if nsltn > 0 else [99.0, 99.0],
-        "mfrac": mfrac,
-        "quality": quality,
-        "prob": prob[0] if nsltn > 0 else 0.0,
-        "stdr": stdr,
-        "nmult": nsltn,
-        "nout2": nf,
-        "nout1": min(nf, maxout),
-    }
-
-    # Add multiple solutions if present
-    if nsltn > 1:
-        output["strike_avg"] = strike_avg[:nsltn]
-        output["dip_avg"] = dip_avg[:nsltn]
-        output["rake_avg"] = rake_avg[:nsltn]
-        output["prob"] = prob[:nsltn]
-        output["rms_diff"] = rms_diff[:, :nsltn]
-        output["quality"] = [quality] * nsltn  # Simplified - could compute per solution
-
-    # Also store raw results
-    output["faults"] = result["faults"]
-    output["slips"] = result["slips"]
-    output["strike"] = result["strike"]
-    output["dip"] = result["dip"]
-    output["rake"] = result["rake"]
-
-    return output
 
 
 def run_hash_with_amp(
@@ -271,9 +175,10 @@ def run_hash_with_amp(
     max_agap=90.0,
     max_pgap=60.0,
     num_threads=None,
+    backend="auto",
+    selection=0,
 ):
-    """
-    Run HASH algorithm with both P-wave polarities and S/P amplitude ratios.
+    """Run HASH algorithm with both P-wave polarities and S/P amplitude ratios.
 
     This implements the FOCALAMP_MC algorithm from Hardebeck and Shearer (2003).
 
@@ -308,8 +213,12 @@ def run_hash_with_amp(
     max_pgap : float
         Maximum takeoff angle gap (degrees)
     num_threads : int or None
-        Number of numba threads for parallel kernels.
-        If None, use numba default.
+        Thread count for the backend (Numba threads or OpenMP threads).
+    backend : str
+        "auto" (default), "fortran" or "numba".
+    selection : int
+        0 = deterministic solution selection (default), 1 = HASH-style
+        random selection.
 
     Returns
     -------
@@ -327,22 +236,17 @@ def run_hash_with_amp(
         - 'nout2': number of acceptable mechanisms
         - And optionally multiple solutions if nmult > 1
     """
+    solver = _resolve_backend(backend)
     if num_threads is not None:
-        core.set_numba_threads(num_threads)
+        solver.set_num_threads(num_threads)
 
     npsta = len(p_pol)
 
-    # Count valid polarities and S/P ratios
-    npol = np.sum(p_pol != 0)
-    nspr = np.sum(sp_amp != 0.0)
-
-    # Convert to arrays if needed
     p_azi = np.asarray(p_azi, dtype=np.float64)
     p_the = np.asarray(p_the, dtype=np.float64)
     p_pol = np.asarray(p_pol, dtype=np.int32)
     sp_amp = np.asarray(sp_amp, dtype=np.float64)
 
-    # Ensure shape is (npsta, nmc)
     if p_azi.ndim == 1:
         p_azi = p_azi.reshape(-1, 1)
         p_the = p_the.reshape(-1, 1)
@@ -350,148 +254,173 @@ def run_hash_with_amp(
             p_azi = np.repeat(p_azi, nmc, axis=1)
             p_the = np.repeat(p_the, nmc, axis=1)
 
-    # Check minimum polarities
-    if npol < npolmin:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "mavg": 0.99,
-            "quality": "F",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
+    result = solver.run_event_amp(
+        p_azi,
+        p_the,
+        p_pol,
+        sp_amp,
+        npsta,
+        p_azi.shape[1],
+        dang,
+        maxout,
+        badfrac=0.1,
+        qbadfac=qbadfac,
+        cangle=cangle,
+        prob_max=prob_max,
+        npolmin=npolmin,
+        max_agap=max_agap,
+        max_pgap=max_pgap,
+        selection=selection,
+    )
+    if nmismax is not None and result["success"]:
+        result["nmismax"] = nmismax
+    return result
 
-    # Check gaps
-    magap, mpgap = core.get_gap(npsta, p_azi[:, 0], p_the[:, 0])
 
-    if magap > max_agap or mpgap > max_pgap:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "mavg": 0.99,
-            "quality": "E",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
+def run_hash_batch(
+    events,
+    dang=5.0,
+    nmc=30,
+    maxout=500,
+    badfrac=0.1,
+    cangle=45.0,
+    prob_max=0.1,
+    npolmin=8,
+    max_agap=90.0,
+    max_pgap=60.0,
+    num_threads=None,
+    backend="auto",
+    selection=0,
+):
+    """Run HASH on many events in one call.
 
-    # Calculate acceptance criteria
-    if nmismax is None:
-        nmismax = max(int(npol * 0.1), 2)
-    nextra = max(int(npol * 0.05), 0)
+    Parameters
+    ----------
+    events : iterable of tuples
+        Each tuple is (p_azi, p_the, p_pol, p_qual) with the same meaning
+        as in :func:`run_hash`. Arrays may be 1D (duplicated across MC
+        trials) or 2D (npol, nmc).
+    dang : float
+        Grid angle for focal mechanism search (degrees)
+    nmc : int
+        Number of Monte Carlo trials (used when inputs are 1D)
+    maxout : int
+        Maximum number of acceptable mechanisms
+    badfrac : float
+        Assumed fraction of bad polarities
+    cangle : float
+        Angle cutoff for mechanism probability (degrees)
+    prob_max : float
+        Probability threshold for multiple solutions
+    npolmin : int
+        Minimum number of polarities
+    max_agap : float
+        Maximum azimuthal gap (degrees)
+    max_pgap : float
+        Maximum takeoff angle gap (degrees)
+    num_threads : int or None
+        Thread count for the backend.
+    backend : str
+        "auto" (default), "fortran" or "numba".
+    selection : int
+        Solution selection mode (0 = deterministic, 1 = HASH random).
 
-    # S/P amplitude ratio criteria
-    qmismax = nspr * qbadfac
-    qextra = max(nspr * qbadfac * 0.5, 2.0)
+    Returns
+    -------
+    list of dict
+        One result per event (same schema as :func:`run_hash`).
+    """
+    solver = _resolve_backend(backend)
+    if num_threads is not None:
+        solver.set_num_threads(num_threads)
 
-    # Find acceptable mechanisms using both polarities and S/P ratios
-    result = amp_subs.focalamp_mc(
-        p_azi, p_the, sp_amp, p_pol, npsta, nmc, dang, maxout, nextra, nmismax, qextra, qmismax
+    prepared = []
+    for p_azi, p_the, p_pol, p_qual in events:
+        p_azi = np.asarray(p_azi, dtype=np.float64)
+        p_the = np.asarray(p_the, dtype=np.float64)
+        p_pol = np.asarray(p_pol, dtype=np.int32)
+        p_qual = np.asarray(p_qual, dtype=np.int32)
+        if p_azi.ndim == 1:
+            p_azi = p_azi.reshape(-1, 1)
+            p_the = p_the.reshape(-1, 1)
+            if nmc > 1:
+                p_azi = np.repeat(p_azi, nmc, axis=1)
+                p_the = np.repeat(p_the, nmc, axis=1)
+        prepared.append((p_azi, p_the, p_pol, p_qual))
+
+    return solver.run_batch(
+        prepared,
+        dang,
+        maxout,
+        badfrac,
+        cangle,
+        prob_max,
+        npolmin,
+        max_agap,
+        max_pgap,
+        selection,
     )
 
-    nf = result["nf"]
 
-    if nf == 0:
-        return {
-            "success": False,
-            "strike_avg": 999.0,
-            "dip_avg": 99.0,
-            "rake_avg": 999.0,
-            "var_est": [99.0, 99.0],
-            "mfrac": 0.99,
-            "mavg": 0.99,
-            "quality": "F",
-            "prob": 0.0,
-            "stdr": 0.0,
-            "nmult": 0,
-            "nout2": 0,
-            "nout1": 0,
-        }
+def run_hash_batch_with_amp(
+    events,
+    dang=5.0,
+    nmc=30,
+    maxout=500,
+    qbadfac=0.3,
+    cangle=45.0,
+    prob_max=0.1,
+    npolmin=8,
+    max_agap=90.0,
+    max_pgap=60.0,
+    num_threads=None,
+    backend="auto",
+    selection=0,
+):
+    """Run HASH with S/P amplitude ratios on many events in one call.
 
-    # Find preferred mechanism
-    prob_result = uncertainty.mech_prob(nf, result["faults"], result["slips"], cangle, prob_max)
+    Parameters
+    ----------
+    events : iterable of tuples
+        Each tuple is (p_azi, p_the, p_pol, sp_amp) with the same meaning
+        as in :func:`run_hash_with_amp`.
 
-    nsltn = prob_result["nsltn"]
-    strike_avg = prob_result["strike_avg"]
-    dip_avg = prob_result["dip_avg"]
-    rake_avg = prob_result["rake_avg"]
-    prob = prob_result["prob"]
-    rms_diff = prob_result["rms_diff"]
+    Returns
+    -------
+    list of dict
+        One result per event.
+    """
+    solver = _resolve_backend(backend)
+    if num_threads is not None:
+        solver.set_num_threads(num_threads)
 
-    # Calculate misfit for preferred solution
-    if nsltn > 0:
-        mfrac, mavg, stdr = amp_subs.get_misf_amp(
-            npsta, p_azi[:, 0], p_the[:, 0], sp_amp, p_pol, strike_avg[0], dip_avg[0], rake_avg[0]
-        )
-    else:
-        mfrac = 0.99
-        mavg = 0.99
-        stdr = 0.0
+    prepared = []
+    for p_azi, p_the, p_pol, sp_amp in events:
+        p_azi = np.asarray(p_azi, dtype=np.float64)
+        p_the = np.asarray(p_the, dtype=np.float64)
+        p_pol = np.asarray(p_pol, dtype=np.int32)
+        sp_amp = np.asarray(sp_amp, dtype=np.float64)
+        if p_azi.ndim == 1:
+            p_azi = p_azi.reshape(-1, 1)
+            p_the = p_the.reshape(-1, 1)
+            if nmc > 1:
+                p_azi = np.repeat(p_azi, nmc, axis=1)
+                p_the = np.repeat(p_the, nmc, axis=1)
+        prepared.append((p_azi, p_the, p_pol, sp_amp))
 
-    # Determine quality rating (using both polarity and amplitude criteria)
-    quality = "D"
-    var_avg = (rms_diff[0, 0] + rms_diff[1, 0]) / 2.0 if nsltn > 0 else 99.0
-
-    if nsltn > 0:
-        if prob[0] > 0.8 and var_avg <= 25.0 and mfrac <= 0.15 and mavg <= 0.2 and stdr >= 0.5:
-            quality = "A"
-        elif prob[0] > 0.6 and var_avg <= 35.0 and mfrac <= 0.2 and mavg <= 0.3 and stdr >= 0.4:
-            quality = "B"
-        elif prob[0] > 0.5 and var_avg <= 45.0 and mfrac <= 0.3 and mavg <= 0.4 and stdr >= 0.3:
-            quality = "C"
-        else:
-            quality = "D"
-
-    # Build result
-    output = {
-        "success": True,
-        "strike_avg": strike_avg[0] if nsltn > 0 else result["strike"][0],
-        "dip_avg": dip_avg[0] if nsltn > 0 else result["dip"][0],
-        "rake_avg": rake_avg[0] if nsltn > 0 else result["rake"][0],
-        "var_est": [rms_diff[0, 0], rms_diff[1, 0]] if nsltn > 0 else [99.0, 99.0],
-        "mfrac": mfrac,
-        "mavg": mavg,
-        "quality": quality,
-        "prob": prob[0] if nsltn > 0 else 0.0,
-        "stdr": stdr,
-        "nmult": nsltn,
-        "nout2": nf,
-        "nout1": min(nf, maxout),
-        "npol": npol,
-        "nspr": nspr,
-    }
-
-    # Add multiple solutions if present
-    if nsltn > 1:
-        output["strike_avg"] = strike_avg[:nsltn]
-        output["dip_avg"] = dip_avg[:nsltn]
-        output["rake_avg"] = rake_avg[:nsltn]
-        output["prob"] = prob[:nsltn]
-        output["rms_diff"] = rms_diff[:, :nsltn]
-        output["quality"] = [quality] * nsltn
-
-    # Also store raw results
-    output["faults"] = result["faults"]
-    output["slips"] = result["slips"]
-    output["strike"] = result["strike"]
-    output["dip"] = result["dip"]
-    output["rake"] = result["rake"]
-
-    return output
-
+    return solver.run_batch_amp(
+        prepared,
+        dang,
+        maxout,
+        badfrac=0.1,
+        qbadfac=qbadfac,
+        cangle=cangle,
+        prob_max=prob_max,
+        npolmin=npolmin,
+        max_agap=max_agap,
+        max_pgap=max_pgap,
+        selection=selection,
+    )
 
 def run_hash_from_file(input_file):
     """

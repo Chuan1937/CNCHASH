@@ -10,7 +10,8 @@ import math
 
 import numpy as np
 from numba import get_num_threads as _numba_get_num_threads
-from numba import njit, set_num_threads as _numba_set_num_threads
+from numba import njit
+from numba import set_num_threads as _numba_set_num_threads
 
 from .utils import (
     DEG_TO_RAD,

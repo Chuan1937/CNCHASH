@@ -73,6 +73,7 @@ contains
         real(rk) :: strike, dip, rake, qcount, scount
         real(rk) :: azi, toff, wt, wo
         real(rk) :: bb1(3), bb2(3), bb3(3)
+        real(rk) :: sd, dd, rdg
         real(rk) :: p_a1, p_a2, p_a3, p_b1, p_b3
         real(rk) :: p_proj1, p_proj2, p_proj3, plen, pp_b1, pp_b2
         real(rk) :: phi_ang, theta_ang, p_amp, dot_val, pol
@@ -97,7 +98,13 @@ contains
                   + cos(2 * dip) * sin(rake) * cos(strike)
         M(3, 2) = M(2, 3)
 
-        call fpcoor(strike, dip, rake, bb3, bb1, 1)
+        ! Moment tensor uses radians; the fault vectors use the original
+        ! degree values. (The original HASH passed the radian-converted
+        ! angles to FPCOOR, which misreads them as degrees; fixed here.)
+        sd = str_avg
+        dd = dip_avg
+        rdg = rak_avg
+        call fpcoor(sd, dd, rdg, bb3, bb1, 1)
         call cross(bb3, bb1, bb2)
 
         mfrac = 0.0_rk

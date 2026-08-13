@@ -500,6 +500,7 @@ def get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
     scount = 0.0
     mavg = 0.0
     acount = 0.0
+    stdr = 0.0
 
     for k in range(npol):
         # Convert to Cartesian
@@ -555,6 +556,7 @@ def get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
                 mfrac += wt
 
             qcount += wt
+            stdr += wt
             scount += 1.0
 
         # S/P amplitude ratio misfit
@@ -568,6 +570,7 @@ def get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
                 mavg += abs(sp_ratio[k] - sp_rat)
 
             acount += 1.0
+            stdr += wt
             scount += 1.0
 
     if qcount > 0:
@@ -575,7 +578,7 @@ def get_misf_amp_numba(npol, p_azi, p_the, sp_ratio, p_pol, strike, dip, rake):
     if acount > 0:
         mavg /= acount
     if scount > 0:
-        stdr = qcount / scount
+        stdr = stdr / scount
     else:
         stdr = 0.0
 

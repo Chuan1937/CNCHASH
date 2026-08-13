@@ -206,6 +206,208 @@ def mech_rotation_angle_numba(norm1, slip1, norm2, slip2):
     return min_rotation
 
 
+@njit(cache=True)
+def _mech_rot_match_numba(n1, s1, n2, s2):
+    """
+    Minimum rotation angle between two mechanisms, trying the 4 nodal
+    plane combinations. As in the original MECH_ROT, mechanism B (n2, s2)
+    is mutated to the best-matching orientation.
+
+    Returns the rotation angle in degrees.
+    """
+    B1 = np.empty(3)
+    B1[0] = n1[1] * s1[2] - n1[2] * s1[1]
+    B1[1] = n1[2] * s1[0] - n1[0] * s1[2]
+    B1[2] = n1[0] * s1[1] - n1[1] * s1[0]
+
+    rotemp = np.zeros(4)
+    phi = np.zeros(3)
+    theta = np.zeros(3)
+
+    for iteration in range(4):
+        n2t = np.empty(3)
+        s2t = np.empty(3)
+        if iteration < 2:
+            n2t = n2.copy()
+            s2t = s2.copy()
+        else:
+            n2t = s2.copy()
+            s2t = n2.copy()
+        if iteration == 1 or iteration == 3:
+            n2t = -n2t
+            s2t = -s2t
+
+        B2 = np.empty(3)
+        B2[0] = n2t[1] * s2t[2] - n2t[2] * s2t[1]
+        B2[1] = n2t[2] * s2t[0] - n2t[0] * s2t[2]
+        B2[2] = n2t[0] * s2t[1] - n2t[1] * s2t[0]
+
+        d = n1[0] * n2t[0] + n1[1] * n2t[1] + n1[2] * n2t[2]
+        phi[0] = math.acos(max(-1.0, min(1.0, d)))
+        d = s1[0] * s2t[0] + s1[1] * s2t[1] + s1[2] * s2t[2]
+        phi[1] = math.acos(max(-1.0, min(1.0, d)))
+        d = B1[0] * B2[0] + B1[1] * B2[1] + B1[2] * B2[2]
+        phi[2] = math.acos(max(-1.0, min(1.0, d)))
+
+        if phi[0] < 1e-4 and phi[1] < 1e-4 and phi[2] < 1e-4:
+            rotemp[iteration] = 0.0
+        elif phi[0] < 1e-4:
+            rotemp[iteration] = RAD_TO_DEG * phi[1]
+        elif phi[1] < 1e-4:
+            rotemp[iteration] = RAD_TO_DEG * phi[2]
+        elif phi[2] < 1e-4:
+            rotemp[iteration] = RAD_TO_DEG * phi[0]
+        else:
+            dn = np.empty((3, 3))
+            dn[:, 0] = n1 - n2t
+            dn[:, 1] = s1 - s2t
+            dn[:, 2] = B1 - B2
+            scale = np.empty(3)
+            for j in range(3):
+                scale[j] = math.sqrt(dn[0, j] ** 2 + dn[1, j] ** 2 + dn[2, j] ** 2)
+                if scale[j] > 0.0:
+                    dn[:, j] = dn[:, j] / scale[j]
+            qdot = np.empty(3)
+            qdot[2] = dn[0, 0] * dn[0, 1] + dn[1, 0] * dn[1, 1] + dn[2, 0] * dn[2, 1]
+            qdot[1] = dn[0, 0] * dn[0, 2] + dn[1, 0] * dn[1, 2] + dn[2, 0] * dn[2, 2]
+            qdot[0] = dn[0, 1] * dn[0, 2] + dn[1, 1] * dn[1, 2] + dn[2, 1] * dn[2, 2]
+            iout = -1
+            for i in range(3):
+                if qdot[i] > 0.9999:
+                    iout = i
+            if iout == -1:
+                qmins = 10000.0
+                for i in range(3):
+                    if scale[i] < qmins:
+                        qmins = scale[i]
+                        iout = i
+            n1v = np.empty(3)
+            n2v = np.empty(3)
+            k = 0
+            for j in range(3):
+                if j != iout:
+                    if k == 0:
+                        n1v = dn[:, j].copy()
+                        k = 1
+                    else:
+                        n2v = dn[:, j].copy()
+            R = np.empty(3)
+            R[0] = n1v[1] * n2v[2] - n1v[2] * n2v[1]
+            R[1] = n1v[2] * n2v[0] - n1v[0] * n2v[2]
+            R[2] = n1v[0] * n2v[1] - n1v[1] * n2v[0]
+            rnorm = math.sqrt(R[0] ** 2 + R[1] ** 2 + R[2] ** 2)
+            if rnorm > 0.0:
+                R = R / rnorm
+            d = n1[0] * R[0] + n1[1] * R[1] + n1[2] * R[2]
+            theta[0] = math.acos(max(-1.0, min(1.0, d)))
+            d = s1[0] * R[0] + s1[1] * R[1] + s1[2] * R[2]
+            theta[1] = math.acos(max(-1.0, min(1.0, d)))
+            d = B1[0] * R[0] + B1[1] * R[1] + B1[2] * R[2]
+            theta[2] = math.acos(max(-1.0, min(1.0, d)))
+            qmindif = 1000.0
+            iuse = 0
+            for i in range(3):
+                dval = abs(theta[i] - PI / 2.0)
+                if dval < qmindif:
+                    qmindif = dval
+                    iuse = i
+            cval = math.cos(phi[iuse]) - math.cos(theta[iuse]) * math.cos(theta[iuse])
+            sval = math.sin(theta[iuse]) * math.sin(theta[iuse])
+            if abs(sval) > 1e-10:
+                rotemp[iteration] = RAD_TO_DEG * math.acos(max(-1.0, min(1.0, cval / sval)))
+            else:
+                rotemp[iteration] = RAD_TO_DEG * phi[iuse]
+
+    rota = 180.0
+    irot = 0
+    for iteration in range(4):
+        if abs(rotemp[iteration]) < rota:
+            rota = abs(rotemp[iteration])
+            irot = iteration
+    if irot >= 2:
+        # Mutate mechanism B in place (numba: element-wise writes only).
+        tmp0, tmp1, tmp2 = n2[0], n2[1], n2[2]
+        n2[0] = s2[0]
+        n2[1] = s2[1]
+        n2[2] = s2[2]
+        s2[0] = tmp0
+        s2[1] = tmp1
+        s2[2] = tmp2
+    if irot == 1 or irot == 3:
+        n2[0] = -n2[0]
+        n2[1] = -n2[1]
+        n2[2] = -n2[2]
+        s2[0] = -s2[0]
+        s2[1] = -s2[1]
+        s2[2] = -s2[2]
+    return rota
+
+
+@njit(cache=True)
+def _mech_avg_faithful_numba(nf, norm1, norm2):
+    """
+    Average focal mechanism (faithful MECH_AVG): plane matching via
+    minimum rotation, weighted orthogonalization with maxmisf = 0.01 deg.
+    """
+    if nf <= 1:
+        return norm1[:, 0].copy(), norm2[:, 0].copy()
+
+    norm1_avg = norm1[:, 0].copy()
+    norm2_avg = norm2[:, 0].copy()
+    ref1 = norm1[:, 0].copy()
+    ref2 = norm2[:, 0].copy()
+
+    for i in range(1, nf):
+        t1 = norm1[:, i].copy()
+        t2 = norm2[:, i].copy()
+        _rota = _mech_rot_match_numba(ref1, ref2, t1, t2)
+        norm1_avg = norm1_avg + t1
+        norm2_avg = norm2_avg + t2
+
+    l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+    l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
+    if l1 > 0.0:
+        norm1_avg = norm1_avg / l1
+    if l2 > 0.0:
+        norm2_avg = norm2_avg / l2
+
+    avang1 = 0.0
+    avang2 = 0.0
+    for i in range(nf):
+        d11 = norm1[0, i] * norm1_avg[0] + norm1[1, i] * norm1_avg[1] + norm1[2, i] * norm1_avg[2]
+        d22 = norm2[0, i] * norm2_avg[0] + norm2[1, i] * norm2_avg[1] + norm2[2, i] * norm2_avg[2]
+        a11 = math.acos(max(-1.0, min(1.0, d11)))
+        a22 = math.acos(max(-1.0, min(1.0, d22)))
+        avang1 += a11 * a11
+        avang2 += a22 * a22
+    avang1 = math.sqrt(avang1 / nf)
+    avang2 = math.sqrt(avang2 / nf)
+
+    if avang1 + avang2 < 0.0001:
+        return norm1_avg, norm2_avg
+
+    fract1 = avang1 / (avang1 + avang2)
+    for _ in range(100):
+        dot1 = norm1_avg[0] * norm2_avg[0] + norm1_avg[1] * norm2_avg[1] + norm1_avg[2] * norm2_avg[2]
+        misf = 90.0 - math.acos(max(-1.0, min(1.0, dot1))) * RAD_TO_DEG
+        if abs(misf) <= 0.01:
+            break
+        theta1 = misf * fract1 * DEG_TO_RAD
+        theta2 = misf * (1.0 - fract1) * DEG_TO_RAD
+        for j in range(3):
+            temp = norm1_avg[j]
+            norm1_avg[j] = norm1_avg[j] - norm2_avg[j] * math.sin(theta1)
+            norm2_avg[j] = norm2_avg[j] - temp * math.sin(theta2)
+        l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
+        l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
+        if l1 > 0.0:
+            norm1_avg = norm1_avg / l1
+        if l2 > 0.0:
+            norm2_avg = norm2_avg / l2
+
+    return norm1_avg, norm2_avg
+
+
 def mech_rot(norm1, slip1, norm2, slip2):
     """
     Find the minimum rotation angle between two mechanisms.
@@ -365,14 +567,18 @@ def mech_avg(nf, norm1, norm2):
         norm1 = norm1.T
         norm2 = norm2.T
 
-    return mech_average_numba(nf, norm1.astype(np.float64), norm2.astype(np.float64))
+    return _mech_avg_faithful_numba(nf, norm1.astype(np.float64), norm2.astype(np.float64))
 
 
 @njit(cache=True)
 def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
     """
     Determine average focal mechanism and check for multiple solutions.
-    Optimized version with reduced memory allocations.
+
+    Faithful port of the original MECH_PROB: outlier removal uses the
+    full minimum-rotation search, RMS differences are computed after
+    matching planes, and the average is computed with the weighted
+    orthogonalization from MECH_AVG.
 
     Parameters
     ----------
@@ -414,201 +620,63 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
     prob = np.zeros(5, dtype=np.float64)
     rms_diff = np.zeros((2, 5), dtype=np.float64)
 
-    # Use indices instead of copying arrays
-    # active[i] = 1 if mechanism i is still active
-    active = np.ones(nf, dtype=np.int32)
-    nsltn = 0
+    norm1 = norm1in.copy()
+    norm2 = norm2in.copy()
+    nfault = nf
+    nc = nf
+    nsltn = 5
 
     for imult in range(5):
-        # Count active mechanisms
-        nc = 0
-        for i in range(nf):
-            if active[i] == 1:
-                nc += 1
-
         if nc < 1:
             nsltn = imult
             break
 
-        # Collect active mechanism indices
-        active_idx = np.zeros(nc, dtype=np.int32)
-        idx = 0
-        for i in range(nf):
-            if active[i] == 1:
-                active_idx[idx] = i
-                idx += 1
-
-        # Iteratively find average and remove outliers
+        # Repeatedly remove the mechanism with the largest angular
+        # difference from the running average, until all are within cangle.
         for _icount in range(nf):
-            # Compute average directly without extra function call
-            norm1_avg = np.zeros(3, dtype=np.float64)
-            norm2_avg = np.zeros(3, dtype=np.float64)
-            ref1 = np.zeros(3, dtype=np.float64)
-            ref2 = np.zeros(3, dtype=np.float64)
-
-            # Get first active as reference
-            ref1[0] = norm1in[0, active_idx[0]]
-            ref1[1] = norm1in[1, active_idx[0]]
-            ref1[2] = norm1in[2, active_idx[0]]
-            ref2[0] = norm2in[0, active_idx[0]]
-            ref2[1] = norm2in[1, active_idx[0]]
-            ref2[2] = norm2in[2, active_idx[0]]
-
-            # Accumulate matched vectors
-            for k in range(nc):
-                idx_k = active_idx[k]
-                n1_0 = norm1in[0, idx_k]
-                n1_1 = norm1in[1, idx_k]
-                n1_2 = norm1in[2, idx_k]
-                n2_0 = norm2in[0, idx_k]
-                n2_1 = norm2in[1, idx_k]
-                n2_2 = norm2in[2, idx_k]
-
-                # Find best matching orientation (4 combinations)
-                best_rot = 180.0
-                best_n1_0, best_n1_1, best_n1_2 = n1_0, n1_1, n1_2
-                best_n2_0, best_n2_1, best_n2_2 = n2_0, n2_1, n2_2
-
-                for iteration in range(4):
-                    if iteration < 2:
-                        t1_0, t1_1, t1_2 = n1_0, n1_1, n1_2
-                        t2_0, t2_1, t2_2 = n2_0, n2_1, n2_2
-                    else:
-                        t1_0, t1_1, t1_2 = n2_0, n2_1, n2_2
-                        t2_0, t2_1, t2_2 = n1_0, n1_1, n1_2
-
-                    if iteration in (1, 3):
-                        t1_0, t1_1, t1_2 = -t1_0, -t1_1, -t1_2
-                        t2_0, t2_1, t2_2 = -t2_0, -t2_1, -t2_2
-
-                    # Quick angle estimate using dot products
-                    dot_n = ref1[0] * t1_0 + ref1[1] * t1_1 + ref1[2] * t1_2
-                    dot_s = ref2[0] * t2_0 + ref2[1] * t2_1 + ref2[2] * t2_2
-                    dot_n = max(-1.0, min(1.0, dot_n))
-                    dot_s = max(-1.0, min(1.0, dot_s))
-                    rot_est = 0.5 * (math.acos(dot_n) + math.acos(dot_s)) * RAD_TO_DEG
-
-                    if rot_est < best_rot:
-                        best_rot = rot_est
-                        best_n1_0, best_n1_1, best_n1_2 = t1_0, t1_1, t1_2
-                        best_n2_0, best_n2_1, best_n2_2 = t2_0, t2_1, t2_2
-
-                norm1_avg[0] += best_n1_0
-                norm1_avg[1] += best_n1_1
-                norm1_avg[2] += best_n1_2
-                norm2_avg[0] += best_n2_0
-                norm2_avg[1] += best_n2_1
-                norm2_avg[2] += best_n2_2
-
-            # Normalize
-            l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
-            l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
-            if l1 > 0:
-                norm1_avg[0] /= l1
-                norm1_avg[1] /= l1
-                norm1_avg[2] /= l1
-            if l2 > 0:
-                norm2_avg[0] /= l2
-                norm2_avg[1] /= l2
-                norm2_avg[2] /= l2
-
-            # Make orthogonal
-            for _ in range(10):
-                dot = (
-                    norm1_avg[0] * norm2_avg[0]
-                    + norm1_avg[1] * norm2_avg[1]
-                    + norm1_avg[2] * norm2_avg[2]
-                )
-                misf = 90.0 - math.acos(max(-1.0, min(1.0, dot))) * RAD_TO_DEG
-                if abs(misf) <= 0.1:
-                    break
-                theta = misf * 0.5 * DEG_TO_RAD
-                n1_0, n1_1, n1_2 = norm1_avg[0], norm1_avg[1], norm1_avg[2]
-                n2_0, n2_1, n2_2 = norm2_avg[0], norm2_avg[1], norm2_avg[2]
-                norm1_avg[0] = n1_0 - n2_0 * math.sin(theta)
-                norm1_avg[1] = n1_1 - n2_1 * math.sin(theta)
-                norm1_avg[2] = n1_2 - n2_2 * math.sin(theta)
-                norm2_avg[0] = n2_0 - n1_0 * math.sin(theta)
-                norm2_avg[1] = n2_1 - n1_1 * math.sin(theta)
-                norm2_avg[2] = n2_2 - n1_2 * math.sin(theta)
-                l1 = math.sqrt(norm1_avg[0] ** 2 + norm1_avg[1] ** 2 + norm1_avg[2] ** 2)
-                l2 = math.sqrt(norm2_avg[0] ** 2 + norm2_avg[1] ** 2 + norm2_avg[2] ** 2)
-                if l1 > 0:
-                    norm1_avg[0] /= l1
-                    norm1_avg[1] /= l1
-                    norm1_avg[2] /= l1
-                if l2 > 0:
-                    norm2_avg[0] /= l2
-                    norm2_avg[1] /= l2
-                    norm2_avg[2] /= l2
-
-            # Find max rotation from average (simplified)
+            norm1_avg, norm2_avg = _mech_avg_faithful_numba(nc, norm1, norm2)
             maxrot = 0.0
             imax = 0
-            for k in range(nc):
-                idx_k = active_idx[k]
-                # Quick rotation estimate
-                dot_n = (
-                    norm1_avg[0] * norm1in[0, idx_k]
-                    + norm1_avg[1] * norm1in[1, idx_k]
-                    + norm1_avg[2] * norm1in[2, idx_k]
-                )
-                dot_s = (
-                    norm2_avg[0] * norm2in[0, idx_k]
-                    + norm2_avg[1] * norm2in[1, idx_k]
-                    + norm2_avg[2] * norm2in[2, idx_k]
-                )
-                dot_n = abs(dot_n)
-                dot_s = abs(dot_s)
-                dot_n = max(-1.0, min(1.0, dot_n))
-                dot_s = max(-1.0, min(1.0, dot_s))
-                rot = 0.5 * (math.acos(dot_n) + math.acos(dot_s)) * RAD_TO_DEG
-                if rot > maxrot:
-                    maxrot = rot
-                    imax = k
-
+            for i in range(nc):
+                t1 = norm1[:, i].copy()
+                t2 = norm2[:, i].copy()
+                rot_angle = _mech_rot_match_numba(norm1_avg, norm2_avg, t1, t2)
+                if abs(rot_angle) > maxrot:
+                    maxrot = abs(rot_angle)
+                    imax = i
             if maxrot <= cangle:
                 break
+            # Move the outlier to the end.
+            t1 = norm1[:, imax].copy()
+            t2 = norm2[:, imax].copy()
+            for j in range(imax, nc - 1):
+                norm1[:, j] = norm1[:, j + 1]
+                norm2[:, j] = norm2[:, j + 1]
+            norm1[:, nc - 1] = t1
+            norm2[:, nc - 1] = t2
+            nc = nc - 1
 
-            # Remove outlier
-            active[active_idx[imax]] = 0
-            nc -= 1
-            if nc < 1:
-                break
-
-            # Rebuild active indices
-            idx = 0
-            for i in range(nf):
-                if active[i] == 1:
-                    active_idx[idx] = i
-                    idx += 1
-
-        # Count remaining
-        nc = 0
-        for i in range(nf):
-            if active[i] == 1:
-                nc += 1
-
-        prob[imult] = float(nc) / float(nf)
+        prob[imult] = float(nc) / float(nfault)
 
         if imult > 0 and prob[imult] < prob_max:
             nsltn = imult
             break
 
-        # Calculate RMS differences
+        # Set up for the next round: move outliers to the front.
+        for j in range(nfault - nc):
+            norm1[:, j] = norm1[:, j + nc]
+            norm2[:, j] = norm2[:, j + nc]
+        nc = nfault - nc
+
+        # RMS angular differences against the average, after matching planes.
         rms1 = 0.0
         rms2 = 0.0
-        for i in range(nf):
-            d11 = abs(
-                norm1in[0, i] * norm1_avg[0]
-                + norm1in[1, i] * norm1_avg[1]
-                + norm1in[2, i] * norm1_avg[2]
-            )
-            d22 = abs(
-                norm2in[0, i] * norm2_avg[0]
-                + norm2in[1, i] * norm2_avg[1]
-                + norm2in[2, i] * norm2_avg[2]
-            )
+        for i in range(nfault):
+            t1 = norm1in[:, i].copy()
+            t2 = norm2in[:, i].copy()
+            _rot_angle = _mech_rot_match_numba(norm1_avg, norm2_avg, t1, t2)
+            d11 = t1[0] * norm1_avg[0] + t1[1] * norm1_avg[1] + t1[2] * norm1_avg[2]
+            d22 = t2[0] * norm2_avg[0] + t2[1] * norm2_avg[1] + t2[2] * norm2_avg[2]
             d11 = max(-1.0, min(1.0, d11))
             d22 = max(-1.0, min(1.0, d22))
             a11 = math.acos(d11)
@@ -616,30 +684,14 @@ def mech_probability_numba(nf, norm1in, norm2in, cangle, prob_max):
             rms1 += a11 * a11
             rms2 += a22 * a22
 
-        rms_diff[0, imult] = RAD_TO_DEG * math.sqrt(rms1 / nf)
-        rms_diff[1, imult] = RAD_TO_DEG * math.sqrt(rms2 / nf)
+        rms_diff[0, imult] = RAD_TO_DEG * math.sqrt(rms1 / nfault)
+        rms_diff[1, imult] = RAD_TO_DEG * math.sqrt(rms2 / nfault)
 
-        # Convert to strike, dip, rake
+        # Convert to strike, dip, rake.
         s, d, r = fp_coord_vectors_to_angles(norm1_avg, norm2_avg)
         str_avg[imult] = s
         dip_avg[imult] = d
         rak_avg[imult] = r
-
-        # Mark current cluster as done, continue with remaining
-        for i in range(nf):
-            if active[i] == 1:
-                active[i] = 2  # Mark as processed
-
-        # Check if any unprocessed remain
-        has_remaining = False
-        for i in range(nf):
-            if active[i] == 0:
-                active[i] = 1
-                has_remaining = True
-
-        if not has_remaining:
-            nsltn = imult + 1
-            break
 
     return nsltn, str_avg, dip_avg, rak_avg, prob, rms_diff
 

@@ -16,15 +16,23 @@ from .amp_subs import (
     focalamp_mc,
     get_misf_amp,
 )
+from .backend import (
+    available_backends,
+    get_backend_info,
+    get_num_threads,
+    set_num_threads,
+)
 from .core import (
     focalmc,
-    get_numba_threads,
     get_gap,
     get_misfit,
+    get_numba_threads,
     set_numba_threads,
 )
 from .driver import (
     run_hash,
+    run_hash_batch,
+    run_hash_batch_with_amp,
     run_hash_event_payload,
     run_hash_from_file,
     run_hash_with_amp,
@@ -58,7 +66,13 @@ __all__ = [
     "run_hash",
     "run_hash_event_payload",
     "run_hash_with_amp",
+    "run_hash_batch",
+    "run_hash_batch_with_amp",
     "run_hash_from_file",
+    "available_backends",
+    "get_backend_info",
+    "set_num_threads",
+    "get_num_threads",
     # Core algorithms
     "focalmc",
     "focalamp_mc",
