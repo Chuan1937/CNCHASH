@@ -202,7 +202,6 @@ contains
         integer(ik) :: irot, ista
         integer(ik) :: nm0, nm1
         real(rk) :: pb1, pb3, pr
-        integer(ik) :: ipl
 
         if (parallel) then
             !$omp parallel default(none) &
@@ -213,7 +212,6 @@ contains
                 integer(ik) :: t_nmiss0min, t_nmissmin
                 integer(ik), allocatable :: t_nmiss01min(:)
                 real(rk) :: pb1, pb3, pr
-                integer(ik) :: ipl
                 allocate (t_nmiss01min(0:npol))
                 t_nmiss0min = 999
                 t_nmissmin = 999
@@ -231,12 +229,9 @@ contains
                             + grid_cache%b3(2, irot) * ws%py(ista, m) &
                             + grid_cache%b3(3, irot) * ws%pz(ista, m)
                         pr = pb1 * pb3
-                        ipl = -1
-                        if (pr > 0.0_rk) ipl = 1
-                        if (ipl /= p_pol(ista)) then
-                            nm1 = nm1 + 1
-                            if (p_qual(ista) == 0) nm0 = nm0 + 1
-                        end if
+                        nm1 = nm1 + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (p_pol(ista) == 1))
+                        nm0 = nm0 + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (p_pol(ista) == 1)) &
+                                          .and. (p_qual(ista) == 0))
                     end do
                     ws%fit0(irot) = nm0
                     ws%fit(irot) = nm1
@@ -267,12 +262,9 @@ contains
                         + grid_cache%b3(2, irot) * ws%py(ista, m) &
                         + grid_cache%b3(3, irot) * ws%pz(ista, m)
                     pr = pb1 * pb3
-                    ipl = -1
-                    if (pr > 0.0_rk) ipl = 1
-                    if (ipl /= p_pol(ista)) then
-                        nm1 = nm1 + 1
-                        if (p_qual(ista) == 0) nm0 = nm0 + 1
-                    end if
+                    nm1 = nm1 + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (p_pol(ista) == 1))
+                    nm0 = nm0 + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (p_pol(ista) == 1)) &
+                                      .and. (p_qual(ista) == 0))
                 end do
                 ws%fit0(irot) = nm0
                 ws%fit(irot) = nm1

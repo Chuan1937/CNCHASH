@@ -1,6 +1,10 @@
 # CNCHASH
 
-Python implementation of HASH for earthquake focal mechanism determination from P-wave polarities.
+High-performance Python implementation of HASH for earthquake focal-mechanism
+determination from P-wave polarities.
+
+It provides a **Modern Fortran/OpenMP native backend** for production-scale
+inversion and a **Numba reference backend** for portability and validation.
 
 ![Python](https://img.shields.io/badge/python-3.10+-orange.svg)
 ![License](https://img.shields.io/badge/license-BSD%203--blue.svg)
@@ -8,7 +12,11 @@ Python implementation of HASH for earthquake focal mechanism determination from 
 ![Numpy](https://img.shields.io/badge/numpy-1.19+-yellow.svg)
 ![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
-Python uses Numba JIT compilation optimization and vectorization, achieving speed improvements while maintaining complete consistency with the core Fortran algorithm.
+Python uses Numba JIT compilation optimization and vectorization, achieving
+speed improvements while maintaining complete consistency with the core
+Fortran algorithm. The optional native backend (`backend="auto"` selects it
+when `libhashhp` is available) adds OpenMP threading and event-level batch
+parallelism.
 
 ![Speed Comparison](docs/images/speed_comparison.png)
 
@@ -20,6 +28,13 @@ Python uses Numba JIT compilation optimization and vectorization, achieving spee
 | Per event | 2.85ms | 19.7ms | **6.9x** |
 | 5000 events | 13.0s | 98.5s | **7.6x** |
 | 10000 events | 26.0s | 197.0s | **7.6x** |
+
+Native backend scaling (30 stations, 30 MC trials, see
+[docs/benchmarks.md](docs/benchmarks.md)):
+
+| Threads | 1 | 2 | 4 | 8 | 16 |
+|---------|---|---|---|---|----|
+| Speedup | 1.0x | 1.8x | 3.0x | 4.1x | 6.1x |
 
 ## Accuracy Verification
 
@@ -79,6 +94,24 @@ print(f"Polarity misfit: {result['mfrac']*100:.1f}%")
 print(f"Amplitude misfit: {result['mavg']:.2f}")
 ```
 
+## Backend Selection
+
+```python
+from cnchash import run_hash, run_hash_batch, available_backends, get_backend_info
+
+# backend="auto" (default) uses the native backend when available
+result = run_hash(p_azi, p_the, p_pol, p_qual, backend="auto", num_threads=16)
+
+# Batch mode: many events in one native call (event-level OpenMP)
+results = run_hash_batch(events, backend="fortran", num_threads=16)
+
+print(available_backends())   # ['fortran', 'numba']
+print(get_backend_info())
+```
+
+See [docs/native_backend.md](docs/native_backend.md) for the backend
+architecture, build instructions, and design rules.
+
 ## Features
 
 - Grid search for focal mechanism determination
@@ -86,7 +119,9 @@ print(f"Amplitude misfit: {result['mavg']:.2f}")
 - S/P amplitude ratio constraint
 - Quality rating (A-D, E, F)
 - Multiple phase file formats
-- Core algorithm matches Fortran exactly
+- Modern Fortran/OpenMP native backend (optional)
+- Event-level batch parallelism
+- Core algorithm matches Fortran exactly (parity-tested)
 
 ## Documentation
 
@@ -99,6 +134,7 @@ See https://cnchash.readthedocs.io/ for full documentation including:
 ## Run Tests
 
 ```bash
+pytest tests/          # parity, determinism, batch, velocity suites
 jupyter notebook HASH_Tests.ipynb
 ```
 
@@ -106,14 +142,19 @@ jupyter notebook HASH_Tests.ipynb
 
 ```
 cnchash/
-├── core.py        # Grid search algorithm (focalmc)
-├── amp_subs.py    # S/P amplitude ratio (focalamp_mc)
-├── uncertainty.py # Uncertainty analysis (mech_prob)
-├── driver.py      # Main driver (run_hash, run_hash_with_amp)
+├── backend/       # backend dispatch (base, numba, fortran)
+├── core.py        # Numba reference grid search (focalmc)
+├── amp_subs.py    # Numba reference S/P amplitude (focalamp_mc)
+├── uncertainty.py # Numba reference uncertainty (mech_prob)
+├── driver.py      # Main driver (run_hash, run_hash_batch)
 ├── io.py          # File I/O
-└── utils.py       # Utilities
+├── utils.py       # Utilities
+└── velocity.py    # velocity tables (reference)
 
-HASH_complete/     # Complete Fortran code with examples
+src/hash_hp/       # Modern Fortran/OpenMP core (libhashhp)
+HASH_complete/     # Original Fortran HASH v1.2 (immutable golden reference)
+benchmarks/        # performance benchmark suite
+tests/             # parity, determinism, batch, velocity tests
 ```
 
 ## Author

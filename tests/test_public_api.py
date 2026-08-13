@@ -45,7 +45,8 @@ def test_run_hash_basic():
     assert result["success"] is True
     assert result["nf"] > 0
     assert result["nmult"] >= 1
-    assert result["quality"] in "ABCD"
+    q = result["quality"]
+    assert all(x in "ABCD" for x in (q if isinstance(q, list) else [q]))
     assert 0.0 <= result["strike_avg"] < 360.0
     assert 0.0 <= result["dip_avg"] <= 90.0
     assert -180.0 <= result["rake_avg"] <= 180.0
