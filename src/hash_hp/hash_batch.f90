@@ -85,7 +85,8 @@ contains
         integer(ik), intent(in) :: p_pol(:), p_qual(:)
         integer(ik), intent(in) :: npol, nmc, maxout, selection
         real(rk), intent(in) :: dang, badfrac, cangle, prob_max
-        integer(ik), intent(in) :: npolmin, max_agap, max_pgap
+        integer(ik), intent(in) :: npolmin
+        real(rk), intent(in) :: max_agap, max_pgap
         type(event_result_t), intent(out) :: res
         real(rk), intent(out) :: strike_all(:), dip_all(:), rake_all(:)
         real(rk), intent(out) :: faults_all(:, :), slips_all(:, :)
@@ -105,7 +106,7 @@ contains
         end if
 
         call get_gap(npol, p_azi_mc(:, 1), p_the_mc(:, 1), magap, mpgap)
-        if (magap > real(max_agap, rk) .or. mpgap > real(max_pgap, rk)) then
+        if (magap > max_agap .or. mpgap > max_pgap) then
             res%quality = 4
             return
         end if
@@ -147,15 +148,17 @@ contains
     subroutine run_event_amp(aws, p_azi_mc, p_the_mc, p_pol, sp_amp, npsta, &
                              nmc, dang, maxout, badfrac, qbadfac, cangle, &
                              prob_max, npolmin, max_agap, max_pgap, selection, &
-                             res, strike_all, dip_all, rake_all, faults_all, &
-                             slips_all, use_omp)
+                             nmismax_override, res, strike_all, dip_all, &
+                             rake_all, faults_all, slips_all, use_omp)
         type(amplitude_workspace_t), intent(inout) :: aws
         real(rk), intent(in) :: p_azi_mc(:, :), p_the_mc(:, :)
         integer(ik), intent(in) :: p_pol(:)
         real(rk), intent(in) :: sp_amp(:)
         integer(ik), intent(in) :: npsta, nmc, maxout, selection
+        integer(ik), intent(in) :: nmismax_override   ! < 0 => automatic
         real(rk), intent(in) :: dang, badfrac, qbadfac, cangle, prob_max
-        integer(ik), intent(in) :: npolmin, max_agap, max_pgap
+        integer(ik), intent(in) :: npolmin
+        real(rk), intent(in) :: max_agap, max_pgap
         type(event_result_t), intent(out) :: res
         real(rk), intent(out) :: strike_all(:), dip_all(:), rake_all(:)
         real(rk), intent(out) :: faults_all(:, :), slips_all(:, :)
@@ -178,12 +181,16 @@ contains
         end if
 
         call get_gap(npsta, p_azi_mc(:, 1), p_the_mc(:, 1), magap, mpgap)
-        if (magap > real(max_agap, rk) .or. mpgap > real(max_pgap, rk)) then
+        if (magap > max_agap .or. mpgap > max_pgap) then
             res%quality = 4
             return
         end if
 
-        nmismax = max(int(real(npol, rk) * 0.1_rk), 2)
+        if (nmismax_override >= 0) then
+            nmismax = nmismax_override
+        else
+            nmismax = max(int(real(npol, rk) * 0.1_rk), 2)
+        end if
         nextra = max(int(real(npol, rk) * 0.05_rk), 0)
         qmismax = real(nspr, rk) * qbadfac
         qextra = max(real(nspr, rk) * qbadfac * 0.5_rk, 2.0_rk)
@@ -236,7 +243,8 @@ contains
         real(rk), intent(in) :: azi_flat(:), the_flat(:)
         integer(ik), intent(in) :: pol_flat(:), qual_flat(:)
         real(rk), intent(in) :: dang, badfrac, cangle, prob_max
-        integer(ik), intent(in) :: maxout, npolmin, max_agap, max_pgap, selection
+        integer(ik), intent(in) :: maxout, npolmin, selection
+        real(rk), intent(in) :: max_agap, max_pgap
         type(event_result_t), intent(out) :: results(:)
         real(rk), intent(out) :: strike_all(:, :), dip_all(:, :), rake_all(:, :)
         real(rk), intent(out) :: faults_all(:, :, :), slips_all(:, :, :)
@@ -292,15 +300,18 @@ contains
     subroutine run_batch_amp(nevent, npsta_arr, nmc_arr, offsets, pick_offsets, &
                              azi_flat, the_flat, pol_flat, sp_flat, dang, maxout, &
                              badfrac, qbadfac, cangle, prob_max, npolmin, &
-                             max_agap, max_pgap, selection, results, strike_all, &
-                             dip_all, rake_all, faults_all, slips_all)
+                             max_agap, max_pgap, selection, nmismax_override, &
+                             results, strike_all, dip_all, rake_all, faults_all, &
+                             slips_all)
         integer(ik), intent(in) :: nevent
         integer(ik), intent(in) :: npsta_arr(:), nmc_arr(:), offsets(:), pick_offsets(:)
+        integer(ik), intent(in) :: nmismax_override
         real(rk), intent(in) :: azi_flat(:), the_flat(:)
         integer(ik), intent(in) :: pol_flat(:)
         real(rk), intent(in) :: sp_flat(:)
         real(rk), intent(in) :: dang, badfrac, qbadfac, cangle, prob_max
-        integer(ik), intent(in) :: maxout, npolmin, max_agap, max_pgap, selection
+        integer(ik), intent(in) :: maxout, npolmin, selection
+        real(rk), intent(in) :: max_agap, max_pgap
         type(event_result_t), intent(out) :: results(:)
         real(rk), intent(out) :: strike_all(:, :), dip_all(:, :), rake_all(:, :)
         real(rk), intent(out) :: faults_all(:, :, :), slips_all(:, :, :)
@@ -322,7 +333,8 @@ contains
                                    sp_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
                                    npsta, nmc, dang, maxout, badfrac, qbadfac, cangle, &
                                    prob_max, npolmin, max_agap, max_pgap, selection, &
-                                   results(ie), strike_all(:, ie), dip_all(:, ie), &
+                                   nmismax_override, results(ie), &
+                                   strike_all(:, ie), dip_all(:, ie), &
                                    rake_all(:, ie), faults_all(:, :, ie), slips_all(:, :, ie), .true.)
             end do
         else
@@ -330,7 +342,8 @@ contains
             !$omp shared(nevent, npsta_arr, nmc_arr, offsets, pick_offsets, azi_flat, &
             !$omp         the_flat, pol_flat, sp_flat, dang, maxout, badfrac, qbadfac, &
             !$omp         cangle, prob_max, npolmin, max_agap, max_pgap, selection, &
-            !$omp         results, strike_all, dip_all, rake_all, faults_all, slips_all) &
+            !$omp         nmismax_override, results, strike_all, dip_all, rake_all, &
+            !$omp         faults_all, slips_all) &
             !$omp private(ie, npsta, nmc, base)
             do ie = 1, nevent
                 npsta = npsta_arr(ie)
@@ -343,7 +356,8 @@ contains
                                    sp_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
                                    npsta, nmc, dang, maxout, badfrac, qbadfac, cangle, &
                                    prob_max, npolmin, max_agap, max_pgap, selection, &
-                                   results(ie), strike_all(:, ie), dip_all(:, ie), &
+                                   nmismax_override, results(ie), &
+                                   strike_all(:, ie), dip_all(:, ie), &
                                    rake_all(:, ie), faults_all(:, :, ie), slips_all(:, :, ie), .false.)
             end do
             !$omp end parallel do

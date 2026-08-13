@@ -271,9 +271,8 @@ def run_hash_with_amp(
         max_agap=max_agap,
         max_pgap=max_pgap,
         selection=selection,
+        nmismax=nmismax,
     )
-    if nmismax is not None and result["success"]:
-        result["nmismax"] = nmismax
     return result
 
 
@@ -367,6 +366,7 @@ def run_hash_batch_with_amp(
     dang=5.0,
     nmc=30,
     maxout=500,
+    nmismax=None,
     qbadfac=0.3,
     cangle=45.0,
     prob_max=0.1,
@@ -420,6 +420,7 @@ def run_hash_batch_with_amp(
         max_agap=max_agap,
         max_pgap=max_pgap,
         selection=selection,
+        nmismax=nmismax,
     )
 
 def run_hash_from_file(input_file):

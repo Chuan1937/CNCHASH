@@ -310,11 +310,123 @@ def test_original_hash_mechanism_sets_match(original_hash_bin, fortran_available
         # rake is periodic in 360 degrees (180 == -180)
         so[:, 2] = np.mod(so[:, 2], 360.0)
         sc[:, 2] = np.mod(sc[:, 2], 360.0)
-        so = np.sort(so, axis=0)
-        sc = np.sort(sc, axis=0)
-        assert np.allclose(so[:, 0], sc[:, 0], atol=1e-6)
-        assert np.allclose(so[:, 1], sc[:, 1], atol=1e-6)
-        assert np.allclose(so[:, 2], sc[:, 2], atol=1e-6)
+        # Sort complete (strike, dip, rake) triples, not columns: sorting
+        # each column independently could recombine rows and mask mismatch.
+        so = so[np.lexsort((so[:, 2], so[:, 1], so[:, 0]))]
+        sc = sc[np.lexsort((sc[:, 2], sc[:, 1], sc[:, 0]))]
+        assert so.shape == sc.shape
+        assert np.allclose(so, sc, atol=1e-6)
+
+
+@pytest.fixture(scope="session")
+def original_multisol_bin(tmp_path_factory, original_hash_bin):
+    """Compile a harness that prints every MECH_PROB solution."""
+    hash_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "HASH_complete")
+    src_dir = os.path.join(hash_dir, "src")
+    obj_dir = os.path.join(hash_dir, "obj")
+    harness = str(tmp_path_factory.mktemp("hashmulti") / "mechdump")
+    if not os.path.exists(harness):
+        hsrc = os.path.join(os.path.dirname(harness), "mechdump.f")
+        with open(hsrc, "w") as f:
+            f.write(
+                """
+      program mechdump
+      implicit none
+      integer nmax0
+      parameter (nmax0=500)
+      integer nf, nsltn, i
+      real f(3,nmax0), s(3,nmax0)
+      real sa(5), da(5), ra(5), pb(5), rd(2,5)
+      read(*,*) nf
+      do i=1,nf
+        read(*,*) f(1,i), f(2,i), f(3,i), s(1,i), s(2,i), s(3,i)
+      end do
+      call MECH_PROB(nf, f, s, 45.0, 0.1, nsltn, sa, da, ra, pb, rd)
+      write(*,*) 'nsltn=', nsltn
+      do i=1,nsltn
+        write(*,'(A,I2,3F12.6,2F12.6)') 'soln ', i, sa(i), da(i), ra(i),
+     &       rd(1,i), rd(2,i)
+      end do
+      end
+"""
+            )
+        objs = (
+            f"{obj_dir}/uncert_subs.o {obj_dir}/util_subs.o"
+        )
+        r = subprocess.run(
+            ["gfortran", "-O", "-I", os.path.join(src_dir, "include"), hsrc, *objs.split(), "-o", harness],
+            capture_output=True, text=True,
+        )
+        if r.returncode != 0:
+            pytest.skip("could not build original MECH_PROB harness")
+    return harness
+
+
+def test_original_hash_multiple_solutions_match(original_multisol_bin, fortran_available):
+    """Weakly constrained events: multi-solution clustering must match the
+    original MECH_PROB.
+
+    The original HASH runs in single precision while CNCHASH uses
+    float64, so the cluster probability can land on either side of the
+    prob_max threshold for borderline clusters. Events where the two
+    implementations agree on the number of solutions are compared
+    strictly (angle by angle); events where the count differs are
+    skipped because they expose only that precision sensitivity, not a
+    logic difference.
+    """
+    rng = np.random.default_rng(SEED + 7)
+    tested = 0
+    skipped = 0
+    for _ in range(60):
+        nsta = 12
+        az, the = uniform_sphere_stations(nsta, rng)
+        pol = np.where(
+            (np.sin(np.deg2rad(the)) * np.cos(np.deg2rad(az - 60))) > 0, 1, -1
+        ).astype(np.int32)
+        nbad = max(1, int(nsta * 0.1))
+        bad = rng.choice(nsta, nbad, replace=False)
+        pol[bad] = -pol[bad]
+        qual = np.zeros(nsta, dtype=np.int32)
+        r = run_hash(az, the, pol, qual, nmc=1, backend="fortran", num_threads=1)
+        if not r["success"] or r["nmult"] < 2:
+            continue
+        lines = [str(r["nf"])]
+        for i in range(r["nf"]):
+            fn = r["faults"][:, i]
+            sl = r["slips"][:, i]
+            lines.append(f"{fn[0]:.15e} {fn[1]:.15e} {fn[2]:.15e} {sl[0]:.15e} {sl[1]:.15e} {sl[2]:.15e}")
+        proc = subprocess.run(
+            [original_multisol_bin], input="\n".join(lines) + "\n",
+            capture_output=True, text=True, timeout=60,
+        )
+        nsltn_orig = None
+        solns_orig = []
+        for line in proc.stdout.splitlines():
+            line = line.strip()
+            if line.startswith("nsltn="):
+                nsltn_orig = int(line.split("=")[1])
+            elif line.startswith("soln"):
+                parts = line.split()
+                solns_orig.append((float(parts[2]), float(parts[3]), float(parts[4])))
+        if nsltn_orig != r["nmult"]:
+            skipped += 1
+            continue
+        sc = np.atleast_1d(r["strike_avg"])
+        dc = np.atleast_1d(r["dip_avg"])
+        rc = np.atleast_1d(r["rake_avg"])
+        for k in range(r["nmult"]):
+            so, do_, ro = solns_orig[k]
+            d_strike = min(abs(sc[k] - so) % 360.0, abs(sc[k] - (so + 180.0) % 360.0) % 360.0)
+            assert d_strike < 5.0, f"soln {k}: strike {sc[k]:.1f} vs original {so:.1f}"
+            assert abs(dc[k] - do_) < 5.0, f"soln {k}: dip {dc[k]:.1f} vs original {do_:.1f}"
+            d_rake = abs(rc[k] - ro) % 360.0
+            assert min(d_rake, 360.0 - d_rake) < 10.0
+        tested += 1
+        if tested >= 3:
+            break
+    assert tested >= 3, (
+        f"fewer than 3 agreeing multi-solution events found ({tested} agree, {skipped} skipped)"
+    )
 
 
 def test_original_hash_preferred_mechanism_close(original_hash_bin, fortran_available):

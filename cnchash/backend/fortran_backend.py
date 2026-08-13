@@ -57,7 +57,7 @@ def _find_library():
     if env and os.path.exists(env):
         return env
     here = os.path.dirname(os.path.abspath(__file__))
-    for rel in ("../lib/libhashhp.so", "../../src/hash_hp/libhashhp.so"):
+    for rel in ("../lib/libhashhp.so", "../../src/hash_hp/libhashhp.so", "../../build/libhashhp.so"):
         candidate = os.path.normpath(os.path.join(here, rel))
         if os.path.exists(candidate):
             return candidate
@@ -181,8 +181,8 @@ class FortranBackend(HashBackend):
             ctypes.c_double,
             ctypes.c_double,
             ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
+            ctypes.c_double,
+            ctypes.c_double,
             ctypes.c_int32,
             ctypes.POINTER(_CEventResult),
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
@@ -207,7 +207,8 @@ class FortranBackend(HashBackend):
             ctypes.c_double,
             ctypes.c_double,
             ctypes.c_int32,
-            ctypes.c_int32,
+            ctypes.c_double,
+            ctypes.c_double,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.POINTER(_CEventResult),
@@ -235,8 +236,8 @@ class FortranBackend(HashBackend):
             ctypes.c_double,
             ctypes.c_double,
             ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
+            ctypes.c_double,
+            ctypes.c_double,
             ctypes.c_int32,
             ctypes.POINTER(_CEventResult),
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
@@ -264,7 +265,8 @@ class FortranBackend(HashBackend):
             ctypes.c_double,
             ctypes.c_double,
             ctypes.c_int32,
-            ctypes.c_int32,
+            ctypes.c_double,
+            ctypes.c_double,
             ctypes.c_int32,
             ctypes.c_int32,
             ctypes.POINTER(_CEventResult),
@@ -417,7 +419,7 @@ class FortranBackend(HashBackend):
         self._lib.cnchash_run_event(
             azi, the, pol, qual, int(npol), int(nmc), float(dang), maxout,
             float(badfrac), float(cangle), float(prob_max), int(npolmin),
-            int(max_agap), int(max_pgap), int(selection),
+            float(max_agap), float(max_pgap), int(selection),
             ctypes.byref(res), s_all, d_all, r_all, f_all, sl_all,
         )
         output = self._unpack_result(res, npol, 0)
@@ -447,6 +449,7 @@ class FortranBackend(HashBackend):
         max_agap,
         max_pgap,
         selection=0,
+        nmismax=None,
     ):
         azi = _as_c_double_array(p_azi_mc).ravel(order="F")
         the = _as_c_double_array(p_the_mc).ravel(order="F")
@@ -462,7 +465,8 @@ class FortranBackend(HashBackend):
         self._lib.cnchash_run_event_amp(
             azi, the, pol, amp, int(npsta), int(nmc), float(dang), maxout,
             float(badfrac), float(qbadfac), float(cangle), float(prob_max),
-            int(npolmin), int(max_agap), int(max_pgap), int(selection),
+            int(npolmin), float(max_agap), float(max_pgap), int(selection),
+            -1 if nmismax is None else int(nmismax),
             ctypes.byref(res), s_all, d_all, r_all, f_all, sl_all,
         )
         npol = int(np.sum(pol != 0))
@@ -529,7 +533,7 @@ class FortranBackend(HashBackend):
         self._lib.cnchash_run_batch(
             nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
             pol_flat, qual_flat, float(dang), maxout, float(badfrac), float(cangle),
-            float(prob_max), int(npolmin), int(max_agap), int(max_pgap),
+            float(prob_max), int(npolmin), float(max_agap), float(max_pgap),
             int(selection), cres, s_all, d_all, r_all, f_all, sl_all,
         )
         results = []
@@ -559,6 +563,7 @@ class FortranBackend(HashBackend):
         max_agap,
         max_pgap,
         selection=0,
+        nmismax=None,
     ):
         events = list(events)
         nevent = len(events)
@@ -598,13 +603,16 @@ class FortranBackend(HashBackend):
         self._lib.cnchash_run_batch_amp(
             nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
             pol_flat, amp_flat, float(dang), maxout, float(badfrac), float(qbadfac),
-            float(cangle), float(prob_max), int(npolmin), int(max_agap),
-            int(max_pgap), int(selection), cres, s_all, d_all, r_all, f_all, sl_all,
+            float(cangle), float(prob_max), int(npolmin), float(max_agap),
+            float(max_pgap), int(selection), -1 if nmismax is None else int(nmismax),
+            cres, s_all, d_all, r_all, f_all, sl_all,
         )
         results = []
         for i in range(nevent):
-            npol = int(np.sum(pol_flat[offsets[i]:offsets[i + 1]] != 0))
-            nspr = int(np.sum(amp_flat[offsets[i]:offsets[i + 1]] != 0.0))
+            lo = int(pick_offsets[i])
+            hi = int(pick_offsets[i + 1])
+            npol = int(np.count_nonzero(pol_flat[lo:hi]))
+            nspr = int(np.count_nonzero(amp_flat[lo:hi]))
             output = self._unpack_result(cres[i], npol, nspr)
             nf = output["nf"]
             sl = slice(i * maxout, i * maxout + nf)

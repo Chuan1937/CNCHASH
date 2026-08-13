@@ -45,11 +45,29 @@ Native backend scaling (30 stations, 30 MC trials, see
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 
-## Quick Start
+## Quick Start (source build)
+
+CNCHASH 2.x is a source-install package: the native backend must be
+compiled once with CMake. A Fortran compiler with OpenMP support
+(gfortran >= 9) is required.
 
 ```bash
-pip install cnchash
+git clone https://github.com/Chuan1937/CNCHASH.git
+cd CNCHASH
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+
+# optional: build with -march=native for ~2.5x more speed on this machine
+# cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCNCHASH_NATIVE_MARCH=ON
+
+export CNCHASH_HASHHP_LIB=$PWD/build/libhashhp.so
+pip install -e .
 ```
+
+Without a Fortran compiler, install still succeeds but the backend is
+not available; `get_backend_info()` reports the library path and
+`available_backends()` stays empty.
 
 ### Basic Usage (P-wave polarities only)
 

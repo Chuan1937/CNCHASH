@@ -270,6 +270,7 @@ contains
         real(rk) :: rota(nf), rot_angle, d11, d22, a11, a22
         integer(ik) :: i, j, imult, icount, nfault, nc, imax
         real(rk) :: maxrot
+        integer(ik) :: nf_cur
 
         if (nf <= 1) then
             temp1 = norm1in(:, 1)
@@ -287,6 +288,7 @@ contains
         norm2 = norm2in
 
         nfault = nf
+        nf_cur = nf
         nc = nf
 
         do imult = 1, 5
@@ -295,7 +297,7 @@ contains
                 ! Repeatedly remove the mechanism with the largest angular
                 ! difference from the running average, until all are within
                 ! cangle of the average.
-                do icount = 1, nf
+                do icount = 1, nf_cur
                     call mech_avg(nc, norm1, norm2, norm1_avg, norm2_avg)
                     do i = 1, nc
                         temp1 = norm1(:, i)
@@ -329,12 +331,15 @@ contains
 
                 if (imult > 1 .and. prob(imult) < prob_max) exit
 
-                ! Set up for next round: move the outliers to the front.
-                do j = 1, nfault - nc
+                ! Set up for next round: move only the outliers of the
+                ! current working set to the front (original MECH_PROB:
+                ! nc = nf - nc; nf = nc).
+                do j = 1, nf_cur - nc
                     norm1(:, j) = norm1(:, j + nc)
                     norm2(:, j) = norm2(:, j + nc)
                 end do
-                nc = nfault - nc
+                nc = nf_cur - nc
+                nf_cur = nc
 
                 ! RMS angular differences between each input mechanism and
                 ! the average, after matching planes.

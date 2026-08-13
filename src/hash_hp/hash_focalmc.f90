@@ -39,7 +39,9 @@ contains
         type(focalmc_workspace_t), intent(inout) :: ws
         integer(ik), intent(in) :: npol, nmc, nrot
         if (allocated(ws%px)) then
-            if (size(ws%px, 1) == npol .and. size(ws%px, 2) == nmc) return
+            ! nrot varies with dang, so the fit arrays must be checked too.
+            if (size(ws%px, 1) == npol .and. size(ws%px, 2) == nmc .and. &
+                size(ws%fit) == nrot) return
             deallocate (ws%px, ws%py, ws%pz, ws%fit0, ws%fit, ws%irotgood)
         end if
         allocate (ws%px(npol, nmc), ws%py(npol, nmc), ws%pz(npol, nmc))

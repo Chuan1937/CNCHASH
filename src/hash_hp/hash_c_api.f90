@@ -75,11 +75,12 @@ contains
         nt = int(hash_get_max_threads(), c_int32_t)
     end function cnchash_get_max_threads
 
-    !> Version string (major.minor.patch as three ints).
+    !> CNCHASH version (major.minor.patch as three ints), kept in sync
+    !> with the Python package version.
     subroutine cnchash_version(ver_major, ver_minor, ver_patch) &
         bind(C, name="cnchash_version")
         integer(c_int32_t), intent(out) :: ver_major, ver_minor, ver_patch
-        ver_major = int(1, c_int32_t)
+        ver_major = int(2, c_int32_t)
         ver_minor = int(0, c_int32_t)
         ver_patch = int(0, c_int32_t)
     end subroutine cnchash_version
@@ -94,7 +95,8 @@ contains
         integer(c_int32_t), intent(in) :: p_pol(*), p_qual(*)
         integer(c_int32_t), value :: npol, nmc, maxout, selection
         real(c_double), value :: dang, badfrac, cangle, prob_max
-        integer(c_int32_t), value :: npolmin, max_agap, max_pgap
+        integer(c_int32_t), value :: npolmin
+        real(c_double), value :: max_agap, max_pgap
         type(c_event_result_t), intent(out) :: res
         real(c_double), intent(out) :: strike_all(*), dip_all(*), rake_all(*)
         real(c_double), intent(out) :: faults_all(*), slips_all(*)
@@ -109,8 +111,8 @@ contains
                        int(p_pol(1:npol), ik), int(p_qual(1:npol), ik), &
                        int(npol, ik), int(nmc, ik), real(dang, rk), &
                        int(maxout, ik), real(badfrac, rk), real(cangle, rk), &
-                       real(prob_max, rk), int(npolmin, ik), int(max_agap, ik), &
-                       int(max_pgap, ik), int(selection, ik), fr, s_all, d_all, &
+                       real(prob_max, rk), int(npolmin, ik), real(max_agap, rk), &
+                       real(max_pgap, rk), int(selection, ik), fr, s_all, d_all, &
                        r_all, f_all, sl_all, .true.)
 
         call copy_result(fr, res)
@@ -134,14 +136,16 @@ contains
     subroutine cnchash_run_event_amp(p_azi_mc, p_the_mc, p_pol, sp_amp, npsta, &
                                      nmc, dang, maxout, badfrac, qbadfac, &
                                      cangle, prob_max, npolmin, max_agap, &
-                                     max_pgap, selection, res, strike_all, &
-                                     dip_all, rake_all, faults_all, slips_all) &
+                                     max_pgap, selection, nmismax_override, res, &
+                                     strike_all, dip_all, rake_all, faults_all, &
+                                     slips_all) &
         bind(C, name="cnchash_run_event_amp")
         real(c_double), intent(in) :: p_azi_mc(*), p_the_mc(*), sp_amp(*)
         integer(c_int32_t), intent(in) :: p_pol(*)
         integer(c_int32_t), value :: npsta, nmc, maxout, selection
         real(c_double), value :: dang, badfrac, qbadfac, cangle, prob_max
-        integer(c_int32_t), value :: npolmin, max_agap, max_pgap
+        integer(c_int32_t), value :: npolmin, nmismax_override
+        real(c_double), value :: max_agap, max_pgap
         type(c_event_result_t), intent(out) :: res
         real(c_double), intent(out) :: strike_all(*), dip_all(*), rake_all(*)
         real(c_double), intent(out) :: faults_all(*), slips_all(*)
@@ -157,8 +161,9 @@ contains
                            int(npsta, ik), int(nmc, ik), real(dang, rk), &
                            int(maxout, ik), real(badfrac, rk), real(qbadfac, rk), &
                            real(cangle, rk), real(prob_max, rk), int(npolmin, ik), &
-                           int(max_agap, ik), int(max_pgap, ik), int(selection, ik), &
-                           fr, s_all, d_all, r_all, f_all, sl_all, .true.)
+                           real(max_agap, rk), real(max_pgap, rk), int(selection, ik), &
+                           int(nmismax_override, ik), fr, s_all, d_all, r_all, &
+                           f_all, sl_all, .true.)
 
         call copy_result(fr, res)
         do n = 1, maxout
@@ -186,7 +191,8 @@ contains
         real(c_double), intent(in) :: azi_flat(*), the_flat(*)
         integer(c_int32_t), intent(in) :: pol_flat(*), qual_flat(*)
         real(c_double), value :: dang, badfrac, cangle, prob_max
-        integer(c_int32_t), value :: maxout, npolmin, max_agap, max_pgap, selection
+        integer(c_int32_t), value :: maxout, npolmin, selection
+        real(c_double), value :: max_agap, max_pgap
         type(c_event_result_t), intent(out) :: results(*)
         real(c_double), intent(out) :: strike_all(*), dip_all(*), rake_all(*)
         real(c_double), intent(out) :: faults_all(*), slips_all(*)
@@ -204,7 +210,7 @@ contains
                        int(qual_flat(1:pick_offsets(nevent + 1)), ik), &
                        real(dang, rk), int(maxout, ik), real(badfrac, rk), &
                        real(cangle, rk), real(prob_max, rk), int(npolmin, ik), &
-                       int(max_agap, ik), int(max_pgap, ik), int(selection, ik), &
+                       real(max_agap, rk), real(max_pgap, rk), int(selection, ik), &
                        fr, s_all, d_all, r_all, f_all, sl_all)
 
         do ie = 1, nevent
@@ -228,15 +234,18 @@ contains
                                      pick_offsets, azi_flat, the_flat, pol_flat, &
                                      sp_flat, dang, maxout, badfrac, qbadfac, &
                                      cangle, prob_max, npolmin, max_agap, &
-                                     max_pgap, selection, results, strike_all, &
-                                     dip_all, rake_all, faults_all, slips_all) &
+                                     max_pgap, selection, nmismax_override, &
+                                     results, strike_all, dip_all, rake_all, &
+                                     faults_all, slips_all) &
         bind(C, name="cnchash_run_batch_amp")
         integer(c_int32_t), value :: nevent
         integer(c_int32_t), intent(in) :: npsta_arr(*), nmc_arr(*), offsets(*), pick_offsets(*)
         real(c_double), intent(in) :: azi_flat(*), the_flat(*), sp_flat(*)
         integer(c_int32_t), intent(in) :: pol_flat(*)
         real(c_double), value :: dang, badfrac, qbadfac, cangle, prob_max
-        integer(c_int32_t), value :: maxout, npolmin, max_agap, max_pgap, selection
+        integer(c_int32_t), value :: maxout, npolmin, selection
+        real(c_double), value :: max_agap, max_pgap
+        integer(c_int32_t), value :: nmismax_override
         type(c_event_result_t), intent(out) :: results(*)
         real(c_double), intent(out) :: strike_all(*), dip_all(*), rake_all(*)
         real(c_double), intent(out) :: faults_all(*), slips_all(*)
@@ -254,8 +263,9 @@ contains
                            real(sp_flat(1:pick_offsets(nevent + 1)), rk), &
                            real(dang, rk), int(maxout, ik), real(badfrac, rk), &
                            real(qbadfac, rk), real(cangle, rk), real(prob_max, rk), &
-                           int(npolmin, ik), int(max_agap, ik), int(max_pgap, ik), &
-                           int(selection, ik), fr, s_all, d_all, r_all, f_all, sl_all)
+                           int(npolmin, ik), real(max_agap, rk), real(max_pgap, rk), &
+                           int(selection, ik), int(nmismax_override, ik), &
+                           fr, s_all, d_all, r_all, f_all, sl_all)
 
         do ie = 1, nevent
             call copy_result(fr(ie), results(ie))
