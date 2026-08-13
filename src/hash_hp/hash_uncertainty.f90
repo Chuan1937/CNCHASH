@@ -10,10 +10,12 @@
 module hash_uncertainty
     use hash_kinds, only: rk, ik
     use hash_geometry, only: pi, deg_to_rad, rad_to_deg, fpcoor, cross
+    use hash_runtime, only: hash_get_max_threads
     implicit none
 
     private
     public :: mech_rot, mech_avg, mech_prob
+
 
 contains
 
@@ -33,6 +35,9 @@ contains
         integer(ik) :: iter, iout, iuse, k, i, j
         integer(ik) :: irot
 
+        ! B1 = n1 x s1 is the same for all four combinations.
+        call cross(n1, s1, B1)
+
         do iter = 1, 4
             if (iter < 3) then
                 n2t = n2
@@ -46,7 +51,6 @@ contains
                 s2t = -s2t
             end if
 
-            call cross(n1, s1, B1)
             call cross(n2t, s2t, B2)
 
             dval = n1(1) * n2t(1) + n1(2) * n2t(2) + n1(3) * n2t(3)
@@ -185,14 +189,28 @@ contains
         ref1 = norm1(:, 1)
         ref2 = norm2(:, 1)
 
-        do i = 2, nf
-            temp1 = norm1(:, i)
-            temp2 = norm2(:, i)
-            rot_angle = 0.0_rk
-            call mech_rot(ref1, ref2, temp1, temp2, rot_angle)
-            norm1_avg = norm1_avg + temp1
-            norm2_avg = norm2_avg + temp2
-        end do
+        if (hash_get_max_threads() > 1 .and. nf > 128) then
+            !$omp parallel do reduction(+:norm1_avg, norm2_avg) &
+            !$omp     private(temp1, temp2, rot_angle) schedule(static)
+            do i = 2, nf
+                temp1 = norm1(:, i)
+                temp2 = norm2(:, i)
+                rot_angle = 0.0_rk
+                call mech_rot(ref1, ref2, temp1, temp2, rot_angle)
+                norm1_avg = norm1_avg + temp1
+                norm2_avg = norm2_avg + temp2
+            end do
+            !$omp end parallel do
+        else
+            do i = 2, nf
+                temp1 = norm1(:, i)
+                temp2 = norm2(:, i)
+                rot_angle = 0.0_rk
+                call mech_rot(ref1, ref2, temp1, temp2, rot_angle)
+                norm1_avg = norm1_avg + temp1
+                norm2_avg = norm2_avg + temp2
+            end do
+        end if
         ln1 = sqrt(sum(norm1_avg**2))
         ln2 = sqrt(sum(norm2_avg**2))
         if (ln1 > 0.0_rk) norm1_avg = norm1_avg / ln1
@@ -270,77 +288,78 @@ contains
 
         nfault = nf
         nc = nf
-        do imult = 1, 5
-            if (nc < 1) exit
 
-            ! Repeatedly remove the mechanism with the largest angular
-            ! difference from the running average, until all are within
-            ! cangle of the average.
-            do icount = 1, nf
-                call mech_avg(nc, norm1, norm2, norm1_avg, norm2_avg)
-                do i = 1, nc
-                    temp1 = norm1(:, i)
-                    temp2 = norm2(:, i)
+        do imult = 1, 5
+                if (nc < 1) exit
+
+                ! Repeatedly remove the mechanism with the largest angular
+                ! difference from the running average, until all are within
+                ! cangle of the average.
+                do icount = 1, nf
+                    call mech_avg(nc, norm1, norm2, norm1_avg, norm2_avg)
+                    do i = 1, nc
+                        temp1 = norm1(:, i)
+                        temp2 = norm2(:, i)
+                        rot_angle = 0.0_rk
+                        call mech_rot(norm1_avg, norm2_avg, temp1, temp2, rot_angle)
+                        rota(i) = rot_angle
+                    end do
+                    maxrot = 0.0_rk
+                    imax = 1
+                    do i = 1, nc
+                        if (abs(rota(i)) > maxrot) then
+                            maxrot = abs(rota(i))
+                            imax = i
+                        end if
+                    end do
+                    if (maxrot <= cangle) exit
+                    ! Move the outlier to the end.
+                    temp1 = norm1(:, imax)
+                    temp2 = norm2(:, imax)
+                    do j = imax, nc - 1
+                        norm1(:, j) = norm1(:, j + 1)
+                        norm2(:, j) = norm2(:, j + 1)
+                    end do
+                    norm1(:, nc) = temp1
+                    norm2(:, nc) = temp2
+                    nc = nc - 1
+                end do
+
+                prob(imult) = real(nc, rk) / real(nfault, rk)
+
+                if (imult > 1 .and. prob(imult) < prob_max) exit
+
+                ! Set up for next round: move the outliers to the front.
+                do j = 1, nfault - nc
+                    norm1(:, j) = norm1(:, j + nc)
+                    norm2(:, j) = norm2(:, j + nc)
+                end do
+                nc = nfault - nc
+
+                ! RMS angular differences between each input mechanism and
+                ! the average, after matching planes.
+                rms_diff(1, imult) = 0.0_rk
+                rms_diff(2, imult) = 0.0_rk
+                do i = 1, nfault
+                    temp1 = norm1in(:, i)
+                    temp2 = norm2in(:, i)
                     rot_angle = 0.0_rk
                     call mech_rot(norm1_avg, norm2_avg, temp1, temp2, rot_angle)
-                    rota(i) = rot_angle
+                    d11 = temp1(1) * norm1_avg(1) + temp1(2) * norm1_avg(2) + temp1(3) * norm1_avg(3)
+                    d22 = temp2(1) * norm2_avg(1) + temp2(2) * norm2_avg(2) + temp2(3) * norm2_avg(3)
+                    a11 = acos(max(-1.0_rk, min(1.0_rk, d11)))
+                    a22 = acos(max(-1.0_rk, min(1.0_rk, d22)))
+                    rms_diff(1, imult) = rms_diff(1, imult) + a11 * a11
+                    rms_diff(2, imult) = rms_diff(2, imult) + a22 * a22
                 end do
-                maxrot = 0.0_rk
-                imax = 1
-                do i = 1, nc
-                    if (abs(rota(i)) > maxrot) then
-                        maxrot = abs(rota(i))
-                        imax = i
-                    end if
-                end do
-                if (maxrot <= cangle) exit
-                ! Move the outlier to the end.
-                temp1 = norm1(:, imax)
-                temp2 = norm2(:, imax)
-                do j = imax, nc - 1
-                    norm1(:, j) = norm1(:, j + 1)
-                    norm2(:, j) = norm2(:, j + 1)
-                end do
-                norm1(:, nc) = temp1
-                norm2(:, nc) = temp2
-                nc = nc - 1
+                rms_diff(1, imult) = rad_to_deg * sqrt(rms_diff(1, imult) / real(nfault, rk))
+                rms_diff(2, imult) = rad_to_deg * sqrt(rms_diff(2, imult) / real(nfault, rk))
+
+                call fpcoor(str_avg(imult), dip_avg(imult), rak_avg(imult), &
+                            norm1_avg, norm2_avg, 2)
             end do
 
-            prob(imult) = real(nc, rk) / real(nfault, rk)
-
-            if (imult > 1 .and. prob(imult) < prob_max) exit
-
-            ! Set up for next round: move the outliers to the front.
-            do j = 1, nfault - nc
-                norm1(:, j) = norm1(:, j + nc)
-                norm2(:, j) = norm2(:, j + nc)
-            end do
-            nc = nfault - nc
-
-            ! RMS angular differences between each input mechanism and the
-            ! average, after matching planes.
-            rms_diff(1, imult) = 0.0_rk
-            rms_diff(2, imult) = 0.0_rk
-            do i = 1, nfault
-                temp1 = norm1in(:, i)
-                temp2 = norm2in(:, i)
-                rot_angle = 0.0_rk
-                call mech_rot(norm1_avg, norm2_avg, temp1, temp2, rot_angle)
-                d11 = temp1(1) * norm1_avg(1) + temp1(2) * norm1_avg(2) + temp1(3) * norm1_avg(3)
-                d22 = temp2(1) * norm2_avg(1) + temp2(2) * norm2_avg(2) + temp2(3) * norm2_avg(3)
-                a11 = acos(max(-1.0_rk, min(1.0_rk, d11)))
-                a22 = acos(max(-1.0_rk, min(1.0_rk, d22)))
-                rms_diff(1, imult) = rms_diff(1, imult) + a11 * a11
-                rms_diff(2, imult) = rms_diff(2, imult) + a22 * a22
-            end do
-            rms_diff(1, imult) = rad_to_deg * sqrt(rms_diff(1, imult) / real(nfault, rk))
-            rms_diff(2, imult) = rad_to_deg * sqrt(rms_diff(2, imult) / real(nfault, rk))
-
-            call fpcoor(str_avg(imult), dip_avg(imult), rak_avg(imult), &
-                        norm1_avg, norm2_avg, 2)
-        end do
-
-        nsltn = imult - 1
+            nsltn = imult - 1
     end subroutine mech_prob
 
     !> Swap two 3-vectors.

@@ -13,6 +13,9 @@ module hash_rotation
     type, public :: rotation_grid_t
         real(rk) :: dang = -1.0_rk
         integer(ik) :: nrot = 0
+        ! Stored as (nrot, 3): each rotation's three components are
+        ! contiguous in memory, so the search loops touch one cache line
+        ! per rotation instead of three stride-nrot lines.
         real(rk), allocatable :: b1(:, :)
         real(rk), allocatable :: b2(:, :)
         real(rk), allocatable :: b3(:, :)
@@ -64,7 +67,7 @@ contains
         if (allocated(grid%b1)) deallocate (grid%b1)
         if (allocated(grid%b2)) deallocate (grid%b2)
         if (allocated(grid%b3)) deallocate (grid%b3)
-        allocate (grid%b1(3, nrot), grid%b2(3, nrot), grid%b3(3, nrot))
+        allocate (grid%b1(nrot, 3), grid%b2(nrot, 3), grid%b3(nrot, 3))
 
         max_the = int(90.1_rk / dang)
         max_zeta = int(179.9_rk / dang)
@@ -99,15 +102,15 @@ contains
                     coszeta = cos(rzeta)
                     sinzeta = sin(rzeta)
                     irot = irot + 1
-                    grid%b3(3, irot) = bb3(3)
-                    grid%b3(1, irot) = bb3(1)
-                    grid%b3(2, irot) = bb3(2)
-                    grid%b1(1, irot) = bb1(1) * coszeta + bb2(1) * sinzeta
-                    grid%b1(2, irot) = bb1(2) * coszeta + bb2(2) * sinzeta
-                    grid%b1(3, irot) = bb1(3) * coszeta + bb2(3) * sinzeta
-                    grid%b2(1, irot) = bb2(1) * coszeta - bb1(1) * sinzeta
-                    grid%b2(2, irot) = bb2(2) * coszeta - bb1(2) * sinzeta
-                    grid%b2(3, irot) = bb2(3) * coszeta - bb1(3) * sinzeta
+                    grid%b3(irot, 3) = bb3(3)
+                    grid%b3(irot, 1) = bb3(1)
+                    grid%b3(irot, 2) = bb3(2)
+                    grid%b1(irot, 1) = bb1(1) * coszeta + bb2(1) * sinzeta
+                    grid%b1(irot, 2) = bb1(2) * coszeta + bb2(2) * sinzeta
+                    grid%b1(irot, 3) = bb1(3) * coszeta + bb2(3) * sinzeta
+                    grid%b2(irot, 1) = bb2(1) * coszeta - bb1(1) * sinzeta
+                    grid%b2(irot, 2) = bb2(2) * coszeta - bb1(2) * sinzeta
+                    grid%b2(irot, 3) = bb2(3) * coszeta - bb1(3) * sinzeta
                 end do
             end do
         end do

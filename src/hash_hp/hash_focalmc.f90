@@ -13,7 +13,11 @@ module hash_focalmc
     use hash_kinds, only: rk, ik
     use hash_geometry, only: to_cart, fpcoor
     use hash_rotation, only: rotation_grid_t
-    use hash_runtime, only: ensure_rotation_grid_cached, grid_cache
+    use hash_runtime, only: ensure_rotation_grid_cached, grid_cache, &
+                            hash_get_max_threads
+#ifdef _OPENMP
+    use omp_lib, only: omp_get_thread_num, omp_get_num_threads
+#endif
     implicit none
 
     type, public :: focalmc_workspace_t
@@ -88,6 +92,9 @@ contains
 
         parallel = .true.
         if (present(use_omp)) parallel = use_omp
+        ! A single OpenMP thread gets no benefit from a parallel region;
+        ! run the serial path to avoid the fork/join overhead.
+        if (parallel .and. hash_get_max_threads() <= 1) parallel = .false.
 
         call ensure_rotation_grid_cached(dang)
 
@@ -200,46 +207,71 @@ contains
         integer(ik), intent(inout) :: nmiss0min, nmissmin
         integer(ik), intent(inout) :: nmiss01min(0:)
         integer(ik) :: irot, ista
-        integer(ik) :: nm0, nm1
-        real(rk) :: pb1, pb3, pr
+        integer(ik) :: nm0, nm1, ipp, iq
+        real(rk) :: pb1, pb3, pr, pa1, pa2, pa3
 
         if (parallel) then
+            ! Transposed parallel path: every thread owns a contiguous
+            ! rotation block and runs the same station-outer /
+            ! rotation-inner loop as the serial path, so the inner loop
+            ! is long, contiguous in memory and branch-free.
+            ws%fit(1:nrot) = 0
+            ws%fit0(1:nrot) = 0
             !$omp parallel default(none) &
             !$omp shared(grid_cache, ws, p_pol, p_qual, npol, nrot, m, &
             !$omp         nmiss01min, nmiss0min, nmissmin)
             block
+                integer(ik) :: tid, nthreads, istart, istop, nchunk, il, ipp, iq
                 integer(ik) :: nm0, nm1
                 integer(ik) :: t_nmiss0min, t_nmissmin
                 integer(ik), allocatable :: t_nmiss01min(:)
-                real(rk) :: pb1, pb3, pr
+                integer(ik), allocatable :: t_fit(:), t_fit0(:)
+                real(rk) :: pb1, pb3, pr, pa1, pa2, pa3
                 allocate (t_nmiss01min(0:npol))
                 t_nmiss0min = 999
                 t_nmissmin = 999
                 t_nmiss01min(:) = 999
-                !$omp do schedule(static)
-                do irot = 1, nrot
-                    nm0 = 0
-                    nm1 = 0
-                    !$omp simd reduction(+:nm0, nm1)
-                    do ista = 1, npol
-                        pb1 = grid_cache%b1(1, irot) * ws%px(ista, m) &
-                            + grid_cache%b1(2, irot) * ws%py(ista, m) &
-                            + grid_cache%b1(3, irot) * ws%pz(ista, m)
-                        pb3 = grid_cache%b3(1, irot) * ws%px(ista, m) &
-                            + grid_cache%b3(2, irot) * ws%py(ista, m) &
-                            + grid_cache%b3(3, irot) * ws%pz(ista, m)
+                tid = omp_get_thread_num()
+                nthreads = omp_get_num_threads()
+                ! Static partition of the rotation range.
+                istart = tid * (nrot / nthreads) + 1
+                istop = (tid + 1) * (nrot / nthreads)
+                if (tid == nthreads - 1) istop = nrot
+                nchunk = istop - istart + 1
+                allocate (t_fit(nchunk), t_fit0(nchunk))
+                t_fit = 0
+                t_fit0 = 0
+                do ista = 1, npol
+                    ipp = p_pol(ista)
+                    iq = p_qual(ista)
+                    pa1 = ws%px(ista, m)
+                    pa2 = ws%py(ista, m)
+                    pa3 = ws%pz(ista, m)
+                    !$omp simd
+                    do il = 1, nchunk
+                        pb1 = grid_cache%b1(istart + il - 1, 1) * pa1 &
+                            + grid_cache%b1(istart + il - 1, 2) * pa2 &
+                            + grid_cache%b1(istart + il - 1, 3) * pa3
+                        pb3 = grid_cache%b3(istart + il - 1, 1) * pa1 &
+                            + grid_cache%b3(istart + il - 1, 2) * pa2 &
+                            + grid_cache%b3(istart + il - 1, 3) * pa3
                         pr = pb1 * pb3
-                        nm1 = nm1 + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (p_pol(ista) == 1))
-                        nm0 = nm0 + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (p_pol(ista) == 1)) &
-                                          .and. (p_qual(ista) == 0))
+                        t_fit(il) = t_fit(il) &
+                                    + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (ipp == 1))
+                        t_fit0(il) = t_fit0(il) &
+                                     + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (ipp == 1)) &
+                                               .and. (iq == 0))
                     end do
-                    ws%fit0(irot) = nm0
-                    ws%fit(irot) = nm1
+                end do
+                do il = 1, nchunk
+                    ws%fit(istart + il - 1) = t_fit(il)
+                    ws%fit0(istart + il - 1) = t_fit0(il)
+                    nm0 = t_fit0(il)
+                    nm1 = t_fit(il)
                     if (nm0 < t_nmiss0min) t_nmiss0min = nm0
                     if (nm1 < t_nmissmin) t_nmissmin = nm1
                     if (nm1 < t_nmiss01min(nm0)) t_nmiss01min(nm0) = nm1
                 end do
-                !$omp end do
                 !$omp critical(hash_focalmc_min)
                 if (t_nmiss0min < nmiss0min) nmiss0min = t_nmiss0min
                 if (t_nmissmin < nmissmin) nmissmin = t_nmissmin
@@ -251,23 +283,37 @@ contains
             end block
             !$omp end parallel
         else
-            do irot = 1, nrot
-                nm0 = 0
-                nm1 = 0
-                do ista = 1, npol
-                    pb1 = grid_cache%b1(1, irot) * ws%px(ista, m) &
-                        + grid_cache%b1(2, irot) * ws%py(ista, m) &
-                        + grid_cache%b1(3, irot) * ws%pz(ista, m)
-                    pb3 = grid_cache%b3(1, irot) * ws%px(ista, m) &
-                        + grid_cache%b3(2, irot) * ws%py(ista, m) &
-                        + grid_cache%b3(3, irot) * ws%pz(ista, m)
+            ! Transposed serial path: stations outer, rotations inner.
+            ! The rotation loop is long (31032), contiguous in memory and
+            ! branch-free, so it vectorizes well; misfit counts accumulate
+            ! directly into ws%fit/ws%fit0 across stations.
+            ws%fit(1:nrot) = 0
+            ws%fit0(1:nrot) = 0
+            do ista = 1, npol
+                ipp = p_pol(ista)
+                iq = p_qual(ista)
+                pa1 = ws%px(ista, m)
+                pa2 = ws%py(ista, m)
+                pa3 = ws%pz(ista, m)
+                !$omp simd
+                do irot = 1, nrot
+                    pb1 = grid_cache%b1(irot, 1) * pa1 &
+                        + grid_cache%b1(irot, 2) * pa2 &
+                        + grid_cache%b1(irot, 3) * pa3
+                    pb3 = grid_cache%b3(irot, 1) * pa1 &
+                        + grid_cache%b3(irot, 2) * pa2 &
+                        + grid_cache%b3(irot, 3) * pa3
                     pr = pb1 * pb3
-                    nm1 = nm1 + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (p_pol(ista) == 1))
-                    nm0 = nm0 + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (p_pol(ista) == 1)) &
-                                      .and. (p_qual(ista) == 0))
+                    ws%fit(irot) = ws%fit(irot) &
+                                   + merge(1_ik, 0_ik, (pr > 0.0_rk) .neqv. (ipp == 1))
+                    ws%fit0(irot) = ws%fit0(irot) &
+                                    + merge(1_ik, 0_ik, ((pr > 0.0_rk) .neqv. (ipp == 1)) &
+                                              .and. (iq == 0))
                 end do
-                ws%fit0(irot) = nm0
-                ws%fit(irot) = nm1
+            end do
+            do irot = 1, nrot
+                nm0 = ws%fit0(irot)
+                nm1 = ws%fit(irot)
                 if (nm0 < nmiss0min) nmiss0min = nm0
                 if (nm1 < nmissmin) nmissmin = nm1
                 if (nm1 < nmiss01min(nm0)) nmiss01min(nm0) = nm1
@@ -284,12 +330,12 @@ contains
         real(rk), intent(inout) :: strike(:), dip(:), rake(:)
         real(rk), intent(inout) :: faults(:, :), slips(:, :)
         integer(ik) :: m
-        faultnorm(1) = grid_cache%b3(1, irot)
-        faultnorm(2) = grid_cache%b3(2, irot)
-        faultnorm(3) = grid_cache%b3(3, irot)
-        slip(1) = grid_cache%b1(1, irot)
-        slip(2) = grid_cache%b1(2, irot)
-        slip(3) = grid_cache%b1(3, irot)
+        faultnorm(1) = grid_cache%b3(irot, 1)
+        faultnorm(2) = grid_cache%b3(irot, 2)
+        faultnorm(3) = grid_cache%b3(irot, 3)
+        slip(1) = grid_cache%b1(irot, 1)
+        slip(2) = grid_cache%b1(irot, 2)
+        slip(3) = grid_cache%b1(irot, 3)
         do m = 1, 3
             faults(m, idx) = faultnorm(m)
             slips(m, idx) = slip(m)

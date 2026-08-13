@@ -287,15 +287,15 @@ contains
         n = min(grid_cache%nrot, int(max_rot, ik))
         nrot = int(n, c_int32_t)
         do i = 1, n
-            b1(3 * (i - 1) + 1) = real(grid_cache%b1(1, i), c_double)
-            b1(3 * (i - 1) + 2) = real(grid_cache%b1(2, i), c_double)
-            b1(3 * (i - 1) + 3) = real(grid_cache%b1(3, i), c_double)
-            b2(3 * (i - 1) + 1) = real(grid_cache%b2(1, i), c_double)
-            b2(3 * (i - 1) + 2) = real(grid_cache%b2(2, i), c_double)
-            b2(3 * (i - 1) + 3) = real(grid_cache%b2(3, i), c_double)
-            b3(3 * (i - 1) + 1) = real(grid_cache%b3(1, i), c_double)
-            b3(3 * (i - 1) + 2) = real(grid_cache%b3(2, i), c_double)
-            b3(3 * (i - 1) + 3) = real(grid_cache%b3(3, i), c_double)
+            b1(3 * (i - 1) + 1) = real(grid_cache%b1(i, 1), c_double)
+            b1(3 * (i - 1) + 2) = real(grid_cache%b1(i, 2), c_double)
+            b1(3 * (i - 1) + 3) = real(grid_cache%b1(i, 3), c_double)
+            b2(3 * (i - 1) + 1) = real(grid_cache%b2(i, 1), c_double)
+            b2(3 * (i - 1) + 2) = real(grid_cache%b2(i, 2), c_double)
+            b2(3 * (i - 1) + 3) = real(grid_cache%b2(i, 3), c_double)
+            b3(3 * (i - 1) + 1) = real(grid_cache%b3(i, 1), c_double)
+            b3(3 * (i - 1) + 2) = real(grid_cache%b3(i, 2), c_double)
+            b3(3 * (i - 1) + 3) = real(grid_cache%b3(i, 3), c_double)
         end do
     end subroutine cnchash_get_rotation_grid
 

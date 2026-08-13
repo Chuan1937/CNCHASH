@@ -9,7 +9,8 @@ module hash_amplitude
     use hash_kinds, only: rk, ik
     use hash_geometry, only: pi, deg_to_rad, to_cart, fpcoor, cross
     use hash_rotation, only: rotation_grid_t
-    use hash_runtime, only: ensure_rotation_grid_cached, grid_cache
+    use hash_runtime, only: ensure_rotation_grid_cached, grid_cache, &
+                            hash_get_max_threads
     implicit none
 
     integer(ik), parameter :: ntab = 180
@@ -84,6 +85,7 @@ contains
 
         parallel = .true.
         if (present(use_omp)) parallel = use_omp
+        if (parallel .and. hash_get_max_threads() <= 1) parallel = .false.
 
         call ensure_rotation_grid_cached(dang)
         nrot = grid_cache%nrot
@@ -239,26 +241,26 @@ contains
                     qm = 0.0_rk
                     !$omp simd reduction(+:nm, qm)
                     do ista = 1, npsta
-                        pb1 = grid_cache%b1(1, irot) * ws%px(ista, m) &
-                            + grid_cache%b1(2, irot) * ws%py(ista, m) &
-                            + grid_cache%b1(3, irot) * ws%pz(ista, m)
-                        pb3 = grid_cache%b3(1, irot) * ws%px(ista, m) &
-                            + grid_cache%b3(2, irot) * ws%py(ista, m) &
-                            + grid_cache%b3(3, irot) * ws%pz(ista, m)
+                        pb1 = grid_cache%b1(irot, 1) * ws%px(ista, m) &
+                            + grid_cache%b1(irot, 2) * ws%py(ista, m) &
+                            + grid_cache%b1(irot, 3) * ws%pz(ista, m)
+                        pb3 = grid_cache%b3(irot, 1) * ws%px(ista, m) &
+                            + grid_cache%b3(irot, 2) * ws%py(ista, m) &
+                            + grid_cache%b3(irot, 3) * ws%pz(ista, m)
                         if (sp_amp(ista) /= 0.0_rk) then
-                            pj1 = ws%px(ista, m) - pb3 * grid_cache%b3(1, irot)
-                            pj2 = ws%py(ista, m) - pb3 * grid_cache%b3(2, irot)
-                            pj3 = ws%pz(ista, m) - pb3 * grid_cache%b3(3, irot)
+                            pj1 = ws%px(ista, m) - pb3 * grid_cache%b3(irot, 1)
+                            pj2 = ws%py(ista, m) - pb3 * grid_cache%b3(irot, 2)
+                            pj3 = ws%pz(ista, m) - pb3 * grid_cache%b3(irot, 3)
                             pln = sqrt(pj1 * pj1 + pj2 * pj2 + pj3 * pj3)
                             if (pln > 0.0_rk) then
                                 pj1 = pj1 / pln
                                 pj2 = pj2 / pln
                                 pj3 = pj3 / pln
                             end if
-                            p1 = grid_cache%b1(1, irot) * pj1 + grid_cache%b1(2, irot) * pj2 &
-                                 + grid_cache%b1(3, irot) * pj3
-                            p2 = grid_cache%b2(1, irot) * pj1 + grid_cache%b2(2, irot) * pj2 &
-                                 + grid_cache%b2(3, irot) * pj3
+                            p1 = grid_cache%b1(irot, 1) * pj1 + grid_cache%b1(irot, 2) * pj2 &
+                                 + grid_cache%b1(irot, 3) * pj3
+                            p2 = grid_cache%b2(irot, 1) * pj1 + grid_cache%b2(irot, 2) * pj2 &
+                                 + grid_cache%b2(irot, 3) * pj3
                             ix = nint((pb3 + 1.0_rk) / astep) + 1
                             tht = thetable(ix)
                             ix = nint((p2 + 1.0_rk) / astep) + 1
@@ -303,26 +305,26 @@ contains
                 nm = 0
                 qm = 0.0_rk
                 do ista = 1, npsta
-                    pb1 = grid_cache%b1(1, irot) * ws%px(ista, m) &
-                        + grid_cache%b1(2, irot) * ws%py(ista, m) &
-                        + grid_cache%b1(3, irot) * ws%pz(ista, m)
-                    pb3 = grid_cache%b3(1, irot) * ws%px(ista, m) &
-                        + grid_cache%b3(2, irot) * ws%py(ista, m) &
-                        + grid_cache%b3(3, irot) * ws%pz(ista, m)
+                    pb1 = grid_cache%b1(irot, 1) * ws%px(ista, m) &
+                        + grid_cache%b1(irot, 2) * ws%py(ista, m) &
+                        + grid_cache%b1(irot, 3) * ws%pz(ista, m)
+                    pb3 = grid_cache%b3(irot, 1) * ws%px(ista, m) &
+                        + grid_cache%b3(irot, 2) * ws%py(ista, m) &
+                        + grid_cache%b3(irot, 3) * ws%pz(ista, m)
                     if (sp_amp(ista) /= 0.0_rk) then
-                        pj1 = ws%px(ista, m) - pb3 * grid_cache%b3(1, irot)
-                        pj2 = ws%py(ista, m) - pb3 * grid_cache%b3(2, irot)
-                        pj3 = ws%pz(ista, m) - pb3 * grid_cache%b3(3, irot)
+                        pj1 = ws%px(ista, m) - pb3 * grid_cache%b3(irot, 1)
+                        pj2 = ws%py(ista, m) - pb3 * grid_cache%b3(irot, 2)
+                        pj3 = ws%pz(ista, m) - pb3 * grid_cache%b3(irot, 3)
                         pln = sqrt(pj1 * pj1 + pj2 * pj2 + pj3 * pj3)
                         if (pln > 0.0_rk) then
                             pj1 = pj1 / pln
                             pj2 = pj2 / pln
                             pj3 = pj3 / pln
                         end if
-                        p1 = grid_cache%b1(1, irot) * pj1 + grid_cache%b1(2, irot) * pj2 &
-                             + grid_cache%b1(3, irot) * pj3
-                        p2 = grid_cache%b2(1, irot) * pj1 + grid_cache%b2(2, irot) * pj2 &
-                             + grid_cache%b2(3, irot) * pj3
+                        p1 = grid_cache%b1(irot, 1) * pj1 + grid_cache%b1(irot, 2) * pj2 &
+                             + grid_cache%b1(irot, 3) * pj3
+                        p2 = grid_cache%b2(irot, 1) * pj1 + grid_cache%b2(irot, 2) * pj2 &
+                             + grid_cache%b2(irot, 3) * pj3
                         ix = nint((pb3 + 1.0_rk) / astep) + 1
                         tht = thetable(ix)
                         ix = nint((p2 + 1.0_rk) / astep) + 1
@@ -367,12 +369,12 @@ contains
         real(rk), intent(inout) :: strike(:), dip(:), rake(:)
         real(rk), intent(inout) :: faults(:, :), slips(:, :)
         integer(ik) :: m
-        faultnorm(1) = grid_cache%b3(1, irot)
-        faultnorm(2) = grid_cache%b3(2, irot)
-        faultnorm(3) = grid_cache%b3(3, irot)
-        slip(1) = grid_cache%b1(1, irot)
-        slip(2) = grid_cache%b1(2, irot)
-        slip(3) = grid_cache%b1(3, irot)
+        faultnorm(1) = grid_cache%b3(irot, 1)
+        faultnorm(2) = grid_cache%b3(irot, 2)
+        faultnorm(3) = grid_cache%b3(irot, 3)
+        slip(1) = grid_cache%b1(irot, 1)
+        slip(2) = grid_cache%b1(irot, 2)
+        slip(3) = grid_cache%b1(irot, 3)
         do m = 1, 3
             faults(m, idx) = faultnorm(m)
             slips(m, idx) = slip(m)

@@ -35,36 +35,44 @@ Run locally with:
 python benchmarks/benchmark_backends.py --events 1000 --seconds 2
 ```
 
-Measured on a development machine (x86_64, gfortran, portable build,
-no `-march=native`). Values are events/second for 30-station events
-with 30 MC trials (`dang=5`).
+Measured on a development machine (x86_64, gfortran, portable SSE2
+build, no `-march=native`). Values are events/second for 30-station
+events with 30 MC trials (`dang=5`).
 
-## Fortran backend thread scaling
+## Fortran backend thread scaling (native build)
 
-| Threads | ev/s | Speedup | Efficiency |
-|---------|------|---------|------------|
-| 1       | 13.6 | 1.00x   | 100%       |
-| 2       | 24.7 | 1.82x   | 91%        |
-| 4       | 41.1 | 3.03x   | 76%        |
-| 8       | 55.6 | 4.10x   | 51%        |
-| 16      | 82.8 | 6.10x   | 38%        |
+| Threads | ms/event | Speedup | Efficiency |
+|---------|----------|---------|------------|
+| 1       | 18.6     | 1.00x   | 100%       |
+| 2       | 10.3     | 1.81x   | 90%        |
+| 4       | 6.1      | 3.06x   | 77%        |
+| 8       | 5.6      | 3.30x   | 41%        |
+| 16      | 4.0      | 4.66x   | 29%        |
 
-## Config comparison (1 thread, ms/event)
+The native build (`-DCNCHASH_NATIVE_MARCH=ON`, AVX2) is roughly 2.5x
+faster than the portable build at one thread; the portable build at
+4 threads matches the native build at 1 thread.
 
-| Config         | ms/ev |
-|----------------|-------|
-| small (12 st)  | 82    |
-| medium (30 st) | 73    |
-| large (80 st)  | 205   |
-| dense (dang=2) | 73    |
-| nmc=100        | 232   |
+## Config comparison (portable build, ms/event)
 
-## Batch mode (medium config)
+| Config         | 1 thread | 4 threads |
+|----------------|----------|-----------|
+| small (12 st)  | 81       | 52        |
+| medium (30 st) | 53       | 18        |
+| large (80 st)  | 127      | 36        |
+| dense (dang=2) | 52       | 20        |
+| nmc=100        | 166      | 54        |
+
+Weakly constrained events (few stations, multiple solutions) are
+dominated by the MECH_PROB clustering; the parallel path helps ~1.5x
+there, while well-constrained events scale ~3x at 4 threads.
+
+## Batch mode (medium config, portable build)
 
 | Threads | Batch ev/s | Scalar ev/s | Batch speedup |
 |---------|------------|-------------|---------------|
-| 1       | 12.8       | 11.9        | 1.08x         |
-| 4       | 49.3       | 28.4        | 1.74x         |
+| 1       | 15.5       | 15.4        | 1.00x         |
+| 4       | 49.7       | 36.2        | 1.37x         |
 
 Numbers are machine-specific. Always re-run the benchmark on the
 target hardware before publishing performance claims.
