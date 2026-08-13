@@ -154,9 +154,9 @@ def fp_coord_vectors_to_angles(faultnorm, slip):
 
     # Check for horizontal fault (undefined strike)
     if 1.0 - abs(fnorm[2]) <= 1e-7:
-        # Horizontal fault
+        # Horizontal fault (matches FPCOOR idir=2)
         dip = 0.0
-        phi = math.atan2(-fnorm[0], slip_vec[1])
+        phi = math.atan2(-slip_vec[0], slip_vec[1])
         clam = math.cos(phi) * slip_vec[0] + math.sin(phi) * slip_vec[1]
         slam = math.sin(phi) * slip_vec[0] - math.cos(phi) * slip_vec[1]
         lam = math.atan2(slam, clam)

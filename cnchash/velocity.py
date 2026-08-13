@@ -196,38 +196,42 @@ def make_table_from_model(depth, velocity, params=None):
     alpha = np.array(velocity, dtype=np.float64)
     slow = 1.0 / alpha
 
-    # Extend model to include all table depths
-    for _idep, dep in enumerate(deptab):
-        if dep > 0.1:
-            # Check if we need to insert a point
-            need_insert = True
-            for i in range(npts - 1):
-                if z[i] <= dep - 0.1 and z[i + 1] >= dep + 0.1:
-                    need_insert = False
-                    break
-
-            if need_insert:
-                # Find insertion point and interpolate
-                for i in range(npts - 1, 0, -1):
-                    if z[i - 1] <= dep - 0.1 and z[i] >= dep + 0.1:
-                        # Insert point
-                        frac = (dep - z[i - 1]) / (z[i] - z[i - 1])
-                        new_vel = alpha[i - 1] + frac * (alpha[i] - alpha[i - 1])
-                        z = np.insert(z, i, dep)
-                        alpha = np.insert(alpha, i, new_vel)
-                        slow = np.insert(slow, i, 1.0 / new_vel)
-                        break
-
-    # Update slowness
+    # Extend model to include all table depths as layer boundaries,
+    # following the original MK_TABLE insertion order: for each model
+    # point from bottom to top, insert every table depth that falls
+    # inside that layer (deepest table depth first).
+    npts = len(depth)
+    z = list(depth)
+    alpha = list(velocity)
+    npts_old = npts
+    for i in range(npts_old - 1, 0, -1):
+        for idep in range(ndep - 1, -1, -1):
+            if z[i - 1] <= deptab[idep] - 0.1 and z[i] >= deptab[idep] + 0.1:
+                dep = deptab[idep]
+                z_top = z[i]
+                z_bot = z[i - 1]
+                a_top = alpha[i]
+                a_bot = alpha[i - 1]
+                frac = (dep - z_bot) / (z_top - z_bot)
+                z.insert(i, dep)
+                alpha.insert(i, a_bot + frac * (a_top - a_bot))
+                npts += 1
+    z = np.array(z, dtype=np.float64)
+    alpha = np.array(alpha, dtype=np.float64)
     slow = 1.0 / alpha
     pmax = slow[0]
     plongcut = slow[-1]
     pstep = (pmax - pmin) / float(nump)
 
-    # Ray tracing
+    # Ray tracing (2D correction arrays, mirroring the original MK_TABLE:
+    # depxcor[np, idep] keeps the offset/travel time at each table depth
+    # for every ray parameter).
     npmax = int((pmax + pstep / 2.0 - pmin) / pstep) + 1
     deltab = np.full(npmax, -999.0, dtype=np.float64)
     tttab = np.full(npmax, -999.0, dtype=np.float64)
+    depxcor = np.full((npmax, ndep), -999.0, dtype=np.float64)
+    deptcor = np.full((npmax, ndep), -999.0, dtype=np.float64)
+    depucor = np.full((npmax, ndep), -999.0, dtype=np.float64)
 
     for np_idx in range(npmax):
         p = pmin + pstep * float(np_idx)
@@ -236,16 +240,11 @@ def make_table_from_model(depth, velocity, params=None):
         t = 0.0
         imth = 3  # Exponential interpolation
 
-        # Initialize correction arrays for this ray parameter
-        depxcor = np.full(ndep, -999.0, dtype=np.float64)
-        deptcor = np.full(ndep, -999.0, dtype=np.float64)
-        depucor = np.full(ndep, -999.0, dtype=np.float64)
-
         for idep in range(ndep):
             if deptab[idep] == 0.0:
-                depxcor[idep] = 0.0
-                deptcor[idep] = 0.0
-                depucor[idep] = slow[0]
+                depxcor[np_idx, idep] = 0.0
+                deptcor[np_idx, idep] = 0.0
+                depucor[np_idx, idep] = slow[0]
 
         # Trace through layers
         for i in range(len(z) - 1):
@@ -268,9 +267,9 @@ def make_table_from_model(depth, velocity, params=None):
             # Check if we're at a table depth
             for idep in range(ndep):
                 if abs(z[i + 1] - deptab[idep]) < 0.1:
-                    depxcor[idep] = x
-                    deptcor[idep] = t
-                    depucor[idep] = slow[i + 1]
+                    depxcor[np_idx, idep] = x
+                    deptcor[np_idx, idep] = t
+                    depucor[np_idx, idep] = slow[i + 1]
 
         deltab[np_idx] = 2.0 * x
         tttab[np_idx] = 2.0 * t
@@ -279,39 +278,54 @@ def make_table_from_model(depth, velocity, params=None):
     table = np.full((ndel, ndep), 0.0, dtype=np.float64)
 
     for idep in range(ndep):
-        # Collect branches
+        # Collect branches (original MK_TABLE logic: upgoing rays from the
+        # source to the surface, then downgoing rays from the surface).
         xsave = []
         tsave = []
         psave = []
         usave = []
 
-        # Upgoing rays (direct to surface)
-        for i in range(npmax):
-            if depxcor[idep] != -999.0 and deltab[i] != -999.0:
-                x2 = depxcor[idep]
-                if len(xsave) == 0 or x2 > xsave[-1]:
-                    t2 = deptcor[idep]
-                    xsave.append(x2)
-                    tsave.append(t2)
-                    psave.append(-(pmin + pstep * float(i)))
-                    usave.append(depucor[idep])
-
-        # Downgoing rays (reflected)
-        for i in range(npmax - 1, -1, -1):
-            if depxcor[idep] != -999.0 and deltab[i] != -999.0:
-                x2 = deltab[i] - depxcor[idep]
-                t2 = tttab[i] - deptcor[idep]
+        if deptab[idep] == 0.0:
+            i2 = npmax - 1
+        else:
+            i2 = npmax
+            xold = -999.0
+            for i in range(npmax):
+                x2 = depxcor[i, idep]
+                if x2 == -999.0:
+                    continue
+                if x2 <= xold:
+                    i2 = i
+                    break
+                t2 = deptcor[i, idep]
                 xsave.append(x2)
                 tsave.append(t2)
-                psave.append(pmin + pstep * float(i))
-                usave.append(depucor[idep])
+                psave.append(-(pmin + pstep * float(i)))
+                usave.append(depucor[i, idep])
+                xold = x2
+            i2 = i2 - 1
+
+        # Downgoing rays (reflected) - from the last upgoing index down.
+        for i in range(i2, -1, -1):
+            if depxcor[i, idep] == -999.0:
+                continue
+            if deltab[i] == -999.0:
+                continue
+            x2 = deltab[i] - depxcor[i, idep]
+            t2 = tttab[i] - deptcor[i, idep]
+            xsave.append(x2)
+            tsave.append(t2)
+            psave.append(pmin + pstep * float(i))
+            usave.append(depucor[i, idep])
 
         ncount = len(xsave)
 
-        # Interpolate to grid
+        # Interpolate to grid. The angle stays 0.0 where no valid ray
+        # exists (the original MK_TABLE/GET_TTS convention: 0 = invalid),
+        # while the travel-time sentinel of 999.0 decides the minimum.
         for idel in range(ndel):
             del_dist = delttab[idel]
-            table[idel, idep] = 999.0
+            best_t = 999.0
 
             for i in range(1, ncount):
                 x1 = xsave[i - 1]
@@ -326,7 +340,8 @@ def make_table_from_model(depth, velocity, params=None):
                 frac = (del_dist - x1) / (x2 - x1) if x2 != x1 else 0.0
                 t1 = tsave[i - 1] + frac * (tsave[i] - tsave[i - 1])
 
-                if t1 < table[idel, idep]:
+                if t1 < best_t:
+                    best_t = t1
                     # Calculate takeoff angle
                     scr1 = psave[i] / usave[i]
                     angle = math.asin(max(-1.0, min(1.0, scr1))) * RAD_TO_DEG

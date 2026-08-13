@@ -149,6 +149,15 @@ class FortranBackend(HashBackend):
         ]
         lib.cnchash_mech_prob.restype = None
 
+        lib.cnchash_mech_rot.argtypes = [
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
+            ctypes.POINTER(ctypes.c_double),
+        ]
+        lib.cnchash_mech_rot.restype = None
+
         lib.cnchash_run_event.argtypes = [
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
@@ -205,6 +214,7 @@ class FortranBackend(HashBackend):
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
+            np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.float64, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
@@ -229,6 +239,7 @@ class FortranBackend(HashBackend):
 
         lib.cnchash_run_batch_amp.argtypes = [
             ctypes.c_int32,
+            np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
             np.ctypeslib.ndpointer(np.int32, flags="C_CONTIGUOUS"),
@@ -478,6 +489,7 @@ class FortranBackend(HashBackend):
         npol_arr = np.zeros(nevent, np.int32)
         nmc_arr = np.zeros(nevent, np.int32)
         offsets = np.zeros(nevent + 1, np.int32)
+        pick_offsets = np.zeros(nevent + 1, np.int32)
         azi_chunks, the_chunks, pol_chunks, qual_chunks = [], [], [], []
         for i, (azi, the, pol, qual) in enumerate(events):
             azi = _as_c_double_array(azi)
@@ -489,6 +501,7 @@ class FortranBackend(HashBackend):
             npol_arr[i] = npol
             nmc_arr[i] = nmc
             offsets[i + 1] = offsets[i] + npol * nmc
+            pick_offsets[i + 1] = pick_offsets[i] + npol
             azi_chunks.append(azi.ravel(order="F"))
             the_chunks.append(the.ravel(order="F"))
             pol_chunks.append(pol.ravel())
@@ -504,8 +517,8 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout * nevent, np.float64)
         sl_all = np.zeros(3 * maxout * nevent, np.float64)
         self._lib.cnchash_run_batch(
-            nevent, npol_arr, nmc_arr, offsets, azi_flat, the_flat, pol_flat,
-            qual_flat, float(dang), maxout, float(badfrac), float(cangle),
+            nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
+            pol_flat, qual_flat, float(dang), maxout, float(badfrac), float(cangle),
             float(prob_max), int(npolmin), int(max_agap), int(max_pgap),
             int(selection), cres, s_all, d_all, r_all, f_all, sl_all,
         )
@@ -545,6 +558,7 @@ class FortranBackend(HashBackend):
         npol_arr = np.zeros(nevent, np.int32)
         nmc_arr = np.zeros(nevent, np.int32)
         offsets = np.zeros(nevent + 1, np.int32)
+        pick_offsets = np.zeros(nevent + 1, np.int32)
         azi_chunks, the_chunks, pol_chunks, amp_chunks = [], [], [], []
         for i, (azi, the, pol, amp) in enumerate(events):
             azi = _as_c_double_array(azi)
@@ -556,6 +570,7 @@ class FortranBackend(HashBackend):
             npol_arr[i] = npsta
             nmc_arr[i] = nmc
             offsets[i + 1] = offsets[i] + npsta * nmc
+            pick_offsets[i + 1] = pick_offsets[i] + npsta
             azi_chunks.append(azi.ravel(order="F"))
             the_chunks.append(the.ravel(order="F"))
             pol_chunks.append(pol.ravel())
@@ -571,8 +586,8 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout * nevent, np.float64)
         sl_all = np.zeros(3 * maxout * nevent, np.float64)
         self._lib.cnchash_run_batch_amp(
-            nevent, npol_arr, nmc_arr, offsets, azi_flat, the_flat, pol_flat,
-            amp_flat, float(dang), maxout, float(badfrac), float(qbadfac),
+            nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
+            pol_flat, amp_flat, float(dang), maxout, float(badfrac), float(qbadfac),
             float(cangle), float(prob_max), int(npolmin), int(max_agap),
             int(max_pgap), int(selection), cres, s_all, d_all, r_all, f_all, sl_all,
         )
@@ -677,7 +692,7 @@ class FortranBackend(HashBackend):
         )
         ndel, ndep = int(ndel.value), int(ndep.value)
         table_data = {
-            "table": table.reshape(ndel_max, ndep_max)[:ndel, :ndep].copy(),
+            "table": table.reshape(ndel_max, ndep_max, order="F")[:ndel, :ndep].copy(),
             "delttab": delttab[:ndel].copy(),
             "deptab": deptab[:ndep].copy(),
             "ndel": ndel,
@@ -695,7 +710,7 @@ class FortranBackend(HashBackend):
         ndep = table["ndep"]
         tt, iflag = ctypes.c_double(), ctypes.c_int32()
         self._lib.cnchash_get_tts(
-            table["table"].ravel(), table["delttab"], table["deptab"],
+            table["table"].ravel(order="F"), table["delttab"], table["deptab"],
             int(ndel), int(ndep), float(del_dist), float(qdep),
             ctypes.byref(tt), ctypes.byref(iflag),
         )

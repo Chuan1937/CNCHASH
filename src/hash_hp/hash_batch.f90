@@ -226,13 +226,13 @@ contains
     !>     flat arrays (picks laid out as (npol, nmc) per event)
     !>   npol_arr(nevent), nmc_arr(nevent)
     !> Output buffers are sized (maxout, nevent) and filled per event.
-    subroutine run_batch(nevent, npol_arr, nmc_arr, offsets, azi_flat, the_flat, &
-                         pol_flat, qual_flat, dang, maxout, badfrac, cangle, &
-                         prob_max, npolmin, max_agap, max_pgap, selection, &
-                         results, strike_all, dip_all, rake_all, faults_all, &
-                         slips_all)
+    subroutine run_batch(nevent, npol_arr, nmc_arr, offsets, pick_offsets, &
+                         azi_flat, the_flat, pol_flat, qual_flat, dang, maxout, &
+                         badfrac, cangle, prob_max, npolmin, max_agap, max_pgap, &
+                         selection, results, strike_all, dip_all, rake_all, &
+                         faults_all, slips_all)
         integer(ik), intent(in) :: nevent
-        integer(ik), intent(in) :: npol_arr(:), nmc_arr(:), offsets(:)
+        integer(ik), intent(in) :: npol_arr(:), nmc_arr(:), offsets(:), pick_offsets(:)
         real(rk), intent(in) :: azi_flat(:), the_flat(:)
         integer(ik), intent(in) :: pol_flat(:), qual_flat(:)
         real(rk), intent(in) :: dang, badfrac, cangle, prob_max
@@ -256,17 +256,17 @@ contains
                 call run_event(fws_serial, &
                                reshape(azi_flat(base + 1:base + npol * nmc), [npol, nmc]), &
                                reshape(the_flat(base + 1:base + npol * nmc), [npol, nmc]), &
-                               pol_flat(base + 1:base + npol), &
-                               qual_flat(base + 1:base + npol), npol, nmc, dang, &
-                               maxout, badfrac, cangle, prob_max, npolmin, &
-                               max_agap, max_pgap, selection, results(ie), &
+                               pol_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npol), &
+                               qual_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npol), &
+                               npol, nmc, dang, maxout, badfrac, cangle, prob_max, &
+                               npolmin, max_agap, max_pgap, selection, results(ie), &
                                strike_all(:, ie), dip_all(:, ie), rake_all(:, ie), &
                                faults_all(:, :, ie), slips_all(:, :, ie), .true.)
             end do
         else
             !$omp parallel do schedule(dynamic) default(none) &
-            !$omp shared(nevent, npol_arr, nmc_arr, offsets, azi_flat, the_flat, &
-            !$omp         pol_flat, qual_flat, dang, maxout, badfrac, cangle, &
+            !$omp shared(nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, &
+            !$omp         the_flat, pol_flat, qual_flat, dang, maxout, badfrac, cangle, &
             !$omp         prob_max, npolmin, max_agap, max_pgap, selection, &
             !$omp         results, strike_all, dip_all, rake_all, faults_all, slips_all) &
             !$omp private(ie, npol, nmc, base)
@@ -277,10 +277,10 @@ contains
                 call run_event(fws_thread, &
                                reshape(azi_flat(base + 1:base + npol * nmc), [npol, nmc]), &
                                reshape(the_flat(base + 1:base + npol * nmc), [npol, nmc]), &
-                               pol_flat(base + 1:base + npol), &
-                               qual_flat(base + 1:base + npol), npol, nmc, dang, &
-                               maxout, badfrac, cangle, prob_max, npolmin, &
-                               max_agap, max_pgap, selection, results(ie), &
+                               pol_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npol), &
+                               qual_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npol), &
+                               npol, nmc, dang, maxout, badfrac, cangle, prob_max, &
+                               npolmin, max_agap, max_pgap, selection, results(ie), &
                                strike_all(:, ie), dip_all(:, ie), rake_all(:, ie), &
                                faults_all(:, :, ie), slips_all(:, :, ie), .false.)
             end do
@@ -289,13 +289,13 @@ contains
     end subroutine run_batch
 
     !> Batch polarity + S/P amplitude pipeline (same layout as run_batch).
-    subroutine run_batch_amp(nevent, npsta_arr, nmc_arr, offsets, azi_flat, &
-                             the_flat, pol_flat, sp_flat, dang, maxout, &
+    subroutine run_batch_amp(nevent, npsta_arr, nmc_arr, offsets, pick_offsets, &
+                             azi_flat, the_flat, pol_flat, sp_flat, dang, maxout, &
                              badfrac, qbadfac, cangle, prob_max, npolmin, &
                              max_agap, max_pgap, selection, results, strike_all, &
                              dip_all, rake_all, faults_all, slips_all)
         integer(ik), intent(in) :: nevent
-        integer(ik), intent(in) :: npsta_arr(:), nmc_arr(:), offsets(:)
+        integer(ik), intent(in) :: npsta_arr(:), nmc_arr(:), offsets(:), pick_offsets(:)
         real(rk), intent(in) :: azi_flat(:), the_flat(:)
         integer(ik), intent(in) :: pol_flat(:)
         real(rk), intent(in) :: sp_flat(:)
@@ -318,17 +318,17 @@ contains
                 call run_event_amp(aws_serial, &
                                    reshape(azi_flat(base + 1:base + npsta * nmc), [npsta, nmc]), &
                                    reshape(the_flat(base + 1:base + npsta * nmc), [npsta, nmc]), &
-                                   pol_flat(base + 1:base + npsta), &
-                                   sp_flat(base + 1:base + npsta), npsta, nmc, dang, &
-                                   maxout, badfrac, qbadfac, cangle, prob_max, &
-                                   npolmin, max_agap, max_pgap, selection, results(ie), &
-                                   strike_all(:, ie), dip_all(:, ie), rake_all(:, ie), &
-                                   faults_all(:, :, ie), slips_all(:, :, ie), .true.)
+                                   pol_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
+                                   sp_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
+                                   npsta, nmc, dang, maxout, badfrac, qbadfac, cangle, &
+                                   prob_max, npolmin, max_agap, max_pgap, selection, &
+                                   results(ie), strike_all(:, ie), dip_all(:, ie), &
+                                   rake_all(:, ie), faults_all(:, :, ie), slips_all(:, :, ie), .true.)
             end do
         else
             !$omp parallel do schedule(dynamic) default(none) &
-            !$omp shared(nevent, npsta_arr, nmc_arr, offsets, azi_flat, the_flat, &
-            !$omp         pol_flat, sp_flat, dang, maxout, badfrac, qbadfac, &
+            !$omp shared(nevent, npsta_arr, nmc_arr, offsets, pick_offsets, azi_flat, &
+            !$omp         the_flat, pol_flat, sp_flat, dang, maxout, badfrac, qbadfac, &
             !$omp         cangle, prob_max, npolmin, max_agap, max_pgap, selection, &
             !$omp         results, strike_all, dip_all, rake_all, faults_all, slips_all) &
             !$omp private(ie, npsta, nmc, base)
@@ -339,12 +339,12 @@ contains
                 call run_event_amp(aws_thread, &
                                    reshape(azi_flat(base + 1:base + npsta * nmc), [npsta, nmc]), &
                                    reshape(the_flat(base + 1:base + npsta * nmc), [npsta, nmc]), &
-                                   pol_flat(base + 1:base + npsta), &
-                                   sp_flat(base + 1:base + npsta), npsta, nmc, dang, &
-                                   maxout, badfrac, qbadfac, cangle, prob_max, &
-                                   npolmin, max_agap, max_pgap, selection, results(ie), &
-                                   strike_all(:, ie), dip_all(:, ie), rake_all(:, ie), &
-                                   faults_all(:, :, ie), slips_all(:, :, ie), .false.)
+                                   pol_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
+                                   sp_flat(pick_offsets(ie) + 1:pick_offsets(ie) + npsta), &
+                                   npsta, nmc, dang, maxout, badfrac, qbadfac, cangle, &
+                                   prob_max, npolmin, max_agap, max_pgap, selection, &
+                                   results(ie), strike_all(:, ie), dip_all(:, ie), &
+                                   rake_all(:, ie), faults_all(:, :, ie), slips_all(:, :, ie), .false.)
             end do
             !$omp end parallel do
         end if

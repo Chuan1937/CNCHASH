@@ -16,7 +16,7 @@ module hash_velocity
     private
     public :: layer_trace, build_takeoff_table, get_tts
 
-    integer(ik), parameter :: nray0 = 10001
+    integer(ik), parameter :: nray0 = 20001
     integer(ik), parameter :: max_model_pts = 2000
 
 contains
@@ -157,9 +157,9 @@ contains
         integer(ik), intent(out) :: ndel, ndep
         real(rk) :: slow(max_model_pts)
         real(rk) :: zz(max_model_pts), aa(max_model_pts)
-        real(rk) :: deltab(nray0), tttab(nray0), ptab(nray0)
+        real(rk), allocatable :: deltab(:), tttab(:), ptab(:)
         real(rk), allocatable :: depxcor(:, :), depucor(:, :), deptcor(:, :)
-        real(rk) :: xsave(nray0), tsave(nray0), psave(nray0), usave(nray0)
+        real(rk), allocatable :: xsave(:), tsave(:), psave(:), usave(:)
         real(rk) :: degrad, pmax, plongcut, pstep, p, x, t, h
         real(rk) :: dx, dt, xdeg, tmin, x2, t2, x1, t1, frac, scr1, angle
         real(rk) :: qtempdep2, dep, del, tt
@@ -182,6 +182,8 @@ contains
             deptab(idep) = dep
         end do
         ndel = int((del2 - del1) / del3) + 1
+        allocate (deltab(nray0), tttab(nray0), ptab(nray0))
+        allocate (xsave(nray0), tsave(nray0), psave(nray0), usave(nray0))
         allocate (depxcor(nray0, max(ndep, 1)))
         allocate (depucor(nray0, max(ndep, 1)))
         allocate (deptcor(nray0, max(ndep, 1)))
@@ -271,8 +273,8 @@ contains
             end if
             do i = 1, np
                 x2 = depxcor(i, idep)
-                if (x2 == -999.0_rk) go to 221
-                if (x2 <= x1) go to 221
+                if (x2 == -999.0_rk) exit
+                if (x2 <= x1) exit
                 t2 = deptcor(i, idep)
                 icount = icount + 1
                 xsave(icount) = x2
@@ -280,12 +282,11 @@ contains
                 psave(icount) = -ptab(i)
                 usave(icount) = depucor(i, idep)
                 x1 = x2
-221             continue
             end do
             i2 = i - 1
 223         do i = i2, 1, -1
-                if (depxcor(i, idep) == -999.0_rk) go to 225
-                if (deltab(i) == -999.0_rk) go to 225
+                if (depxcor(i, idep) == -999.0_rk) cycle
+                if (deltab(i) == -999.0_rk) cycle
                 x2 = deltab(i) - depxcor(i, idep)
                 t2 = tttab(i) - deptcor(i, idep)
                 icount = icount + 1
@@ -293,7 +294,6 @@ contains
                 tsave(icount) = t2
                 psave(icount) = ptab(i)
                 usave(icount) = depucor(i, idep)
-225             continue
             end do
             ncount = icount
 

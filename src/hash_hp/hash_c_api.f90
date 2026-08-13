@@ -13,7 +13,7 @@ module hash_c_api
     use hash_focalmc, only: focalmc, focalmc_workspace_t
     use hash_amplitude, only: focalamp_mc, get_misf_amp, amplitude_workspace_t
     use hash_misfit, only: get_gap, get_misfit
-    use hash_uncertainty, only: mech_prob
+    use hash_uncertainty, only: mech_prob, mech_rot
     use hash_velocity, only: build_takeoff_table, get_tts
     use hash_batch, only: run_event, run_event_amp, run_batch, run_batch_amp, &
                           event_result_t, max_solutions
@@ -175,14 +175,14 @@ contains
     end subroutine cnchash_run_event_amp
 
     !> Batch polarity-only pipeline (CSR-style flat inputs).
-    subroutine cnchash_run_batch(nevent, npol_arr, nmc_arr, offsets, azi_flat, &
-                                 the_flat, pol_flat, qual_flat, dang, maxout, &
-                                 badfrac, cangle, prob_max, npolmin, max_agap, &
-                                 max_pgap, selection, results, strike_all, &
+    subroutine cnchash_run_batch(nevent, npol_arr, nmc_arr, offsets, pick_offsets, &
+                                 azi_flat, the_flat, pol_flat, qual_flat, dang, &
+                                 maxout, badfrac, cangle, prob_max, npolmin, &
+                                 max_agap, max_pgap, selection, results, strike_all, &
                                  dip_all, rake_all, faults_all, slips_all) &
         bind(C, name="cnchash_run_batch")
         integer(c_int32_t), value :: nevent
-        integer(c_int32_t), intent(in) :: npol_arr(*), nmc_arr(*), offsets(*)
+        integer(c_int32_t), intent(in) :: npol_arr(*), nmc_arr(*), offsets(*), pick_offsets(*)
         real(c_double), intent(in) :: azi_flat(*), the_flat(*)
         integer(c_int32_t), intent(in) :: pol_flat(*), qual_flat(*)
         real(c_double), value :: dang, badfrac, cangle, prob_max
@@ -197,10 +197,11 @@ contains
 
         call run_batch(int(nevent, ik), int(npol_arr(1:nevent), ik), &
                        int(nmc_arr(1:nevent), ik), int(offsets(1:nevent + 1), ik), &
+                       int(pick_offsets(1:nevent + 1), ik), &
                        real(azi_flat(1:offsets(nevent + 1)), rk), &
                        real(the_flat(1:offsets(nevent + 1)), rk), &
-                       int(pol_flat(1:offsets(nevent + 1)), ik), &
-                       int(qual_flat(1:offsets(nevent + 1)), ik), &
+                       int(pol_flat(1:pick_offsets(nevent + 1)), ik), &
+                       int(qual_flat(1:pick_offsets(nevent + 1)), ik), &
                        real(dang, rk), int(maxout, ik), real(badfrac, rk), &
                        real(cangle, rk), real(prob_max, rk), int(npolmin, ik), &
                        int(max_agap, ik), int(max_pgap, ik), int(selection, ik), &
@@ -224,14 +225,14 @@ contains
 
     !> Batch polarity + S/P amplitude pipeline.
     subroutine cnchash_run_batch_amp(nevent, npsta_arr, nmc_arr, offsets, &
-                                     azi_flat, the_flat, pol_flat, sp_flat, &
-                                     dang, maxout, badfrac, qbadfac, cangle, &
-                                     prob_max, npolmin, max_agap, max_pgap, &
-                                     selection, results, strike_all, dip_all, &
-                                     rake_all, faults_all, slips_all) &
+                                     pick_offsets, azi_flat, the_flat, pol_flat, &
+                                     sp_flat, dang, maxout, badfrac, qbadfac, &
+                                     cangle, prob_max, npolmin, max_agap, &
+                                     max_pgap, selection, results, strike_all, &
+                                     dip_all, rake_all, faults_all, slips_all) &
         bind(C, name="cnchash_run_batch_amp")
         integer(c_int32_t), value :: nevent
-        integer(c_int32_t), intent(in) :: npsta_arr(*), nmc_arr(*), offsets(*)
+        integer(c_int32_t), intent(in) :: npsta_arr(*), nmc_arr(*), offsets(*), pick_offsets(*)
         real(c_double), intent(in) :: azi_flat(*), the_flat(*), sp_flat(*)
         integer(c_int32_t), intent(in) :: pol_flat(*)
         real(c_double), value :: dang, badfrac, qbadfac, cangle, prob_max
@@ -246,10 +247,11 @@ contains
 
         call run_batch_amp(int(nevent, ik), int(npsta_arr(1:nevent), ik), &
                            int(nmc_arr(1:nevent), ik), int(offsets(1:nevent + 1), ik), &
+                           int(pick_offsets(1:nevent + 1), ik), &
                            real(azi_flat(1:offsets(nevent + 1)), rk), &
                            real(the_flat(1:offsets(nevent + 1)), rk), &
-                           int(pol_flat(1:offsets(nevent + 1)), ik), &
-                           real(sp_flat(1:offsets(nevent + 1)), rk), &
+                           int(pol_flat(1:pick_offsets(nevent + 1)), ik), &
+                           real(sp_flat(1:pick_offsets(nevent + 1)), rk), &
                            real(dang, rk), int(maxout, ik), real(badfrac, rk), &
                            real(qbadfac, rk), real(cangle, rk), real(prob_max, rk), &
                            int(npolmin, ik), int(max_agap, ik), int(max_pgap, ik), &
@@ -347,6 +349,19 @@ contains
         prob = real(pb, c_double)
         rms_diff = real(rd, c_double)
     end subroutine cnchash_mech_prob
+
+    !> Minimum rotation angle between two mechanisms (wraps MECH_ROT).
+    subroutine cnchash_mech_rot(n1, s1, n2, s2, rota) bind(C, name="cnchash_mech_rot")
+        real(c_double), intent(in) :: n1(*), s1(*), n2(*), s2(*)
+        real(c_double), intent(out) :: rota
+        real(rk) :: a1(3), b1(3), a2(3), b2(3), r
+        a1 = real(n1(1:3), rk)
+        b1 = real(s1(1:3), rk)
+        a2 = real(n2(1:3), rk)
+        b2 = real(s2(1:3), rk)
+        call mech_rot(a1, b1, a2, b2, r)
+        rota = real(r, c_double)
+    end subroutine cnchash_mech_rot
 
     !> Build a takeoff-angle table from a velocity model (no I/O).
     subroutine cnchash_build_velocity_table(z, alpha, npts, del1, del2, del3, &
