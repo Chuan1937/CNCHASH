@@ -141,11 +141,12 @@ architecture, build instructions, and design rules.
 
 ## Documentation
 
-See https://cnchash.readthedocs.io/ for full documentation including:
+See https://chuan1937.github.io/CNCHASH/ for full documentation including:
+- Installation and source build
+- Usage and backend selection
+- Native backend architecture
+- Performance benchmarks
 - API reference
-- Algorithm details
-- File format specifications
-- Performance optimization
 
 ## Run Tests
 

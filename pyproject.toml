@@ -51,7 +51,7 @@ docs = [
 
 [project.urls]
 Homepage = "https://github.com/Chuan1937/CNCHASH"
-Documentation = "https://cnchash.readthedocs.io"
+Documentation = "https://chuan1937.github.io/CNCHASH/"
 Repository = "https://github.com/Chuan1937/CNCHASH"
 Issues = "https://github.com/Chuan1937/CNCHASH/issues"
 

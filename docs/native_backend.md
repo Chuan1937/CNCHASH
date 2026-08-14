@@ -53,8 +53,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-Portable binaries: add `-DCNCHASH_NATIVE_MARCH=OFF`. Without a Fortran
-compiler, CNCHASH installs and runs on the Numba backend.
+Portable binaries are the default. Set `-DCNCHASH_NATIVE_MARCH=ON` for
+a machine-specific build that is roughly 2.5x faster on the machine it
+was compiled for.
 
 ## Backend selection
 
@@ -86,13 +87,14 @@ results = run_hash_batch(events, nmc=30, backend="fortran", num_threads=16)
 
 | Item | HASH v1.2 | HASH-HP |
 |------|-----------|---------|
-| GET_GAP gaps | INTEGER (implicit typing truncates) | REAL, identical to Numba |
+| GET_GAP gaps | INTEGER (implicit typing truncates) | REAL (gaps are continuous) |
 | GET_MISF fault vectors | radians misread as degrees (unit bug) | fixed: degrees passed to FPCOOR |
 | GET_MISF_AMP stdr | weights summed for amplitude stations | identical |
 | selection when nf > maxout | `rand(0)` random | deterministic default |
 | velocity GET_TTS depth check | `d(nd0)` (uninitialized) | `d(ndep)` |
 | velocity ray buffers | fixed 10001 (can overflow) | 20001 heap-allocated |
 
-All deviations are bug fixes that make the backend internally
-consistent; parity tests pin the Fortran and Numba backends to the same
-behavior.
+All deviations are bug fixes. Tests pin the acceptable-mechanism sets
+and preferred solutions to the original HASH v1.2 on identical inputs
+(see tests/test_accuracy.py), with the only remaining differences being
+single-vs-double-precision effects at cluster boundaries.
