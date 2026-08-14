@@ -4,12 +4,12 @@
 {% block sidebartitle %}
 {{ super() }}
 <div class="language-switch" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e3e3e3; font-size: 14px;">
-    {% if language == 'zh_CN' %}
-    <a href="https://chuan1937.github.io/CNCHASH/">English</a> |
+    {% if is_chinese %}
+    <a href="{{ lang_switch_en }}">English</a> |
     <strong>中文</strong>
     {% else %}
     <strong>English</strong> |
-    <a href="https://chuan1937.github.io/CNCHASH/zh_CN/">中文</a>
+    <a href="{{ lang_switch_zh }}">中文</a>
     {% endif %}
 </div>
 {% endblock %}
