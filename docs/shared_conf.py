@@ -56,10 +56,6 @@ def _git_last_commit(path: Path) -> tuple[str, str]:
 def setup(app):
     """Show the last git commit date of each page in the footer."""
     def html_page_context_handler(app, pagename, templatename, context, doctree):
-        context["current_lang"] = getattr(app.config, "language", "en")
-        context["lang_switch_en"] = "https://chuan1937.github.io/CNCHASH/"
-        context["lang_switch_zh"] = "https://chuan1937.github.io/CNCHASH/zh_CN/"
-        context["is_chinese"] = getattr(app.config, "language", "en") == "zh_CN"
         suffixes = list(app.config.source_suffix.keys()) if not isinstance(
             app.config.source_suffix, list
         ) else app.config.source_suffix

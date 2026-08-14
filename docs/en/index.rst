@@ -15,6 +15,12 @@ front-end.
    benchmarks
    api
 
+.. toctree::
+   :caption: Links
+
+   English documentation <https://chuan1937.github.io/CNCHASH/>
+   中文文档 <https://chuan1937.github.io/CNCHASH/zh_CN/>
+
 Indices and tables
 ==================
 

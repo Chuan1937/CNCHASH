@@ -1,19 +1,5 @@
 {% extends "!layout.html" %}
 
-{# Language switch in the sidebar navigation bar. #}
-{% block sidebartitle %}
-{{ super() }}
-<div class="language-switch" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e3e3e3; font-size: 14px;">
-    {% if is_chinese %}
-    <a href="{{ lang_switch_en }}">English</a> |
-    <strong>中文</strong>
-    {% else %}
-    <strong>English</strong> |
-    <a href="{{ lang_switch_zh }}">中文</a>
-    {% endif %}
-</div>
-{% endblock %}
-
 {% block document %}
 {% if author or last_updated %}
 <div class="document-wrapper" style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2980b9;">
