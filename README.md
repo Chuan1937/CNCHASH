@@ -19,19 +19,20 @@ event-level batch parallelism scale across cores.
 
 ## Performance
 
-| Metric | Python+Numba | Fortran | Speedup |
-|--------|-------------|---------|---------|
-| 24 events | 0.068s | 0.473s | **6.9x** |
-| Per event | 2.85ms | 19.7ms | **6.9x** |
-| 5000 events | 13.0s | 98.5s | **7.6x** |
-| 10000 events | 26.0s | 197.0s | **7.6x** |
-
-Native backend scaling (30 stations, 30 MC trials, see
+30 stations, 30 MC trials, dang=5 deg (see
 [docs/benchmarks.md](docs/benchmarks.md)):
 
-| Threads | 1 | 2 | 4 | 8 | 16 |
-|---------|---|---|---|---|----|
-| Speedup | 1.0x | 1.8x | 3.0x | 4.1x | 6.1x |
+| Backend build          | ms/event |
+|------------------------|----------|
+| Portable, 1 thread     | ~47      |
+| Portable, 4 threads    | ~21      |
+| Native (AVX2), 1 thread| ~19      |
+| Native (AVX2), 16 threads | ~4    |
+| Original HASH v1.2     | ~145     |
+
+The native build (`-DCNCHASH_NATIVE_MARCH=ON`) is roughly 2.5x faster
+than the portable build at one thread; it is machine-specific and
+should only be used on the machine it was compiled for.
 
 ## Accuracy Verification
 

@@ -429,6 +429,70 @@ def test_original_hash_multiple_solutions_match(original_multisol_bin, fortran_a
     )
 
 
+def test_original_hash_multisol_regression_fixed(original_multisol_bin, fortran_available):
+    """Fixed regression: a weakly constrained event that the buggy
+    clustering (before the working-set fix) solved as 5 mechanisms must
+    now agree with the original MECH_PROB (2 solutions, angle by angle).
+
+    The event is deterministic: fixed RNG stream, the first event in
+    the stream with a multi-solution result.
+    """
+    rng = np.random.default_rng(SEED + 7)
+    found = 0
+    for _ in range(60):
+        nsta = 12
+        az, the = uniform_sphere_stations(nsta, rng)
+        pol = np.where(
+            (np.sin(np.deg2rad(the)) * np.cos(np.deg2rad(az - 60))) > 0, 1, -1
+        ).astype(np.int32)
+        nbad = max(1, int(nsta * 0.1))
+        bad = rng.choice(nsta, nbad, replace=False)
+        pol[bad] = -pol[bad]
+        qual = np.zeros(nsta, dtype=np.int32)
+        r = run_hash(az, the, pol, qual, nmc=1, backend="fortran", num_threads=1)
+        if not r["success"] or r["nmult"] < 2:
+            continue
+        # This event must have exactly 2 solutions (the fixed behavior;
+        # the buggy working-set update produced spurious extra clusters).
+        assert r["nmult"] == 2, (
+            f"expected 2 solutions, got {r['nmult']}; clustering regressed"
+        )
+        lines = [str(r["nf"])]
+        for i in range(r["nf"]):
+            fn = r["faults"][:, i]
+            sl = r["slips"][:, i]
+            lines.append(
+                f"{fn[0]:.15e} {fn[1]:.15e} {fn[2]:.15e} {sl[0]:.15e} {sl[1]:.15e} {sl[2]:.15e}"
+            )
+        proc = subprocess.run(
+            [original_multisol_bin], input="\n".join(lines) + "\n",
+            capture_output=True, text=True, timeout=60,
+        )
+        nsltn_orig = None
+        solns_orig = []
+        for line in proc.stdout.splitlines():
+            line = line.strip()
+            if line.startswith("nsltn="):
+                nsltn_orig = int(line.split("=")[1])
+            elif line.startswith("soln"):
+                parts = line.split()
+                solns_orig.append((float(parts[2]), float(parts[3]), float(parts[4])))
+        assert nsltn_orig == 2, f"original HASH gives {nsltn_orig} solutions, expected 2"
+        sc = np.atleast_1d(r["strike_avg"])
+        dc = np.atleast_1d(r["dip_avg"])
+        rc = np.atleast_1d(r["rake_avg"])
+        for k in range(2):
+            so, do_, ro = solns_orig[k]
+            d_strike = min(abs(sc[k] - so) % 360.0, abs(sc[k] - (so + 180.0) % 360.0) % 360.0)
+            assert d_strike < 5.0, f"soln {k}: strike {sc[k]:.1f} vs original {so:.1f}"
+            assert abs(dc[k] - do_) < 5.0, f"soln {k}: dip {dc[k]:.1f} vs original {do_:.1f}"
+            d_rake = abs(rc[k] - ro) % 360.0
+            assert min(d_rake, 360.0 - d_rake) < 10.0
+        found = 1
+        break
+    assert found, "no multi-solution event found in the fixed stream"
+
+
 def test_original_hash_preferred_mechanism_close(original_hash_bin, fortran_available):
     """Preferred mechanisms must agree within nodal-plane ambiguity."""
     rng = np.random.default_rng(SEED + 3)

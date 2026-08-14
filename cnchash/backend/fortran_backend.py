@@ -14,6 +14,7 @@ Library discovery order:
 import ctypes
 import ctypes.util
 import os
+import threading
 
 import numpy as np
 
@@ -41,6 +42,16 @@ class _CEventResult(ctypes.Structure):
         ("mavg", ctypes.c_double),
         ("stdr", ctypes.c_double),
     ]
+
+
+def _synchronized(method):
+    """Serialize access to the process-global native state."""
+
+    def wrapper(self, *args, **kwargs):
+        with self._lock:
+            return method(self, *args, **kwargs)
+
+    return wrapper
 
 
 def _as_c_double_array(arr):
@@ -78,6 +89,11 @@ class FortranBackend(HashBackend):
         self.available = False
         self._tables = {}
         self._table_ip = 0
+        # The native core keeps process-global state (rotation grid cache,
+        # thread-private workspaces), so independent Python-thread calls
+        # must be serialized at this boundary. OpenMP threading inside a
+        # single call is unaffected.
+        self._lock = threading.RLock()
         if self._lib_path is not None:
             try:
                 self._lib = ctypes.CDLL(self._lib_path)
@@ -325,10 +341,12 @@ class FortranBackend(HashBackend):
             "library": self._lib_path,
         }
 
+    @_synchronized
     def set_num_threads(self, num_threads):
         self._lib.cnchash_set_num_threads(int(num_threads))
         return self.get_num_threads()
 
+    @_synchronized
     def get_num_threads(self):
         return int(self._lib.cnchash_get_max_threads())
 
@@ -387,6 +405,7 @@ class FortranBackend(HashBackend):
             output["quality"] = [quality] * nsltn
         return output
 
+    @_synchronized
     def run_event(
         self,
         p_azi_mc,
@@ -431,6 +450,7 @@ class FortranBackend(HashBackend):
         output["slips"] = sl_all.reshape(maxout, 3)[:nf, :].T.copy()
         return output
 
+    @_synchronized
     def run_event_amp(
         self,
         p_azi_mc,
@@ -482,6 +502,7 @@ class FortranBackend(HashBackend):
 
     # ---- batch --------------------------------------------------------------
 
+    @_synchronized
     def run_batch(
         self,
         events,
@@ -550,6 +571,7 @@ class FortranBackend(HashBackend):
             results.append(output)
         return results
 
+    @_synchronized
     def run_batch_amp(
         self,
         events,
@@ -626,6 +648,7 @@ class FortranBackend(HashBackend):
 
     # ---- low-level pieces ---------------------------------------------------
 
+    @_synchronized
     def get_rotation_grid(self, dang):
         """Rotation grid (b1/b2/b3 column-major) for a grid spacing.
 
@@ -650,6 +673,7 @@ class FortranBackend(HashBackend):
             "b3": b3.reshape(max_rot, 3)[:n, :].T.copy(),
         }
 
+    @_synchronized
     def get_gap(self, npol, p_azi, p_the):
         magap, mpgap = ctypes.c_double(), ctypes.c_double()
         self._lib.cnchash_get_gap(
@@ -661,6 +685,7 @@ class FortranBackend(HashBackend):
         )
         return float(magap.value), float(mpgap.value)
 
+    @_synchronized
     def get_misfit(self, npol, p_azi, p_the, p_pol, p_qual, strike, dip, rake):
         mfrac, stdr = ctypes.c_double(), ctypes.c_double()
         self._lib.cnchash_get_misfit(
@@ -674,6 +699,7 @@ class FortranBackend(HashBackend):
         )
         return float(mfrac.value), float(stdr.value)
 
+    @_synchronized
     def get_misfit_amp(self, npol, p_azi, p_the, sp_amp, p_pol, strike, dip, rake):
         mfrac, mavg, stdr = ctypes.c_double(), ctypes.c_double(), ctypes.c_double()
         self._lib.cnchash_get_misfit_amp(
@@ -687,6 +713,7 @@ class FortranBackend(HashBackend):
         )
         return float(mfrac.value), float(mavg.value), float(stdr.value)
 
+    @_synchronized
     def mech_prob(self, nf, faults, slips, cangle, prob_max):
         f = _as_c_double_array(faults).ravel(order="F")
         s = _as_c_double_array(slips).ravel(order="F")
@@ -710,6 +737,7 @@ class FortranBackend(HashBackend):
             "rms_diff": rd[:n, :].T.copy(),
         }
 
+    @_synchronized
     def build_velocity_table(self, depth, velocity, params=None):
         if params is None:
             params = _default_table_params()
@@ -742,6 +770,7 @@ class FortranBackend(HashBackend):
         self._tables[self._table_ip] = table_data
         return table_data
 
+    @_synchronized
     def get_tts(self, ip, del_dist, qdep):
         table = self._tables.get(ip)
         if table is None:

@@ -1,14 +1,15 @@
 # CNCHASH native backend (Modern Fortran + OpenMP)
 #
-# Builds libhashhp, the high-performance HASH-HP core. The backend is
-# OPTIONAL for the Python package: cnchash falls back to the Numba
-# backend when this library is unavailable.
+# Builds libhashhp, the HASH-HP computation core used by the Python
+# package. Without the compiled library the package cannot run; build
+# this target and point CNCHASH_HASHHP_LIB at the produced library.
 #
 # Options:
 #   CNCHASH_FAST_MATH      - enable -ffast-math (default OFF; scientific
 #                            correctness first)
-#   CNCHASH_NATIVE_MARCH   - add -march=native (default ON for local
-#                            performance; portable builds should set OFF)
+#   CNCHASH_NATIVE_MARCH   - add -march=native (default OFF; portable
+#                            builds stay compatible, set ON for a
+#                            machine-specific ~2.5x speedup)
 #   CNCHASH_BUILD_TESTS    - build the native C test executable
 cmake_minimum_required(VERSION 3.16)
 
@@ -19,7 +20,7 @@ set(CMAKE_Fortran_STANDARD_REQUIRED ON)
 set(CMAKE_Fortran_EXTENSIONS OFF)
 
 option(CNCHASH_FAST_MATH "Enable -ffast-math" OFF)
-option(CNCHASH_NATIVE_MARCH "Enable -march=native" ON)
+option(CNCHASH_NATIVE_MARCH "Enable -march=native (machine-specific)" OFF)
 option(CNCHASH_BUILD_TESTS "Build native tests" OFF)
 
 find_package(OpenMP QUIET)

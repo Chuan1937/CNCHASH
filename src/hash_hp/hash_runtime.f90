@@ -2,8 +2,13 @@
 !>
 !> The rotation grid is built once per dang value and then shared,
 !> read-only, across all events and all threads. Building is guarded by
-!> an OpenMP critical section (double-checked locking), so concurrent
-!> batch calls are safe.
+!> an OpenMP critical section (double-checked locking).
+!>
+!> Reentrancy note: this core is safe for OpenMP worker threads inside a
+!> single native call, and for sequential calls. It is NOT reentrant for
+!> independent concurrent API calls (the grid cache and the module-level
+!> workspaces are process-global); the Python front-end serializes such
+!> calls with a lock.
 module hash_runtime
     use hash_kinds, only: rk, ik
     use hash_rotation, only: rotation_grid_t, build_rotation_grid

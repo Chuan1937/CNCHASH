@@ -27,6 +27,49 @@ def _resolve_backend(backend_name):
     return backend.get_backend(backend_name)
 
 
+def _validate_polarity_inputs(p_azi, p_the, p_pol, p_qual):
+    """Validate array shapes before crossing into the native ABI.
+
+    Wrong sizes are memory hazards in the assumed-size C interface, so
+    they are rejected here with clear Python errors instead.
+    """
+    p_azi = np.asarray(p_azi, dtype=np.float64)
+    p_the = np.asarray(p_the, dtype=np.float64)
+    p_pol = np.asarray(p_pol, dtype=np.int32)
+    p_qual = np.asarray(p_qual, dtype=np.int32)
+
+    if p_pol.ndim != 1 or p_qual.ndim != 1:
+        raise ValueError("p_pol and p_qual must be 1-D arrays")
+    if p_pol.size != p_qual.size:
+        raise ValueError(
+            f"p_pol and p_qual must have the same length ({p_pol.size} vs {p_qual.size})"
+        )
+    if p_azi.ndim not in (1, 2) or p_the.ndim != p_azi.ndim:
+        raise ValueError("p_azi and p_the must both be 1-D or both be 2-D")
+    if p_azi.shape != p_the.shape:
+        raise ValueError(
+            f"p_azi and p_the must have the same shape ({p_azi.shape} vs {p_the.shape})"
+        )
+    if p_azi.shape[0] != p_pol.size:
+        raise ValueError(
+            f"p_azi first dimension ({p_azi.shape[0]}) must match p_pol length ({p_pol.size})"
+        )
+    return p_azi, p_the, p_pol, p_qual
+
+
+def _validate_amp_inputs(p_azi, p_the, p_pol, sp_amp):
+    """Validate amplitude inputs; sp_amp is 1-D and matches p_pol."""
+    p_azi, p_the, p_pol, _ = _validate_polarity_inputs(p_azi, p_the, p_pol, np.zeros_like(p_pol))
+    sp_amp = np.asarray(sp_amp, dtype=np.float64)
+    if sp_amp.ndim != 1:
+        raise ValueError("sp_amp must be a 1-D array")
+    if sp_amp.size != p_pol.size:
+        raise ValueError(
+            f"sp_amp length ({sp_amp.size}) must match p_pol length ({p_pol.size})"
+        )
+    return p_azi, p_the, p_pol, sp_amp
+
+
 def run_hash_event_payload(payload):
     """
     Solve one event from a serialized payload.
@@ -125,12 +168,8 @@ def run_hash(
     if num_threads is not None:
         solver.set_num_threads(num_threads)
 
-    npol = len(p_pol)
-
-    p_azi = np.asarray(p_azi, dtype=np.float64)
-    p_the = np.asarray(p_the, dtype=np.float64)
-    p_pol = np.asarray(p_pol, dtype=np.int32)
-    p_qual = np.asarray(p_qual, dtype=np.int32)
+    p_azi, p_the, p_pol, p_qual = _validate_polarity_inputs(p_azi, p_the, p_pol, p_qual)
+    npol = p_pol.size
 
     if p_azi.ndim == 1:
         p_azi = p_azi.reshape(-1, 1)
@@ -240,12 +279,8 @@ def run_hash_with_amp(
     if num_threads is not None:
         solver.set_num_threads(num_threads)
 
-    npsta = len(p_pol)
-
-    p_azi = np.asarray(p_azi, dtype=np.float64)
-    p_the = np.asarray(p_the, dtype=np.float64)
-    p_pol = np.asarray(p_pol, dtype=np.int32)
-    sp_amp = np.asarray(sp_amp, dtype=np.float64)
+    p_azi, p_the, p_pol, sp_amp = _validate_amp_inputs(p_azi, p_the, p_pol, sp_amp)
+    npsta = p_pol.size
 
     if p_azi.ndim == 1:
         p_azi = p_azi.reshape(-1, 1)
@@ -335,10 +370,9 @@ def run_hash_batch(
 
     prepared = []
     for p_azi, p_the, p_pol, p_qual in events:
-        p_azi = np.asarray(p_azi, dtype=np.float64)
-        p_the = np.asarray(p_the, dtype=np.float64)
-        p_pol = np.asarray(p_pol, dtype=np.int32)
-        p_qual = np.asarray(p_qual, dtype=np.int32)
+        p_azi, p_the, p_pol, p_qual = _validate_polarity_inputs(
+            p_azi, p_the, p_pol, p_qual
+        )
         if p_azi.ndim == 1:
             p_azi = p_azi.reshape(-1, 1)
             p_the = p_the.reshape(-1, 1)
@@ -396,10 +430,9 @@ def run_hash_batch_with_amp(
 
     prepared = []
     for p_azi, p_the, p_pol, sp_amp in events:
-        p_azi = np.asarray(p_azi, dtype=np.float64)
-        p_the = np.asarray(p_the, dtype=np.float64)
-        p_pol = np.asarray(p_pol, dtype=np.int32)
-        sp_amp = np.asarray(sp_amp, dtype=np.float64)
+        p_azi, p_the, p_pol, sp_amp = _validate_amp_inputs(
+            p_azi, p_the, p_pol, sp_amp
+        )
         if p_azi.ndim == 1:
             p_azi = p_azi.reshape(-1, 1)
             p_the = p_the.reshape(-1, 1)
