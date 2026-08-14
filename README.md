@@ -1,43 +1,74 @@
 # CNCHASH
 
-Python implementation of HASH for earthquake focal mechanism determination from P-wave polarities.
+High-performance implementation of HASH for earthquake focal-mechanism
+determination from P-wave polarities, built on a **Modern Fortran/OpenMP
+native backend** with a clean Python front-end.
 
 ![Python](https://img.shields.io/badge/python-3.10+-orange.svg)
 ![License](https://img.shields.io/badge/license-BSD%203--blue.svg)
-![Numba](https://img.shields.io/badge/numba-0.53+-red.svg)
-![Numpy](https://img.shields.io/badge/numpy-1.19+-yellow.svg)
+![Fortran](https://img.shields.io/badge/fortran-modern%20fortran-orange.svg)
+![Numpy](https://img.shields.io/badge/numpy-1.20+-yellow.svg)
 ![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
 
-Python uses Numba JIT compilation optimization and vectorization, achieving speed improvements while maintaining complete consistency with the core Fortran algorithm.
+All computation runs in the Modern Fortran/OpenMP core (`libhashhp`): grid
+search, S/P amplitudes, uncertainty analysis, and velocity tables. The
+Python layer handles data, file formats, and the API. OpenMP threads and
+event-level batch parallelism scale across cores.
 
 ![Speed Comparison](docs/images/speed_comparison.png)
 
 ## Performance
 
-| Metric | Python+Numba | Fortran | Speedup |
-|--------|-------------|---------|---------|
-| 24 events | 0.068s | 0.473s | **6.9x** |
-| Per event | 2.85ms | 19.7ms | **6.9x** |
-| 5000 events | 13.0s | 98.5s | **7.6x** |
-| 10000 events | 26.0s | 197.0s | **7.6x** |
+30 stations, 30 MC trials, dang=5 deg (see
+[docs/benchmarks.md](docs/benchmarks.md)):
+
+| Backend build          | ms/event |
+|------------------------|----------|
+| Portable, 1 thread     | ~47      |
+| Portable, 4 threads    | ~21      |
+| Native (AVX2), 1 thread| ~19      |
+| Native (AVX2), 16 threads | ~4    |
+| Original HASH v1.2     | ~145     |
+
+The native build (`-DCNCHASH_NATIVE_MARCH=ON`) is roughly 2.5x faster
+than the portable build at one thread; it is machine-specific and
+should only be used on the machine it was compiled for.
 
 ## Accuracy Verification
 
 ![Accuracy Verification](docs/images/accuracy_verification.png)
 
 **Key Results:**
-- Python dip error median: 5.6° (Fortran: 11.1°)
-- Python rake error median: 24.1° (Fortran: 26.6°)
-- Python synthetic trials: 300/300 successful solutions
-- Fortran synthetic trials: 60/60 successful solutions (direct-runs)
+- CNCHASH dip error median: 5.6°
+- CNCHASH rake error median: 24.1°
+- CNCHASH synthetic trials: 300/300 successful solutions
+- HASH v1.2 synthetic trials: 60/60 successful solutions (direct-runs)
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 
-## Quick Start
+## Quick Start (source build)
+
+CNCHASH 2.x is a source-install package: the native backend must be
+compiled once with CMake. A Fortran compiler with OpenMP support
+(gfortran >= 9) is required.
 
 ```bash
-pip install cnchash
+git clone https://github.com/Chuan1937/CNCHASH.git
+cd CNCHASH
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+
+# optional: build with -march=native for ~2.5x more speed on this machine
+# cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCNCHASH_NATIVE_MARCH=ON
+
+export CNCHASH_HASHHP_LIB=$PWD/build/libhashhp.so
+pip install -e .
 ```
+
+Without a Fortran compiler, install still succeeds but the backend is
+not available; `get_backend_info()` reports the library path and
+`available_backends()` stays empty.
 
 ### Basic Usage (P-wave polarities only)
 
@@ -79,6 +110,24 @@ print(f"Polarity misfit: {result['mfrac']*100:.1f}%")
 print(f"Amplitude misfit: {result['mavg']:.2f}")
 ```
 
+## Backend Selection
+
+```python
+from cnchash import run_hash, run_hash_batch, available_backends, get_backend_info
+
+# backend="auto" (default) uses the native backend when available
+result = run_hash(p_azi, p_the, p_pol, p_qual, backend="auto", num_threads=16)
+
+# Batch mode: many events in one native call (event-level OpenMP)
+results = run_hash_batch(events, backend="fortran", num_threads=16)
+
+print(available_backends())   # ['fortran']
+print(get_backend_info())
+```
+
+See [docs/native_backend.md](docs/native_backend.md) for the backend
+architecture, build instructions, and design rules.
+
 ## Features
 
 - Grid search for focal mechanism determination
@@ -86,19 +135,23 @@ print(f"Amplitude misfit: {result['mavg']:.2f}")
 - S/P amplitude ratio constraint
 - Quality rating (A-D, E, F)
 - Multiple phase file formats
-- Core algorithm matches Fortran exactly
+- Modern Fortran/OpenMP native backend
+- Event-level batch parallelism
+- Core algorithm matches the original HASH v1.2 (golden-reference tested)
 
 ## Documentation
 
-See https://cnchash.readthedocs.io/ for full documentation including:
+See https://chuan1937.github.io/CNCHASH/ for full documentation including:
+- Installation and source build
+- Usage and backend selection
+- Native backend architecture
+- Performance benchmarks
 - API reference
-- Algorithm details
-- File format specifications
-- Performance optimization
 
 ## Run Tests
 
 ```bash
+pytest tests/          # parity, determinism, batch, velocity suites
 jupyter notebook HASH_Tests.ipynb
 ```
 
@@ -106,14 +159,15 @@ jupyter notebook HASH_Tests.ipynb
 
 ```
 cnchash/
-├── core.py        # Grid search algorithm (focalmc)
-├── amp_subs.py    # S/P amplitude ratio (focalamp_mc)
-├── uncertainty.py # Uncertainty analysis (mech_prob)
-├── driver.py      # Main driver (run_hash, run_hash_with_amp)
+├── backend/       # native backend binding (fortran via ctypes)
+├── driver.py      # Main driver (run_hash, run_hash_batch)
 ├── io.py          # File I/O
 └── utils.py       # Utilities
 
-HASH_complete/     # Complete Fortran code with examples
+src/hash_hp/       # Modern Fortran/OpenMP core (libhashhp)
+HASH_complete/     # Original Fortran HASH v1.2 (immutable golden reference)
+benchmarks/        # performance benchmark suite
+tests/             # parity, determinism, batch, velocity tests
 ```
 
 ## Author

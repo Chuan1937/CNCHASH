@@ -1,14 +1,13 @@
 """
-Utility functions for CNCHASH implementation.
+Utility functions for CNCHASH.
 
-Includes coordinate transformations, vector operations, and random number generation.
-Optimized with numba JIT compilation.
+Coordinate transformations, vector operations, and the fault-plane
+coordinate conversion used by the Python front-end.
 """
 
 import math
 
 import numpy as np
-from numba import float64, njit
 
 # Constants
 PI = 3.14159265358979323846
@@ -16,7 +15,6 @@ DEG_TO_RAD = PI / 180.0
 RAD_TO_DEG = 180.0 / PI
 
 
-@njit([float64[:, :](float64[:, :], float64[:, :])], cache=True)
 def cross_product_array(v1, v2):
     """
     Compute cross product for arrays of 3D vectors.
@@ -33,16 +31,13 @@ def cross_product_array(v1, v2):
     ndarray, shape (n, 3)
         Cross products v1 x v2
     """
-    n = v1.shape[0]
-    result = np.empty((n, 3), dtype=np.float64)
-    for i in range(n):
-        result[i, 0] = v1[i, 1] * v2[i, 2] - v1[i, 2] * v2[i, 1]
-        result[i, 1] = v1[i, 2] * v2[i, 0] - v1[i, 0] * v2[i, 2]
-        result[i, 2] = v1[i, 0] * v2[i, 1] - v1[i, 1] * v2[i, 0]
+    result = np.empty_like(v1)
+    result[:, 0] = v1[:, 1] * v2[:, 2] - v1[:, 2] * v2[:, 1]
+    result[:, 1] = v1[:, 2] * v2[:, 0] - v1[:, 0] * v2[:, 2]
+    result[:, 2] = v1[:, 0] * v2[:, 1] - v1[:, 1] * v2[:, 0]
     return result
 
 
-@njit([float64[:](float64[:], float64[:])], cache=True)
 def cross_product(v1, v2):
     """
     Compute cross product of two 3D vectors.
@@ -66,7 +61,6 @@ def cross_product(v1, v2):
     return result
 
 
-@njit([float64[:, :](float64[:], float64[:], float64)], cache=True)
 def to_cartesian_array(theta, phi, r):
     """
     Transform spherical coordinates to Cartesian for arrays.
@@ -86,18 +80,15 @@ def to_cartesian_array(theta, phi, r):
         Cartesian coordinates (x, y, z)
         Uses coordinate system: x=north, y=east, z=down
     """
-    n = theta.shape[0]
-    result = np.empty((n, 3), dtype=np.float64)
-    for i in range(n):
-        theta_rad = theta[i] * DEG_TO_RAD
-        phi_rad = phi[i] * DEG_TO_RAD
-        result[i, 2] = -r * np.cos(theta_rad)  # z (down)
-        result[i, 0] = r * np.sin(theta_rad) * np.cos(phi_rad)  # x (north)
-        result[i, 1] = r * np.sin(theta_rad) * np.sin(phi_rad)  # y (east)
+    theta_rad = theta * DEG_TO_RAD
+    phi_rad = phi * DEG_TO_RAD
+    result = np.empty((theta.shape[0], 3), dtype=np.float64)
+    result[:, 2] = -r * np.cos(theta_rad)  # z (down)
+    result[:, 0] = r * np.sin(theta_rad) * np.cos(phi_rad)  # x (north)
+    result[:, 1] = r * np.sin(theta_rad) * np.sin(phi_rad)  # y (east)
     return result
 
 
-@njit(cache=True)
 def to_cartesian(theta, phi, r):
     """
     Transform spherical coordinates to Cartesian.
@@ -125,7 +116,6 @@ def to_cartesian(theta, phi, r):
     return x, y, z
 
 
-@njit(cache=True)
 def fp_coord_vectors_to_angles(faultnorm, slip):
     """
     Convert fault normal and slip vectors to strike, dip, and rake.
@@ -145,18 +135,14 @@ def fp_coord_vectors_to_angles(faultnorm, slip):
     tuple of float
         (strike, dip, rake) in degrees
     """
-    # Create local copies without using np.array with dtype
-    fnorm = np.empty(3, dtype=np.float64)
-    slip_vec = np.empty(3, dtype=np.float64)
-    for i in range(3):
-        fnorm[i] = faultnorm[i]
-        slip_vec[i] = slip[i]
+    fnorm = np.asarray(faultnorm, dtype=np.float64)
+    slip_vec = np.asarray(slip, dtype=np.float64)
 
     # Check for horizontal fault (undefined strike)
     if 1.0 - abs(fnorm[2]) <= 1e-7:
-        # Horizontal fault
+        # Horizontal fault (matches FPCOOR idir=2)
         dip = 0.0
-        phi = math.atan2(-fnorm[0], slip_vec[1])
+        phi = math.atan2(-slip_vec[0], slip_vec[1])
         clam = math.cos(phi) * slip_vec[0] + math.sin(phi) * slip_vec[1]
         slam = math.sin(phi) * slip_vec[0] - math.cos(phi) * slip_vec[1]
         lam = math.atan2(slam, clam)
@@ -189,7 +175,6 @@ def fp_coord_vectors_to_angles(faultnorm, slip):
     return strike, dip, rake
 
 
-@njit(cache=True)
 def fp_coord_angles_to_vectors(strike, dip, rake):
     """
     Convert strike, dip, and rake to fault normal and slip vectors.
@@ -292,30 +277,15 @@ def vectors_to_strike_dip_rake(faultnorm, slip):
 _random_state = {"jran": 314159, "initialized": False}
 
 
-@njit(cache=True)
-def normal_distribution_random_numba(jran):
-    """
-    Generate normally-distributed random number (modified from Numerical Recipes).
-
-    Parameters
-    ----------
-    jran : int
-        Current random seed state
-
-    Returns
-    -------
-    tuple
-        (fran, jran_new) - random value and new state
-    """
+def _normal_distribution_random_step(jran):
+    """One step of the Numerical Recipes normal deviate generator."""
     im = 120050  # overflow at 2**28
     ia = 2311
     ic = 25367
-
     fran = 0.0
     for _ in range(12):
         jran = (jran * ia + ic) % im
         fran += float(jran) / float(im)
-
     fran = fran - 6.0
     return fran, jran
 
@@ -336,7 +306,7 @@ def normal_distribution_random():
         _random_state["jran"] = 314159
         _random_state["initialized"] = True
 
-    fran, _random_state["jran"] = normal_distribution_random_numba(_random_state["jran"])
+    fran, _random_state["jran"] = _normal_distribution_random_step(_random_state["jran"])
     return fran
 
 
@@ -354,7 +324,6 @@ def reset_random_seed(seed=314159):
     _random_state["initialized"] = True
 
 
-@njit(cache=True)
 def normalize_vector(v):
     """
     Normalize a vector to unit length.
@@ -375,7 +344,6 @@ def normalize_vector(v):
     return v
 
 
-@njit([float64[:, :](float64[:, :])], cache=True)
 def normalize_vectors_array(v):
     """
     Normalize array of vectors to unit length.
@@ -390,28 +358,23 @@ def normalize_vectors_array(v):
     ndarray, shape (n, 3)
         Normalized vectors
     """
-    n = v.shape[0]
     result = np.empty_like(v)
-    for i in range(n):
+    for i in range(v.shape[0]):
         norm = math.sqrt(v[i, 0] ** 2 + v[i, 1] ** 2 + v[i, 2] ** 2)
         if norm > 0:
             result[i, 0] = v[i, 0] / norm
             result[i, 1] = v[i, 1] / norm
             result[i, 2] = v[i, 2] / norm
         else:
-            result[i, 0] = v[i, 0]
-            result[i, 1] = v[i, 1]
-            result[i, 2] = v[i, 2]
+            result[i] = v[i]
     return result
 
 
-@njit(cache=True)
 def dot_product(v1, v2):
     """Compute dot product of two vectors."""
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
 
 
-@njit(cache=True)
 def vector_length(v):
     """Compute length of a vector."""
     return math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
@@ -429,7 +392,6 @@ __all__ = [
     "strike_dip_rake_to_vectors",
     "vectors_to_strike_dip_rake",
     "normal_distribution_random",
-    "normal_distribution_random_numba",
     "reset_random_seed",
     "normalize_vector",
     "normalize_vectors_array",

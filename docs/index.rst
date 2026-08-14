@@ -1,7 +1,9 @@
 CNCHASH Documentation
 =====================
 
-Python implementation of HASH for earthquake focal mechanism determination.
+High-performance implementation of HASH for earthquake focal-mechanism
+determination, built on a Modern Fortran/OpenMP core with a Python
+front-end.
 
 .. toctree::
    :maxdepth: 2
@@ -9,6 +11,7 @@ Python implementation of HASH for earthquake focal mechanism determination.
 
    installation
    usage
+   native_backend
    benchmarks
    api
 

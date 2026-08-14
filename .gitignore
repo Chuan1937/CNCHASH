@@ -21,3 +21,12 @@ build/
 .idea/
 .vscode/
 *.swp
+# Native backend build artifacts
+src/hash_hp/*.o
+src/hash_hp/*.mod
+src/hash_hp/*.so
+src/hash_hp/*.so.*
+
+# HASH_complete build artifacts (upstream snapshot stays clean)
+HASH_complete/bin/
+HASH_complete/obj/
