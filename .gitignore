@@ -30,3 +30,4 @@ src/hash_hp/*.so.*
 # HASH_complete build artifacts (upstream snapshot stays clean)
 HASH_complete/bin/
 HASH_complete/obj/
+build-native/

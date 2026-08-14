@@ -12,8 +12,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from cnchash import run_hash
 from cnchash import backend as backend_mod
+from cnchash import run_hash
 from cnchash.utils import fp_coord_angles_to_vectors
 
 sys_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tests")

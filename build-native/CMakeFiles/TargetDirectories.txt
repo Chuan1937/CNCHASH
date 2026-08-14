@@ -1,7 +1,0 @@
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/hashhp.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/edit_cache.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/rebuild_cache.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/list_install_components.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/install.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/install/local.dir
-/home/yuan/code/CNCHASH/build-native/CMakeFiles/install/strip.dir

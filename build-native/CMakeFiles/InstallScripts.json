@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/yuan/code/CNCHASH/build-native/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
