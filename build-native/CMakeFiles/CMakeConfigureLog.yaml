@@ -1,0 +1,2134 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+      - "/bin/"
+    searched_directories:
+      - "/home/yuan/.mimocode/bin/uname"
+      - "/usr/lib/wsl/lib/uname"
+      - "/home/yuan/.opencode/bin/uname"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/uname"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/uname"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/uname"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/uname"
+      - "/home/yuan/miniconda3/bin/uname"
+      - "/home/yuan/miniconda3/condabin/uname"
+      - "/home/yuan/.local/bin/uname"
+      - "/home/yuan/bin/uname"
+      - "/usr/share/Modules/bin/uname"
+      - "/usr/local/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:16 (project)"
+    message: |
+      The system is: Linux - 6.6.87.2-microsoft-standard-WSL2 - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/home/yuan/.mimocode/bin/gmake"
+      - "/usr/lib/wsl/lib/gmake"
+      - "/home/yuan/.opencode/bin/gmake"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gmake"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gmake"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gmake"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gmake"
+      - "/home/yuan/miniconda3/bin/gmake"
+      - "/home/yuan/miniconda3/condabin/gmake"
+      - "/home/yuan/.local/bin/gmake"
+      - "/home/yuan/bin/gmake"
+      - "/usr/share/Modules/bin/gmake"
+      - "/usr/local/bin/gmake"
+    found: "/usr/bin/gmake"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:89 (_cmake_find_compiler)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_Fortran_COMPILER"
+    description: "Fortran compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "f95"
+      - "ftn"
+      - "ifx"
+      - "ifort"
+      - "nvfortran"
+      - "pgfortran"
+      - "lf95"
+      - "xlf"
+      - "fort"
+      - "flang"
+      - "lfortran"
+      - "frt"
+      - "nagfor"
+      - "gfortran"
+    candidate_directories:
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/home/yuan/.mimocode/bin/f95"
+      - "/usr/lib/wsl/lib/f95"
+      - "/home/yuan/.opencode/bin/f95"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/f95"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/f95"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/f95"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/f95"
+      - "/home/yuan/miniconda3/bin/f95"
+      - "/home/yuan/miniconda3/condabin/f95"
+      - "/home/yuan/.local/bin/f95"
+      - "/home/yuan/bin/f95"
+      - "/usr/share/Modules/bin/f95"
+      - "/usr/local/bin/f95"
+    found: "/usr/bin/f95"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:468 (find_file)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:506 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:190 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeFortranCompilerId.F.in"
+    candidate_directories:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/"
+    found: "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerId.F.in"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:190 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:16 (project)"
+    message: |
+      Compiling the Fortran compiler identification source file "CMakeFortranCompilerId.F" succeeded.
+      Compiler: /usr/bin/f95 
+      Build flags: 
+      Id flags: -v 
+      
+      The output was:
+      0
+      Driving: /usr/bin/f95 -v CMakeFortranCompilerId.F -l gfortran -l m -shared-libgcc
+      Using built-in specs.
+      COLLECT_GCC=/usr/bin/f95
+      COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper
+      OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+      OFFLOAD_TARGET_DEFAULT=1
+      Target: x86_64-redhat-linux
+      Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+      Thread model: posix
+      Supported LTO compression algorithms: zlib zstd
+      gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) 
+      COLLECT_GCC_OPTIONS='-v' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'a-'
+       /usr/libexec/gcc/x86_64-redhat-linux/15/f951 CMakeFortranCompilerId.F -ffixed-form -cpp=/tmp/ccwTIE00.fi -quiet -v CMakeFortranCompilerId.F -quiet -dumpdir a- -dumpbase CMakeFortranCompilerId.F -dumpbase-ext .F -mtune=generic -march=x86-64 -version -foffload-options=-l_GCC_gfortran -foffload-options=-l_GCC_m -fintrinsic-modules-path /usr/lib/gcc/x86_64-redhat-linux/15/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/ccS5hLmR.s
+      GNU Fortran (GCC) version 15.2.1 20260123 (Red Hat 15.2.1-7) (x86_64-redhat-linux)
+      	compiled by GNU C version 15.2.1 20260123 (Red Hat 15.2.1-7), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.24-GMP
+      
+      GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+      ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/include-fixed"
+      ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/../../../../x86_64-redhat-linux/include"
+      #include "..." search starts here:
+      #include <...> search starts here:
+       /usr/lib/gcc/x86_64-redhat-linux/15/finclude
+       /usr/lib/gcc/x86_64-redhat-linux/15/include
+       /usr/local/include
+       /usr/include
+      End of search list.
+      COLLECT_GCC_OPTIONS='-v' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'a-'
+       as -v --64 -o /tmp/ccKoNwbG.o /tmp/ccS5hLmR.s
+      GNU assembler version 2.45.1 (x86_64-redhat-linux) using BFD version version 2.45.1-4.fc43
+      Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec
+      rename spec lib to liborig
+      COLLECT_GCC_OPTIONS='-v' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'a-'
+      COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/
+      LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/
+      COLLECT_GCC_OPTIONS='-v' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'a.'
+       /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccY7M5Vq.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib /tmp/ccKoNwbG.o -lgfortran -lm -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o
+      COLLECT_GCC_OPTIONS='-v' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'a.'
+      
+      
+      Compilation of the Fortran compiler identification source "CMakeFortranCompilerId.F" produced "a.out"
+      
+      The Fortran compiler identification is GNU, found in:
+        /home/yuan/code/CNCHASH/build-native/CMakeFiles/4.3.2/CompilerIdFortran/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/objcopy"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/readelf"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/home/yuan/.mimocode/bin/dlltool"
+      - "/usr/lib/wsl/lib/dlltool"
+      - "/home/yuan/.opencode/bin/dlltool"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/dlltool"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/dlltool"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/dlltool"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/dlltool"
+      - "/home/yuan/miniconda3/bin/dlltool"
+      - "/home/yuan/miniconda3/condabin/dlltool"
+      - "/home/yuan/.local/bin/dlltool"
+      - "/home/yuan/bin/dlltool"
+      - "/usr/share/Modules/bin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/dlltool"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:313 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/home/yuan/.mimocode/bin/tapi"
+      - "/usr/lib/wsl/lib/tapi"
+      - "/home/yuan/.opencode/bin/tapi"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/tapi"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/tapi"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/tapi"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/tapi"
+      - "/home/yuan/miniconda3/bin/tapi"
+      - "/home/yuan/miniconda3/condabin/tapi"
+      - "/home/yuan/.local/bin/tapi"
+      - "/home/yuan/bin/tapi"
+      - "/usr/share/Modules/bin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/tapi"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:314 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_Fortran_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ar-15.2"
+      - "gcc-ar-15"
+      - "gcc-ar15"
+      - "gcc-ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ar-15.2"
+      - "/home/yuan/.mimocode/bin/gcc-ar-15.2"
+      - "/usr/lib/wsl/lib/gcc-ar-15.2"
+      - "/home/yuan/.opencode/bin/gcc-ar-15.2"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ar-15.2"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ar-15.2"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ar-15.2"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ar-15.2"
+      - "/home/yuan/miniconda3/bin/gcc-ar-15.2"
+      - "/home/yuan/miniconda3/condabin/gcc-ar-15.2"
+      - "/home/yuan/.local/bin/gcc-ar-15.2"
+      - "/home/yuan/bin/gcc-ar-15.2"
+      - "/usr/share/Modules/bin/gcc-ar-15.2"
+      - "/usr/local/bin/gcc-ar-15.2"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ar-15.2"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ar-15.2"
+      - "/usr/bin/gcc-ar-15"
+      - "/home/yuan/.mimocode/bin/gcc-ar-15"
+      - "/usr/lib/wsl/lib/gcc-ar-15"
+      - "/home/yuan/.opencode/bin/gcc-ar-15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ar-15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ar-15"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ar-15"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ar-15"
+      - "/home/yuan/miniconda3/bin/gcc-ar-15"
+      - "/home/yuan/miniconda3/condabin/gcc-ar-15"
+      - "/home/yuan/.local/bin/gcc-ar-15"
+      - "/home/yuan/bin/gcc-ar-15"
+      - "/usr/share/Modules/bin/gcc-ar-15"
+      - "/usr/local/bin/gcc-ar-15"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ar-15"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ar-15"
+      - "/usr/bin/gcc-ar15"
+      - "/home/yuan/.mimocode/bin/gcc-ar15"
+      - "/usr/lib/wsl/lib/gcc-ar15"
+      - "/home/yuan/.opencode/bin/gcc-ar15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ar15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ar15"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ar15"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ar15"
+      - "/home/yuan/miniconda3/bin/gcc-ar15"
+      - "/home/yuan/miniconda3/condabin/gcc-ar15"
+      - "/home/yuan/.local/bin/gcc-ar15"
+      - "/home/yuan/bin/gcc-ar15"
+      - "/usr/share/Modules/bin/gcc-ar15"
+      - "/usr/local/bin/gcc-ar15"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ar15"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ar15"
+    found: "/usr/bin/gcc-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineFortranCompiler.cmake:314 (include)"
+      - "CMakeLists.txt:16 (project)"
+    mode: "program"
+    variable: "CMAKE_Fortran_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ranlib-15.2"
+      - "gcc-ranlib-15"
+      - "gcc-ranlib15"
+      - "gcc-ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/home/yuan/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ranlib-15.2"
+      - "/home/yuan/.mimocode/bin/gcc-ranlib-15.2"
+      - "/usr/lib/wsl/lib/gcc-ranlib-15.2"
+      - "/home/yuan/.opencode/bin/gcc-ranlib-15.2"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ranlib-15.2"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ranlib-15.2"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ranlib-15.2"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ranlib-15.2"
+      - "/home/yuan/miniconda3/bin/gcc-ranlib-15.2"
+      - "/home/yuan/miniconda3/condabin/gcc-ranlib-15.2"
+      - "/home/yuan/.local/bin/gcc-ranlib-15.2"
+      - "/home/yuan/bin/gcc-ranlib-15.2"
+      - "/usr/share/Modules/bin/gcc-ranlib-15.2"
+      - "/usr/local/bin/gcc-ranlib-15.2"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ranlib-15.2"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ranlib-15.2"
+      - "/usr/bin/gcc-ranlib-15"
+      - "/home/yuan/.mimocode/bin/gcc-ranlib-15"
+      - "/usr/lib/wsl/lib/gcc-ranlib-15"
+      - "/home/yuan/.opencode/bin/gcc-ranlib-15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ranlib-15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ranlib-15"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ranlib-15"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ranlib-15"
+      - "/home/yuan/miniconda3/bin/gcc-ranlib-15"
+      - "/home/yuan/miniconda3/condabin/gcc-ranlib-15"
+      - "/home/yuan/.local/bin/gcc-ranlib-15"
+      - "/home/yuan/bin/gcc-ranlib-15"
+      - "/usr/share/Modules/bin/gcc-ranlib-15"
+      - "/usr/local/bin/gcc-ranlib-15"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ranlib-15"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ranlib-15"
+      - "/usr/bin/gcc-ranlib15"
+      - "/home/yuan/.mimocode/bin/gcc-ranlib15"
+      - "/usr/lib/wsl/lib/gcc-ranlib15"
+      - "/home/yuan/.opencode/bin/gcc-ranlib15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/gcc-ranlib15"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/gcc-ranlib15"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/gcc-ranlib15"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/gcc-ranlib15"
+      - "/home/yuan/miniconda3/bin/gcc-ranlib15"
+      - "/home/yuan/miniconda3/condabin/gcc-ranlib15"
+      - "/home/yuan/.local/bin/gcc-ranlib15"
+      - "/home/yuan/bin/gcc-ranlib15"
+      - "/usr/share/Modules/bin/gcc-ranlib15"
+      - "/usr/local/bin/gcc-ranlib15"
+      - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI/gcc-ranlib15"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ranlib15"
+    found: "/usr/bin/gcc-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:16 (project)"
+    checks:
+      - "Detecting Fortran compiler ABI info"
+    directories:
+      source: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428"
+      binary: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+    buildResult:
+      variable: "CMAKE_Fortran_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428'
+        
+        Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_77ca0/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_77ca0.dir/build.make CMakeFiles/cmTC_77ca0.dir/build
+        gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428'
+        Building Fortran object CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o
+        /usr/bin/f95   -v -c /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/f95
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-redhat-linux
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/'
+         /usr/libexec/gcc/x86_64-redhat-linux/15/f951 /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -cpp=/tmp/cciD6Anh.fii -quiet -v /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -quiet -dumpdir CMakeFiles/cmTC_77ca0.dir/ -dumpbase CMakeFortranCompilerABI.F90.F90 -dumpbase-ext .F90 -mtune=generic -march=x86-64 -version -fintrinsic-modules-path /usr/lib/gcc/x86_64-redhat-linux/15/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/cch9lI1c.s
+        GNU Fortran (GCC) version 15.2.1 20260123 (Red Hat 15.2.1-7) (x86_64-redhat-linux)
+        	compiled by GNU C version 15.2.1 20260123 (Red Hat 15.2.1-7), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/../../../../x86_64-redhat-linux/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-redhat-linux/15/finclude
+         /usr/lib/gcc/x86_64-redhat-linux/15/include
+         /usr/local/include
+         /usr/include
+        End of search list.
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/'
+         as -v --64 -o CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o /tmp/cch9lI1c.s
+        GNU assembler version 2.45.1 (x86_64-redhat-linux) using BFD version version 2.45.1-4.fc43
+        COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.'
+        Linking Fortran executable cmTC_77ca0
+        /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_77ca0.dir/link.txt --verbose=1
+        Driving: /usr/bin/f95 -v -Wl,-v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -o cmTC_77ca0 -l gfortran -l m -shared-libgcc
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/f95
+        COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-redhat-linux
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) 
+        Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec
+        rename spec lib to liborig
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_77ca0' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_77ca0-'
+        COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_77ca0' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_77ca0.'
+         /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccf0zpz5.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_77ca0 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o
+        collect2 version 15.2.1 20260123 (Red Hat 15.2.1-7)
+        /usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccf0zpz5.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_77ca0 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o
+        GNU ld version 2.45.1-4.fc43
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_77ca0' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_77ca0.'
+        /usr/bin/f95  -v -Wl,-v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -o cmTC_77ca0
+        gmake[1]: Leaving directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:16 (project)"
+    message: |
+      Parsed Fortran implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-redhat-linux/15/finclude]
+          add: [/usr/lib/gcc/x86_64-redhat-linux/15/include]
+          add: [/usr/local/include]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-redhat-linux/15/finclude] ==> [/usr/lib/gcc/x86_64-redhat-linux/15/finclude]
+        collapse include dir [/usr/lib/gcc/x86_64-redhat-linux/15/include] ==> [/usr/lib/gcc/x86_64-redhat-linux/15/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/gcc/x86_64-redhat-linux/15/finclude;/usr/lib/gcc/x86_64-redhat-linux/15/include;/usr/local/include;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:16 (project)"
+    message: |
+      Parsed Fortran implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_77ca0/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_77ca0.dir/build.make CMakeFiles/cmTC_77ca0.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Yfn428']
+        ignore line: [Building Fortran object CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o]
+        ignore line: [/usr/bin/f95   -v -c /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -o CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/f95]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-redhat-linux]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/']
+        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/15/f951 /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -cpp=/tmp/cciD6Anh.fii -quiet -v /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeFortranCompilerABI.F90 -quiet -dumpdir CMakeFiles/cmTC_77ca0.dir/ -dumpbase CMakeFortranCompilerABI.F90.F90 -dumpbase-ext .F90 -mtune=generic -march=x86-64 -version -fintrinsic-modules-path /usr/lib/gcc/x86_64-redhat-linux/15/finclude -fpre-include=/usr/include/finclude/math-vector-fortran.h -o /tmp/cch9lI1c.s]
+        ignore line: [GNU Fortran (GCC) version 15.2.1 20260123 (Red Hat 15.2.1-7) (x86_64-redhat-linux)]
+        ignore line: [	compiled by GNU C version 15.2.1 20260123 (Red Hat 15.2.1-7)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.3.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/15/../../../../x86_64-redhat-linux/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-redhat-linux/15/finclude]
+        ignore line: [ /usr/lib/gcc/x86_64-redhat-linux/15/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o /tmp/cch9lI1c.s]
+        ignore line: [GNU assembler version 2.45.1 (x86_64-redhat-linux) using BFD version version 2.45.1-4.fc43]
+        ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-c' '-o' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.']
+        ignore line: [Linking Fortran executable cmTC_77ca0]
+        ignore line: [/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_77ca0.dir/link.txt --verbose=1]
+        ignore line: [Driving: /usr/bin/f95 -v -Wl -v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -o cmTC_77ca0 -l gfortran -l m -shared-libgcc]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/f95]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-redhat-linux]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) ]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec]
+        ignore line: [rename spec lib to liborig]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_77ca0' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_77ca0-']
+        ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_77ca0' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_77ca0.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccf0zpz5.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_77ca0 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o]
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccf0zpz5.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lquadmath] ==> ignore
+          arg [-plugin-opt=-pass-through=-lm] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--no-add-needed] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_77ca0] ==> ignore
+          arg [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o]
+          arg [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o]
+          arg [/usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o] ==> ignore
+          arg [-lgfortran] ==> lib [gfortran]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lquadmath] ==> lib [quadmath]
+          arg [--no-as-needed] ==> ignore
+          arg [-lm] ==> lib [m]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-redhat-linux/15/crtend.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/15/crtend.o]
+          arg [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o]
+        ignore line: [collect2 version 15.2.1 20260123 (Red Hat 15.2.1-7)]
+        ignore line: [/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccf0zpz5.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_77ca0 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_77ca0.dir/CMakeFortranCompilerABI.F90.o -lgfortran -lm -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o]
+        linker tool for 'Fortran': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o] ==> [/usr/lib64/crt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o] ==> [/usr/lib64/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o] ==> [/usr/lib64/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15] ==> [/usr/lib/gcc/x86_64-redhat-linux/15]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> [/usr/lib]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [gfortran;m;gcc_s;gcc;quadmath;m;c;gcc_s;gcc]
+        implicit objs: [/usr/lib64/crt1.o;/usr/lib64/crti.o;/usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o;/usr/lib/gcc/x86_64-redhat-linux/15/crtend.o;/usr/lib64/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-redhat-linux/15;/usr/lib64;/lib64;/usr/lib;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/CMakeTestFortranCompiler.cmake:20 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:16 (project)"
+    message: |
+      Running the Fortran compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld version 2.45.1-4.fc43
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:333 (try_compile)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:659 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    description: "Detecting Fortran OpenMP compiler info"
+    directories:
+      source: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D"
+      binary: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_FortranHeader_fopenmp"
+      cached: true
+      stdout: |
+        Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D'
+        
+        Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a87d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_2a87d.dir/build.make CMakeFiles/cmTC_2a87d.dir/build
+        gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D'
+        Building Fortran object CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o
+        /usr/bin/f95   -fopenmp -c /home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D/OpenMPTryFlag.F90 -o CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o
+        Linking Fortran executable cmTC_2a87d
+        /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a87d.dir/link.txt --verbose=1
+        Driving: /usr/bin/f95 -v -fopenmp CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o -o cmTC_2a87d -l gfortran -l m -shared-libgcc
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/f95
+        COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-redhat-linux
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) 
+        Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec
+        rename spec lib to liborig
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_2a87d' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_2a87d-'
+        COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/
+        Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.spec
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_2a87d' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_2a87d.'
+         /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccm8aR96.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_2a87d /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o -lgfortran -lm -lgomp -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lpthread -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadend.o
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_2a87d' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_2a87d.'
+        /usr/bin/f95 -v  -fopenmp CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o -o cmTC_2a87d
+        gmake[1]: Leaving directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:377 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:659 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    message: |
+      Parsed Fortran OpenMP implicit link information from above output:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a87d/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_2a87d.dir/build.make CMakeFiles/cmTC_2a87d.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D']
+        ignore line: [Building Fortran object CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o]
+        ignore line: [/usr/bin/f95   -fopenmp -c /home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Wuzy3D/OpenMPTryFlag.F90 -o CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o]
+        ignore line: [Linking Fortran executable cmTC_2a87d]
+        ignore line: [/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a87d.dir/link.txt --verbose=1]
+        ignore line: [Driving: /usr/bin/f95 -v -fopenmp CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o -o cmTC_2a87d -l gfortran -l m -shared-libgcc]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/f95]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-redhat-linux]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) ]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec]
+        ignore line: [rename spec lib to liborig]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_2a87d' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_2a87d-']
+        ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.spec]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_2a87d' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_2a87d.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/ccm8aR96.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_2a87d /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o -lgfortran -lm -lgomp -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lpthread -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadend.o]
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccm8aR96.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lquadmath] ==> ignore
+          arg [-plugin-opt=-pass-through=-lm] ==> ignore
+          arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--no-add-needed] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_2a87d] ==> ignore
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [CMakeFiles/cmTC_2a87d.dir/OpenMPTryFlag.F90.o] ==> ignore
+          arg [-lgfortran] ==> lib [gfortran]
+          arg [-lm] ==> lib [m]
+          arg [-lgomp] ==> lib [gomp]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lquadmath] ==> lib [quadmath]
+          arg [--no-as-needed] ==> ignore
+          arg [-lm] ==> lib [m]
+          arg [-lpthread] ==> lib [pthread]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15] ==> [/usr/lib/gcc/x86_64-redhat-linux/15]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> [/usr/lib]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [gfortran;m;gomp;gcc_s;gcc;quadmath;m;pthread;c;gcc_s;gcc]
+        implicit objs: []
+        implicit dirs: [/usr/lib/gcc/x86_64-redhat-linux/15;/usr/lib64;/lib64;/usr/lib;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:395 (find_library)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:659 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    mode: "library"
+    variable: "OpenMP_gomp_LIBRARY"
+    description: "Path to the gomp library for OpenMP"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gomp"
+    candidate_directories:
+      - "/usr/lib/gcc/x86_64-redhat-linux/15/"
+      - "/usr/lib64/"
+      - "/lib64/"
+      - "/usr/lib64/"
+      - "/usr/lib/"
+      - "/lib64/"
+      - "/lib/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+      - "/usr/local/lib64/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib64/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/lib64/"
+      - "/lib/"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/"
+      - "/opt/"
+      - "/usr/lib64/X11/"
+    found: "/usr/lib/gcc/x86_64-redhat-linux/15/libgomp.so"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:395 (find_library)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:659 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    mode: "library"
+    variable: "OpenMP_pthread_LIBRARY"
+    description: "Path to the pthread library for OpenMP"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "pthread"
+    candidate_directories:
+      - "/usr/lib/gcc/x86_64-redhat-linux/15/"
+      - "/usr/lib64/"
+      - "/lib64/"
+      - "/usr/lib64/"
+      - "/usr/lib/"
+      - "/lib64/"
+      - "/lib/"
+      - "/home/yuan/.mimocode/bin/"
+      - "/usr/lib/wsl/lib/"
+      - "/home/yuan/.opencode/bin/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli/"
+      - "/home/yuan/.nvm/versions/node/v24.12.0/bin/"
+      - "/home/yuan/miniconda3/bin/"
+      - "/home/yuan/miniconda3/condabin/"
+      - "/home/yuan/.local/bin/"
+      - "/usr/share/Modules/bin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts/"
+      - "/usr/local/lib64/"
+      - "/usr/local/lib/"
+      - "/usr/local/"
+      - "/usr/lib64/"
+      - "/usr/lib/"
+      - "/usr/"
+      - "/lib64/"
+      - "/lib/"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/"
+      - "/opt/"
+      - "/usr/lib64/X11/"
+    searched_directories:
+      - "/usr/lib/gcc/x86_64-redhat-linux/15/"
+    found: "/usr/lib64/libpthread.a"
+    search_context:
+      ENV{PATH}:
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/yuan/.vscode-server/data/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/home/yuan/.vscode-server/cli/servers/Stable-a5b500951314efd502d07465bd138dfbd714a960/server/bin/remote-cli"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.mimocode/bin"
+        - "/usr/lib/wsl/lib"
+        - "/home/yuan/.opencode/bin"
+        - "/home/yuan/.nvm/versions/node/v24.12.0/bin"
+        - "/home/yuan/miniconda3/bin"
+        - "/home/yuan/miniconda3/condabin"
+        - "/home/yuan/.local/bin"
+        - "/home/yuan/bin"
+        - "/usr/share/Modules/bin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+        - "/home/yuan/.vscode-server/extensions/ms-python.debugpy-2026.6.0-linux-x64/bundled/scripts/noConfigScripts"
+        - "/home/yuan/.local/bin"
+        - "/mnt/c/Program Files/NVIDIA Corporation/NVSMI"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_LIBRARY_PATH:
+        - "/usr/lib/X11"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:333 (try_compile)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:679 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    description: "Detecting Fortran OpenMP compiler info"
+    directories:
+      source: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh"
+      binary: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_FortranModule_fopenmp"
+      cached: true
+      stdout: |
+        Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh'
+        
+        Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_87276/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_87276.dir/build.make CMakeFiles/cmTC_87276.dir/build
+        gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh'
+        Building Fortran object CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o
+        /usr/bin/f95   -fopenmp -c /home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh/OpenMPTryFlag.F90 -o CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o
+        Linking Fortran executable cmTC_87276
+        /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87276.dir/link.txt --verbose=1
+        Driving: /usr/bin/f95 -v -fopenmp CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o -o cmTC_87276 -l gfortran -l m -shared-libgcc
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/f95
+        COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-redhat-linux
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) 
+        Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec
+        rename spec lib to liborig
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_87276' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_87276-'
+        COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/
+        Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.spec
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_87276' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_87276.'
+         /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/cc3Tlqp8.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_87276 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o -lgfortran -lm -lgomp -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lpthread -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadend.o
+        COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_87276' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_87276.'
+        /usr/bin/f95 -v  -fopenmp CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o -o cmTC_87276
+        gmake[1]: Leaving directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:377 (message)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:679 (_OPENMP_GET_FLAGS)"
+      - "CMakeLists.txt:26 (find_package)"
+    message: |
+      Parsed Fortran OpenMP implicit link information from above output:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_87276/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_87276.dir/build.make CMakeFiles/cmTC_87276.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh']
+        ignore line: [Building Fortran object CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o]
+        ignore line: [/usr/bin/f95   -fopenmp -c /home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-IMzpJh/OpenMPTryFlag.F90 -o CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o]
+        ignore line: [Linking Fortran executable cmTC_87276]
+        ignore line: [/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_87276.dir/link.txt --verbose=1]
+        ignore line: [Driving: /usr/bin/f95 -v -fopenmp CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o -o cmTC_87276 -l gfortran -l m -shared-libgcc]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/f95]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-redhat-linux]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-15.2.1-build/gcc-15.2.1-20260123/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20260123 (Red Hat 15.2.1-7) (GCC) ]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgfortran.spec]
+        ignore line: [rename spec lib to liborig]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_87276' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_87276-']
+        ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/15/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/15/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/15/../../../:/lib/:/usr/lib/]
+        ignore line: [Reading specs from /usr/lib/gcc/x86_64-redhat-linux/15/libgomp.spec]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-fopenmp' '-o' 'cmTC_87276' '-foffload-options=-l_GCC_gfortran' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-pthread' '-dumpdir' 'cmTC_87276.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/15/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper -plugin-opt=-fresolution=/tmp/cc3Tlqp8.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lquadmath -plugin-opt=-pass-through=-lm -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_87276 /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/15/crtbegin.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/15 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/15/../../.. -L/lib -L/usr/lib CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o -lgfortran -lm -lgomp -lgcc_s -lgcc --as-needed -lquadmath --no-as-needed -lm -lpthread -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/15/crtend.o /usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64/crtn.o /usr/lib/gcc/x86_64-redhat-linux/15/crtoffloadend.o]
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/libexec/gcc/x86_64-redhat-linux/15/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/15/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/cc3Tlqp8.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lquadmath] ==> ignore
+          arg [-plugin-opt=-pass-through=-lm] ==> ignore
+          arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--no-add-needed] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_87276] ==> ignore
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+          arg [-L/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [CMakeFiles/cmTC_87276.dir/OpenMPTryFlag.F90.o] ==> ignore
+          arg [-lgfortran] ==> lib [gfortran]
+          arg [-lm] ==> lib [m]
+          arg [-lgomp] ==> lib [gomp]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lquadmath] ==> lib [quadmath]
+          arg [--no-as-needed] ==> ignore
+          arg [-lm] ==> lib [m]
+          arg [-lpthread] ==> lib [pthread]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15] ==> [/usr/lib/gcc/x86_64-redhat-linux/15]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+        collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/15/../../..] ==> [/usr/lib]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [gfortran;m;gomp;gcc_s;gcc;quadmath;m;pthread;c;gcc_s;gcc]
+        implicit objs: []
+        implicit dirs: [/usr/lib/gcc/x86_64-redhat-linux/15;/usr/lib64;/lib64;/usr/lib;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:574 (try_compile)"
+      - "/home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/share/cmake-4.3/Modules/FindOpenMP.cmake:714 (_OPENMP_GET_SPEC_DATE)"
+      - "CMakeLists.txt:26 (find_package)"
+    description: "Detecting Fortran OpenMP version"
+    directories:
+      source: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e"
+      binary: "/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e"
+    cmakeVariables:
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_Fortran_FLAGS: ""
+      CMAKE_Fortran_FLAGS_DEBUG: "-g"
+    buildResult:
+      variable: "OpenMP_SPECTEST_Fortran_"
+      cached: true
+      stdout: |
+        Change Dir: '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e'
+        
+        Run Build Command(s): /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_5d5bb/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_5d5bb.dir/build.make CMakeFiles/cmTC_5d5bb.dir/build
+        gmake[1]: Entering directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e'
+        Building Fortran object CMakeFiles/cmTC_5d5bb.dir/OpenMPCheckVersion.F90.o
+        /usr/bin/f95   -fopenmp -c /home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e/OpenMPCheckVersion.F90 -o CMakeFiles/cmTC_5d5bb.dir/OpenMPCheckVersion.F90.o
+        Linking Fortran executable cmTC_5d5bb
+        /home/yuan/miniconda3/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5d5bb.dir/link.txt --verbose=1
+        /usr/bin/f95  -fopenmp CMakeFiles/cmTC_5d5bb.dir/OpenMPCheckVersion.F90.o -o cmTC_5d5bb
+        gmake[1]: Leaving directory '/home/yuan/code/CNCHASH/build-native/CMakeFiles/CMakeScratch/TryCompile-Nsay7e'
+        
+      exitCode: 0
+...

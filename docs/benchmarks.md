@@ -7,7 +7,7 @@
 Synthetic events with uniform full-focal-sphere coverage: without
 polarity errors CNCHASH recovers 10/10 known mechanisms (median Kagan
 rotation ~8 deg, the dang=5 grid discretization floor); with ~10%
-flipped polarities 8/10 remain within 25 deg. These checks are part of
+flipped polarities 9/10 remain within 25 deg. These checks are part of
 the test suite (tests/test_accuracy.py).
 
 **Note:** Strike differences (40-80 deg) are normal - focal mechanisms

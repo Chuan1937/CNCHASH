@@ -24,10 +24,10 @@ event-level batch parallelism scale across cores.
 
 | Backend build          | ms/event |
 |------------------------|----------|
-| Portable, 1 thread     | ~47      |
-| Portable, 4 threads    | ~21      |
-| Native (AVX2), 1 thread| ~19      |
-| Native (AVX2), 16 threads | ~4    |
+| Portable, 1 thread     | ~49      |
+| Portable, 4 threads    | ~19      |
+| Native (AVX2), 1 thread| ~23      |
+| Native (AVX2), 16 threads | ~7    |
 | Original HASH v1.2     | ~145     |
 
 The native build (`-DCNCHASH_NATIVE_MARCH=ON`) is roughly 2.5x faster
@@ -38,11 +38,12 @@ should only be used on the machine it was compiled for.
 
 ![Accuracy Verification](docs/images/accuracy_verification.png)
 
-**Key Results:**
-- CNCHASH dip error median: 5.6°
-- CNCHASH rake error median: 24.1°
-- CNCHASH synthetic trials: 300/300 successful solutions
-- HASH v1.2 synthetic trials: 60/60 successful solutions (direct-runs)
+**Key Results:** (see tests/test_accuracy.py)
+- Synthetic recovery without polarity errors: 10/10 mechanisms, median
+  Kagan rotation ~8° (dang=5 grid discretization floor)
+- With ~10% flipped polarities: 9/10 within the 25° acceptance angle
+- Acceptable-mechanism sets identical to the original HASH v1.2 on the
+  same inputs (golden-reference tests)
 
 **Note:** Strike differences (40-80°) are normal - focal mechanisms have two orthogonal nodal planes that both satisfy polarity data.
 

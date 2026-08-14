@@ -1,0 +1,24 @@
+file(REMOVE_RECURSE
+  ".1"
+  "CMakeFiles/hashhp.dir/link.d"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_amplitude.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_batch.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_c_api.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_focalmc.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_geometry.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_kinds.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_misfit.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_rotation.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_runtime.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_uncertainty.f90.o"
+  "CMakeFiles/hashhp.dir/src/hash_hp/hash_velocity.f90.o"
+  "libhashhp.pdb"
+  "libhashhp.so"
+  "libhashhp.so.1"
+  "libhashhp.so.1.0.0"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang Fortran)
+  include(CMakeFiles/hashhp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
