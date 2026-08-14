@@ -5,6 +5,7 @@ Outputs docs/images/speed_comparison.png and accuracy_verification.png.
 """
 
 import os
+import sys
 
 import matplotlib
 
@@ -16,10 +17,9 @@ from cnchash import backend as backend_mod
 from cnchash import run_hash
 from cnchash.utils import fp_coord_angles_to_vectors
 
-sys_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tests")
-import sys
-
-sys.path.insert(0, sys_path)
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tests")
+)
 from test_accuracy import MECHANISMS, kagan_angle, make_synthetic_event  # noqa: E402
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -99,7 +99,7 @@ def main():
         ORIGINAL_MS,
     ]
     values = [v for v in values if v is not None]
-    labels = [l for l, v in zip(labels, values, strict=True) if v is not None]
+    labels = [lab for lab, _v in zip(labels, values, strict=True) if _v is not None]
 
     fig, ax = plt.subplots(figsize=(9, 5))
     bars = ax.bar(labels, values, color=["#4C72B0", "#55A868", "#DD8452", "#C44E52", "#8172B3"])
