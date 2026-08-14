@@ -1,0 +1,23 @@
+CNCHASH 文档
+============
+
+`English <https://chuan1937.github.io/CNCHASH/>`_ | **中文**
+
+基于 Modern Fortran/OpenMP 核心与 Python 前端的 HASH 地震震源机制解算
+高性能实现。
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 内容:
+
+   installation
+   usage
+   native_backend
+   benchmarks
+   api
+
+索引和表格
+==========
+
+* :ref:`genindex`
+* :ref:`search`

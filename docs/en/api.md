@@ -66,6 +66,14 @@ result = run_hash_with_amp(p_azi, p_the, p_pol, sp_amp, **kwargs)
 
 ---
 
+### run_hash_batch() / run_hash_batch_with_amp()
+
+Process many events in one native call (event-level OpenMP).
+
+```python
+results = run_hash_batch(events, nmc=30, backend="fortran", num_threads=16)
+```
+
 ### run_hash_from_file()
 
 Process events from HASH input file.
@@ -100,38 +108,42 @@ results = run_hash_from_file("example.inp")
 
 ---
 
-## Low-Level Functions
+## Low-Level Backend Methods
 
-### focalmc()
+These live on the Fortran backend instance (via `backend.get_backend("fortran")`)
+and are used by the test suite to pin results to the original HASH:
 
-Core grid search algorithm.
+### run_event()
 
-```python
-result = focalmc(p_azi_mc, p_the_mc, p_pol, p_qual, npol, nmc, dang, maxout, nextra, ntotal)
-```
+Full polarity-only pipeline for one event (equivalent to `run_hash` without
+input normalization).
 
-Returns all acceptable mechanisms with fault normals and slip vectors.
+### run_event_amp()
 
-### get_misfit()
+Full polarity + S/P amplitude pipeline for one event.
 
-Calculate polarity misfit.
+### run_batch() / run_batch_amp()
 
-```python
-mfrac, stdr = get_misfit(npol, p_azi, p_the, p_pol, p_qual, strike, dip, rake)
-```
-
-### get_gap()
-
-Calculate azimuthal and plunge gaps.
-
-```python
-magap, mpgap = get_gap(npol, p_azi, p_the)
-```
+Batch pipelines (CSR-style flat arrays) used by `run_hash_batch` and
+`run_hash_batch_with_amp`.
 
 ### mech_prob()
 
-Calculate mechanism probability and average.
+Preferred mechanism(s) and probability from a set of acceptable mechanisms.
 
 ```python
-result = mech_prob(nf, norm1, norm2, cangle=45.0, prob_max=0.1)
+result = backend.mech_prob(nf, faults, slips, cangle=45.0, prob_max=0.1)
 ```
+
+### get_misfit() / get_misfit_amp() / get_gap()
+
+Misfit fractions, station distribution ratio, and azimuthal/takeoff gaps for
+a given mechanism.
+
+### build_velocity_table() / get_tts()
+
+Takeoff-angle table construction and interpolation for 1D velocity models.
+
+### get_rotation_grid()
+
+The cached rotation grid for a given `dang` (b1/b2/b3 direction cosines).

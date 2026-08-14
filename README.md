@@ -4,6 +4,8 @@ High-performance implementation of HASH for earthquake focal-mechanism
 determination from P-wave polarities, built on a **Modern Fortran/OpenMP
 native backend** with a clean Python front-end.
 
+**English** | [中文](./README.zh-CN.md)
+
 ![Python](https://img.shields.io/badge/python-3.10+-orange.svg)
 ![License](https://img.shields.io/badge/license-BSD%203--blue.svg)
 ![Fortran](https://img.shields.io/badge/fortran-modern%20fortran-orange.svg)

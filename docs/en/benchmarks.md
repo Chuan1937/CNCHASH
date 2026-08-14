@@ -2,7 +2,7 @@
 
 ## Accuracy (synthetic recovery)
 
-![Accuracy Verification](images/accuracy_verification.png)
+![Accuracy Verification](../images/accuracy_verification.png)
 
 Synthetic events with uniform full-focal-sphere coverage: without
 polarity errors CNCHASH recovers 10/10 known mechanisms (median Kagan
