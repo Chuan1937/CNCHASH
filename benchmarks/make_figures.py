@@ -99,11 +99,11 @@ def main():
         ORIGINAL_MS,
     ]
     values = [v for v in values if v is not None]
-    labels = [l for l, v in zip(labels, values) if v is not None]
+    labels = [l for l, v in zip(labels, values, strict=True) if v is not None]
 
     fig, ax = plt.subplots(figsize=(9, 5))
     bars = ax.bar(labels, values, color=["#4C72B0", "#55A868", "#DD8452", "#C44E52", "#8172B3"])
-    for b, v in zip(bars, values):
+    for b, v in zip(bars, values, strict=True):
         ax.text(b.get_x() + b.get_width() / 2, v * 1.02, f"{v:.1f}", ha="center", fontsize=11)
     ax.set_ylabel("ms / event (30 stations, nmc=30)")
     ax.set_title("CNCHASH vs original HASH v1.2 (same machine)")
