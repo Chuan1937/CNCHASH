@@ -23,12 +23,12 @@ requirements:
     - pip
     - setuptools >=61
     - wheel
-    - numpy >=1.20
   run:
     - python
     - numpy >=1.20
-    # libgfortran5 and _openmp_mutex are added automatically by the
-    # compiler run_exports.
+    # OpenMP runtime: on linux the compiler run_exports no longer add
+    # _openmp_mutex, so declare it explicitly.
+    - _openmp_mutex  # [linux]
 
 test:
   imports:
