@@ -1,0 +1,4 @@
+include CMakeLists.txt
+include LICENSE
+recursive-include src/hash_hp *.f90
+recursive-include conda-recipe *.yaml *.sh *.py *.bat
