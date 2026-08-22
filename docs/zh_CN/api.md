@@ -145,3 +145,36 @@ result = backend.mech_prob(nf, faults, slips, cangle=45.0, prob_max=0.1)
 ### get_rotation_grid()
 
 给定 `dang` 的旋转网格缓存（b1/b2/b3 方向余弦）。
+
+---
+
+## 离源角 API
+
+原生速度表之上的公开封装（`cnchash.takeoff`）：
+
+| 接口 | 说明 |
+|------|------|
+| `TakeoffTable(depth, velocity, params=None, backend="auto")` | 由一维速度模型构建离源角表（MK_TABLE）；按模型内容缓存复用 |
+| `TakeoffTable.takeoff(distance, source_depth)` | 单点查询；超出可用范围抛 `TakeoffRangeError` |
+| `TakeoffTable.takeoff_batch(distances, source_depths)` | 向量化查询（支持广播）；超出范围返回 NaN |
+| `compute_takeoff_angles(depth, velocity, distances, source_depths, ...)` | 便捷函数：建表 + 批量查询一步完成 |
+| `DEFAULT_TABLE_PARAMS` | 默认表参数（距离 0-120 km 步长 1，深度 0-35 km 步长 1，nump 1000） |
+
+离源角约定：自竖直方向量起，0° = 垂直向上，90° = 水平，180° = 垂直向下。
+
+---
+
+## 完整原版 HASH 覆盖
+
+Python 接口完整覆盖原版 Fortran 功能：
+
+| 原版 Fortran | Python 接口 |
+|--------------|-------------|
+| driver1（FPFIT 文件内离源角） | `read_phase_file` 自动解析方位角/离源角/不确定度；`process_event` 按台站不确定度 Monte Carlo |
+| driver2（速度模型表） | `velocity_models` 参数 + `TakeoffTable`；深度扰动 + 模型轮换 |
+| driver3（S/P 振幅比） | `read_amp_file` + `read_statcor_file` + `ratmin` SNR 过滤；自动走 `run_hash_with_amp` |
+| driver5（SIMULPS 离源角） | `read_simul_takeoff_file` + `simul` 参数；按事件 ID/台站名匹配极性 |
+| CHECK_POL / GETSTAT | `read_polarity_reversal_file` / `read_station_file`（含 TRI 格式） |
+| MK_TABLE / GET_TTS | `TakeoffTable` / `compute_takeoff_angles` |
+| MECH_ROT | `kagan_angle(n1, s1, n2, s2)`（原生绑定） |
+| 核心版本 | `backend.get_backend("fortran").native_version()` |

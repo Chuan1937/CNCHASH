@@ -194,10 +194,18 @@ class HashBackend(ABC):
     def build_velocity_table(self, depth, velocity, params=None):
         """Takeoff-angle table from a 1D velocity model.
 
-        Returns a dict with keys table/delttab/deptab/ndel/ndep.
+        Returns a dict with keys table/delttab/deptab/ndel/ndep/ip.
         """
         raise NotImplementedError
 
     def get_tts(self, ip, del_dist, qdep):
         """Interpolate a takeoff angle from a built table: (tt, iflag)."""
+        raise NotImplementedError
+
+    def mech_rot(self, n1, s1, n2, s2):
+        """Minimum rotation (Kagan) angle between two mechanisms."""
+        raise NotImplementedError
+
+    def native_version(self):
+        """Version of the native computation core."""
         raise NotImplementedError

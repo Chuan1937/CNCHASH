@@ -380,6 +380,30 @@ def vector_length(v):
     return math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
 
 
+def kagan_angle(n1, s1, n2, s2):
+    """Minimum rotation (Kagan) angle between two focal mechanisms.
+
+    Each mechanism is given by its fault-normal (n) and slip (s)
+    3-vectors. Backed by the native MECH_ROT (the original HASH
+    uncert_subs.f subroutine).
+
+    Parameters
+    ----------
+    n1, s1 : array_like
+        Fault normal and slip vectors of the first mechanism.
+    n2, s2 : array_like
+        Fault normal and slip vectors of the second mechanism.
+
+    Returns
+    -------
+    float
+        Minimum rotation angle in degrees (0 = identical mechanisms).
+    """
+    from . import backend
+
+    return backend.get_backend("auto").mech_rot(n1, s1, n2, s2)
+
+
 # Export all utility functions
 __all__ = [
     "cross_product",
@@ -397,4 +421,5 @@ __all__ = [
     "normalize_vectors_array",
     "dot_product",
     "vector_length",
+    "kagan_angle",
 ]

@@ -147,3 +147,37 @@ Takeoff-angle table construction and interpolation for 1D velocity models.
 ### get_rotation_grid()
 
 The cached rotation grid for a given `dang` (b1/b2/b3 direction cosines).
+
+---
+
+## Takeoff Angle API
+
+Public wrappers over the native velocity tables (`cnchash.takeoff`):
+
+| Callable | Description |
+|----------|-------------|
+| `TakeoffTable(depth, velocity, params=None, backend="auto")` | Build a takeoff-angle table from a 1D velocity model (MK_TABLE). Tables are cached per model content |
+| `TakeoffTable.takeoff(distance, source_depth)` | Scalar lookup; raises `TakeoffRangeError` outside the usable range |
+| `TakeoffTable.takeoff_batch(distances, source_depths)` | Vectorized lookup with broadcasting; NaN outside the range |
+| `compute_takeoff_angles(depth, velocity, distances, source_depths, ...)` | One-shot convenience: build table and look up |
+| `DEFAULT_TABLE_PARAMS` | Default table ranges (del 0-120 km step 1, dep 0-35 km step 1, nump 1000) |
+
+Convention: degrees from the vertical, 0 = straight up, 90 =
+horizontal, 180 = straight down.
+
+---
+
+## Complete Original-HASH Coverage
+
+The Python interface covers the full original Fortran functionality:
+
+| Original Fortran | Python interface |
+|------------------|------------------|
+| driver1 (FPFIT file takeoffs) | `read_phase_file` parses file azimuth/takeoff/uncertainties; `process_event` Monte Carlos with per-station uncertainties |
+| driver2 (velocity tables) | `velocity_models` argument + `TakeoffTable`; depth perturbation + model rotation |
+| driver3 (S/P amplitudes) | `read_amp_file` + `read_statcor_file` + `ratmin` SNR filtering; automatically runs `run_hash_with_amp` |
+| driver5 (SIMULPS takeoffs) | `read_simul_takeoff_file` + `simul` argument; polarities matched by event id/station name |
+| CHECK_POL / GETSTAT | `read_polarity_reversal_file` / `read_station_file` (incl. TRI format) |
+| MK_TABLE / GET_TTS | `TakeoffTable` / `compute_takeoff_angles` |
+| MECH_ROT | `kagan_angle(n1, s1, n2, s2)` (native binding) |
+| Core version | `backend.get_backend("fortran").native_version()` |

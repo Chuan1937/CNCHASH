@@ -28,14 +28,25 @@ from .driver import (
     run_hash_with_amp,
 )
 from .io import (
+    read_amp_file,
     read_phase_file,
+    read_polarity_reversal_file,
+    read_simul_takeoff_file,
+    read_statcor_file,
     read_station_file,
     read_velocity_model,
     write_mechanism_output,
 )
+from .takeoff import (
+    DEFAULT_TABLE_PARAMS,
+    TakeoffRangeError,
+    TakeoffTable,
+    compute_takeoff_angles,
+)
 from .utils import (
     cross_product,
     fp_coord,
+    kagan_angle,
     normal_distribution_random,
     strike_dip_rake_to_vectors,
     to_cartesian,
@@ -55,10 +66,16 @@ __all__ = [
     "get_backend_info",
     "set_num_threads",
     "get_num_threads",
+    # Takeoff angles from 1D velocity models
+    "TakeoffTable",
+    "TakeoffRangeError",
+    "compute_takeoff_angles",
+    "DEFAULT_TABLE_PARAMS",
     # Utilities
     "cross_product",
     "to_cartesian",
     "fp_coord",
+    "kagan_angle",
     "normal_distribution_random",
     "strike_dip_rake_to_vectors",
     "vectors_to_strike_dip_rake",
@@ -66,5 +83,9 @@ __all__ = [
     "read_phase_file",
     "read_station_file",
     "read_velocity_model",
+    "read_amp_file",
+    "read_statcor_file",
+    "read_simul_takeoff_file",
+    "read_polarity_reversal_file",
     "write_mechanism_output",
 ]

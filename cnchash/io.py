@@ -312,15 +312,32 @@ def _parse_phase_format1(lines):
                         channel = parts[-1] if len(parts) > 5 else "VHZ"
                         network = "CI"
 
-                        event["stations"].append(
-                            {
-                                "name": station,
-                                "network": network,
-                                "component": channel,
-                                "onset": onset,
-                                "polarity": polarity,
-                            }
-                        )
+                        station_data = {
+                            "name": station,
+                            "network": network,
+                            "component": channel,
+                            "onset": onset,
+                            "polarity": polarity,
+                        }
+
+                        # File-provided geometry (original hash_driver1.f
+                        # fixed columns): distance f4.1 + incidence i3,
+                        # azimuth i3, takeoff/azimuth uncertainties i3.
+                        # Takeoff is stored as angle from vertical with
+                        # 0 = up (HASH convention), i.e. 180 - incidence.
+                        raw_line = lines[i]
+                        if len(raw_line) >= 86:
+                            try:
+                                # f4.1: one implied decimal (e.g. " 258" = 25.8 km)
+                                station_data["distance"] = float(raw_line[58:62]) / 10.0
+                                station_data["the"] = 180.0 - float(raw_line[62:65])
+                                station_data["azi"] = float(raw_line[75:78])
+                                station_data["sthe"] = float(raw_line[79:82])
+                                station_data["sazi"] = float(raw_line[83:86])
+                            except ValueError:
+                                pass
+
+                        event["stations"].append(station_data)
 
                     i += 1
 
@@ -739,8 +756,7 @@ def _parse_phase_format3(lines):
 
                 events.append(event)
 
-            except (ValueError, IndexError) as e:
-                print(f"DEBUG format4: Exception at line {i}: {e}")  # DEBUG
+            except (ValueError, IndexError):
                 i += 1
                 continue
         else:
@@ -885,15 +901,23 @@ def _parse_phase_format4(lines):
                                     polarity = "U"
                             onset = "E" if len(prmk) > 1 and prmk[1] == "1" else "I"
 
-                        event["stations"].append(
-                            {
-                                "name": station,
-                                "network": "CI",
-                                "component": "HHZ",
-                                "onset": onset,
-                                "polarity": polarity,
-                            }
-                        )
+                        station_data = {
+                            "name": station,
+                            "network": "CI",
+                            "component": "HHZ",
+                            "onset": onset,
+                            "polarity": polarity,
+                        }
+                        # File-provided geometry from the SIMUL station
+                        # line: DIST AZ TOA; TOA is the incidence angle
+                        # from vertical, HASH takeoff = 180 - TOA.
+                        try:
+                            station_data["distance"] = float(stn_parts[1])
+                            station_data["azi"] = float(stn_parts[2])
+                            station_data["the"] = 180.0 - float(stn_parts[3])
+                        except (ValueError, IndexError):
+                            pass
+                        event["stations"].append(station_data)
 
                     i += 1
 
@@ -1084,6 +1108,155 @@ def read_velocity_model(filename):
     return np.array(depths), np.array(velocities)
 
 
+def read_amp_file(filename):
+    """Read an S/P amplitude-ratio file (hash_driver3.f ``ampfile``).
+
+    Format, per event::
+
+        <event_id> <nrecords>
+        STA  COMP NET  dist  az  p_noise  s_noise  p_amp  s_amp
+        ...
+
+    Parameters
+    ----------
+    filename : str
+        Path to the amplitude file.
+
+    Returns
+    -------
+    dict
+        Maps event id (string) to a list of station dicts with keys
+        name/component/network/distance/azi/p_noise/s_noise/p_amp/s_amp.
+    """
+    data = {}
+    with open(filename) as f:
+        lines = [line.rstrip("\n\r") for line in f]
+
+    current_id = None
+    for line in lines:
+        if not line.strip():
+            continue
+        parts = line.split()
+        if len(parts) == 2 and all(p.replace(".", "").isdigit() for p in parts):
+            # Event header: "<event_id> <nrecords>"
+            current_id = parts[0]
+            data.setdefault(current_id, [])
+            continue
+        if len(parts) >= 9 and current_id is not None:
+            try:
+                data[current_id].append(
+                    {
+                        "name": parts[0],
+                        "component": parts[1],
+                        "network": parts[2],
+                        "distance": float(parts[3]),
+                        "azi": float(parts[4]),
+                        "p_noise": float(parts[5]),
+                        "s_noise": float(parts[6]),
+                        "p_amp": float(parts[7]),
+                        "s_amp": float(parts[8]),
+                    }
+                )
+            except ValueError:
+                continue
+    return data
+
+
+def read_statcor_file(filename):
+    """Read a station amplitude-correction file (hash_driver3.f GET_COR).
+
+    Format: ``STA  COMP NET CORRECTION`` (e.g. "BRCY  EHZ XX -0.0550"),
+    station names in alphabetical order, like the original file.
+
+    Returns
+    -------
+    dict
+        Maps (name, component, network) to the log10 amplitude
+        correction.
+    """
+    corrections = {}
+    with open(filename) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) < 4:
+                continue
+            try:
+                corrections[(parts[0], parts[1], parts[2])] = float(parts[3])
+            except ValueError:
+                continue
+    return corrections
+
+
+def read_simul_takeoff_file(filename):
+    """Read a SIMULPS-format takeoff-angle file (hash_driver5.f).
+
+    The file contains, per event, a SIMUL-format event header followed
+    by station lines with fixed columns::
+
+        (1x,a4,1x,f5.1,i4,i4,46x,f4.0,f4.0)
+        name  range(km)  azimuth  incidence  [46 cols]  sazi  sthe
+
+    Returns
+    -------
+    dict
+        Maps event id (string) to a dict mapping station name to a dict
+        with keys distance/azi/the/sazi/sthe. ``the`` uses the HASH
+        convention (degrees from vertical, 0 = up): 180 - incidence.
+        Missing sazi/sthe default to 0.5, like the original driver.
+    """
+    data = {}
+    with open(filename, errors="ignore") as f:
+        lines = f.readlines()
+
+    current_id = None
+    i = 0
+    while i < len(lines):
+        raw = lines[i].rstrip("\n\r")
+        i += 1
+        if not raw.strip() or raw.strip().startswith(("DATE", "STN")):
+            continue
+
+        # Event header: " 94 121 11 4 14.75 34N13.89 118W36.53 ... 3143312 0.22"
+        if re.match(r"^\s*\d{2}\s+\d{2,3}\s+\d+\s+\d+\s+\d+\.\d+", raw):
+            parts = raw.split()
+            event_id = next((p for p in parts if p.isdigit() and len(p) == 7), None)
+            if event_id is None:
+                current_id = None
+                continue
+            current_id = event_id
+            data.setdefault(current_id, {})
+            continue
+
+        # Station line, fixed columns of the original driver.
+        if len(raw) < 73 or not raw[1:5].strip():
+            continue
+        try:
+            name = raw[1:5].strip()
+            distance = float(raw[6:11])
+            azi = float(raw[11:15])
+            incidence = float(raw[15:19])
+            sazi = float(raw[65:69])
+            sthe = float(raw[69:73])
+        except ValueError:
+            continue
+        if sazi == 0.0:
+            sazi = 0.5
+        if sthe == 0.0:
+            sthe = 0.5
+        if current_id is not None and name:
+            data.setdefault(current_id, {})[name] = {
+                "distance": distance,
+                "azi": azi,
+                "the": 180.0 - incidence,
+                "sazi": sazi,
+                "sthe": sthe,
+            }
+    return data
+
+
 def read_hash_input_file(filename):
     """
     Read HASH input file (like example.inp).
@@ -1121,13 +1294,14 @@ def read_hash_input_file(filename):
         # Check if there are additional files before phasefile (format 3 has statcor and amp)
         third_line = lines[2].strip() if len(lines) > 2 else ""
         if third_line.endswith(".statcor") or third_line.endswith(".amp"):
-            # Format 3: stationfile, polfile, statcor, amp, phasefile, outfile1, params...
+            # Format 3: stationfile, polfile, statcor, amp, phasefile,
+            # outfile1, params... (no outfile2)
             params["statcor_file"] = lines[2].strip() if len(lines) > 2 else ""
             params["amp_file"] = lines[3].strip() if len(lines) > 3 else ""
             params["phasefile"] = lines[4].strip() if len(lines) > 4 else ""
             params["outfile1"] = lines[5].strip() if len(lines) > 5 else ""
-            params["outfile2"] = lines[6].strip() if len(lines) > 6 else ""
-            param_idx = 7
+            params["outfile2"] = ""
+            param_idx = 6
         else:
             # Format 2 or 4: stationfile, polfile, phasefile, outfile1, outfile2, params...
             params["phasefile"] = lines[2].strip() if len(lines) > 2 else ""
@@ -1177,14 +1351,18 @@ def read_hash_input_file(filename):
 
     # Collect numeric parameter values in order
     param_values = []
+    velocity_models = []
     for i in range(param_idx, len(lines)):
         line = lines[i].strip()
         if not line:
             continue
 
-        # Check if it's a velocity model file (starts with 'vz.')
+        # Velocity model file lines (e.g. 'vz.socal' or an absolute
+        # path) follow the numeric parameters; collect them and keep
+        # scanning so later numeric lines still count as parameters.
         if line.startswith("vz.") or line.startswith("/"):
-            break
+            velocity_models.append(line)
+            continue
 
         # Try to parse as number
         try:
@@ -1194,67 +1372,39 @@ def read_hash_input_file(filename):
 
         param_values.append(val)
 
-    # For Format 1 (example1), parameters are in this fixed order:
-    # npolmin, max_agap, max_pgap, dang, nmc, maxout, badfrac, delmax, cangle, prob_max
-    # For other formats, use heuristics based on value ranges
+    # Parameter order matches the original HASH drivers exactly:
+    #   driver1/2/4/5: npolmin, max_agap, max_pgap, dang, nmc, maxout,
+    #                  badfrac, delmax, cangle, prob_max
+    #   driver3:       npolmin, dang, nmc, maxout, ratmin, badfrac,
+    #                  qbadfac, delmax, cangle, prob_max
+    # Extra trailing values (e.g. the velocity-model count ntab in
+    # driver2 inputs) are ignored; the model list comes from the vz
+    # lines collected above.
 
-    if first_line.endswith(".simul"):
-        # Format 5: same order as Format 1
+    if "station" in first_line.lower() and param_idx == 6:
+        # Format 3 (statcor + amp files, hash_driver3.f order)
         if len(param_values) >= 1:
-            params["npolmin"] = int(param_values[0]) if param_values[0] >= 1 else params["npolmin"]
+            params["npolmin"] = int(param_values[0])
         if len(param_values) >= 2:
-            params["max_agap"] = param_values[1]
+            params["dang"] = param_values[1]
         if len(param_values) >= 3:
-            params["max_pgap"] = param_values[2]
+            params["nmc"] = int(param_values[2])
         if len(param_values) >= 4:
-            params["dang"] = param_values[3]
+            params["maxout"] = int(param_values[3])
         if len(param_values) >= 5:
-            params["nmc"] = int(param_values[4])
+            params["ratmin"] = param_values[4]
         if len(param_values) >= 6:
-            params["maxout"] = int(param_values[5])
+            params["badfrac"] = param_values[5]
         if len(param_values) >= 7:
-            params["badfrac"] = param_values[6]
+            params["qbadfac"] = param_values[6]
         if len(param_values) >= 8:
             params["delmax"] = param_values[7]
         if len(param_values) >= 9:
             params["cangle"] = param_values[8]
         if len(param_values) >= 10:
             params["prob_max"] = param_values[9]
-    elif "station" in first_line.lower() or first_line.endswith(".stations"):
-        # Format 2, 3, or 4: use heuristics based on value ranges
-        for val in param_values:
-            # npolmin: small integer (1-20)
-            if 1 <= val <= 20 and "npolmin" not in params:
-                params["npolmin"] = int(val)
-            # max_agap: 30-180 degrees (check first)
-            elif 30 <= val <= 180 and params["max_agap"] == 90.0:
-                params["max_agap"] = val
-            # max_pgap: 30-180 degrees (check after max_agap)
-            elif 30 <= val <= 180 and params["max_pgap"] == 60.0:
-                params["max_pgap"] = val
-            # dang: grid angle (1-30 degrees, smaller range)
-            elif 1 <= val <= 20 and params["dang"] == 10.0:
-                params["dang"] = val
-            # nmc: number of trials (5-1000)
-            elif 5 <= val <= 1000 and params["nmc"] == 30:
-                params["nmc"] = int(val)
-            # maxout: max output (10-10000)
-            elif 10 <= val <= 10000 and params["maxout"] == 500:
-                params["maxout"] = int(val)
-            # badfrac: 0.0-1.0
-            elif 0.0 <= val <= 1.0 and params["badfrac"] == 0.1:
-                params["badfrac"] = val
-            # delmax: max distance (50-1000 km)
-            elif 50 <= val <= 1000 and params["delmax"] == 120.0:
-                params["delmax"] = val
-            # cangle: angle cutoff (15-90 degrees)
-            elif 15 <= val <= 90 and params["cangle"] == 45.0:
-                params["cangle"] = val
-            # prob_max: 0.0-1.0 (second 0-1 value)
-            elif 0.0 <= val <= 1.0 and params["prob_max"] == 0.1:
-                params["prob_max"] = val
     else:
-        # Format 1: fixed order
+        # Formats 1, 2, 4, 5: fixed order
         if len(param_values) >= 1:
             params["npolmin"] = int(param_values[0])
         if len(param_values) >= 2:
@@ -1279,6 +1429,7 @@ def read_hash_input_file(filename):
     # Calculate derived parameters
     params["nextra"] = max(int(params["npolmin"] * params["badfrac"] * 0.5), 2)
     params["ntotal"] = max(int(params["npolmin"] * params["badfrac"]), 2)
+    params["velocity_models"] = velocity_models
 
     return params
 
@@ -1298,11 +1449,25 @@ def write_mechanism_output(filename, events, mechanisms):
     """
     with open(filename, "w") as f:
         for event, mech in zip(events, mechanisms, strict=True):
-            if mech is None or mech.get("quality") == "F":
-                # Failed event
+            if mech is None or mech.get("quality") in ("E", "F"):
+                # Failed event (E: gap too large, F: no mechanism)
                 write_failed_event(f, event, mech)
             else:
                 write_successful_event(f, event, mech)
+
+
+def _result_scalar(mech, keys, default):
+    """First scalar element from a result value (list/array or scalar)."""
+    for key in keys:
+        if key not in mech:
+            continue
+        value = mech[key]
+        if isinstance(value, np.ndarray):
+            return int(value[0]) if value.size else default
+        if isinstance(value, (list, tuple)):
+            return int(value[0]) if value else default
+        return int(value)
+    return default
 
 
 def write_failed_event(f, event, mech):
@@ -1325,7 +1490,7 @@ def write_failed_event(f, event, mech):
         "{id:16s} {year:4d} {month:2d} {day:2d} {hour:2d} {min:2d} {sec:6.3f} {etype:1s} "
         "{mag:5.3f} {magtype:1s} {lat:9.5f} {lon:10.5f} {depth:7.3f} {locqual:1s} "
         "{rms:7.3f} {seh:7.3f} {sez:7.3f} {terr:7.3f} "
-        "{nppick+nspick:4d} {nppick:4d} {nspick:4d} "
+        "{npicks:4d} {nppick:4d} {nspick:4d} "
         "{strike:4d} {dip:3d} {rake:4d} "
         "{var1:3d} {var2:3d} "
         "{npol:3d} {mfrac:3d} "
@@ -1353,9 +1518,10 @@ def write_failed_event(f, event, mech):
         terr=event.get("terr", -9.0),
         nppick=event.get("nppick", -9),
         nspick=event.get("nspick", -9),
-        strike=int(mech.get("strike", 999)),
-        dip=int(mech.get("dip", 99)),
-        rake=int(mech.get("rake", 999)),
+        npicks=event.get("nppick", -9) + event.get("nspick", -9),
+        strike=_result_scalar(mech, ("strike_avg", "strike"), 999),
+        dip=_result_scalar(mech, ("dip_avg", "dip"), 99),
+        rake=_result_scalar(mech, ("rake_avg", "rake"), 999),
         var1=int(mech.get("var_est", [99, 99])[0]),
         var2=int(mech.get("var_est", [99, 99])[1]),
         npol=event.get("npol", 0),
@@ -1383,8 +1549,8 @@ def write_successful_event(f, event, mech):
             var2 = mech["rms_diff"][1, imult]
             prob = mech["prob"][imult]
             quality = mech["quality"][imult]
-            stdr = mech["stdr"][imult]
-            mfrac = mech["mfrac"][imult]
+            stdr = mech.get("stdr", 0.0)
+            mfrac = mech.get("mfrac", 0.0)
         else:
             strike = mech.get("strike_avg", mech.get("strike", 0))
             dip = mech.get("dip_avg", mech.get("dip", 0))
@@ -1402,7 +1568,7 @@ def write_successful_event(f, event, mech):
             "{id:16s} {year:4d} {month:2d} {day:2d} {hour:2d} {min:2d} {sec:6.3f} {etype:1s} "
             "{mag:5.3f} {magtype:1s} {lat:9.5f} {lon:10.5f} {depth:7.3f} {locqual:1s} "
             "{rms:7.3f} {seh:7.3f} {sez:7.3f} {terr:7.3f} "
-            "{nppick+nspick:4d} {nppick:4d} {nspick:4d} "
+            "{npicks:4d} {nppick:4d} {nspick:4d} "
             "{strike:4d} {dip:3d} {rake:4d} "
             "{var1:3d} {var2:3d} "
             "{npol:3d} {mfrac:3d} "
@@ -1430,6 +1596,7 @@ def write_successful_event(f, event, mech):
             terr=event.get("terr", -9.0),
             nppick=event.get("nppick", -9),
             nspick=event.get("nspick", -9),
+            npicks=event.get("nppick", -9) + event.get("nspick", -9),
             strike=int(strike),
             dip=int(dip),
             rake=int(rake),
@@ -1444,6 +1611,15 @@ def write_successful_event(f, event, mech):
         )
 
         f.write(line + "\n")
+
+
+def _first(value, default):
+    """First element of a list/array value, or the value itself."""
+    if isinstance(value, (list, tuple)):
+        return value[0] if value else default
+    if isinstance(value, np.ndarray):
+        return value[0] if value.size else default
+    return value if value is not None else default
 
 
 def write_acceptable_planes(filename, event, mech):
@@ -1486,14 +1662,14 @@ def write_acceptable_planes(filename, event, mech):
                 npol=event.get("npol", 0),
                 nout2=mech.get("nout2", 0),
                 id=event.get("id", ""),
-                strike=mech.get("strike_avg", 0),
-                dip=mech.get("dip_avg", 0),
-                rake=mech.get("rake_avg", 0),
+                strike=_first(mech.get("strike_avg"), 0),
+                dip=_first(mech.get("dip_avg"), 0),
+                rake=_first(mech.get("rake_avg"), 0),
                 var1=mech.get("var_est", [0, 0])[0],
                 var2=mech.get("var_est", [0, 0])[1],
                 mfrac=mech.get("mfrac", 0.0),
-                quality=mech.get("quality", "D"),
-                prob=mech.get("prob", 0.0),
+                quality=_first(mech.get("quality"), "D"),
+                prob=_first(mech.get("prob"), 0.0),
                 stdr=mech.get("stdr", 0.0),
             )
         )

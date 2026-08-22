@@ -68,7 +68,11 @@ def _find_library():
     if env and os.path.exists(env):
         return env
     here = os.path.dirname(os.path.abspath(__file__))
-    for rel in ("../lib/libhashhp.so", "../../src/hash_hp/libhashhp.so", "../../build/libhashhp.so"):
+    for rel in (
+        "../lib/libhashhp.so",
+        "../../src/hash_hp/libhashhp.so",
+        "../../build/libhashhp.so",
+    ):
         candidate = os.path.normpath(os.path.join(here, rel))
         if os.path.exists(candidate):
             return candidate
@@ -107,6 +111,13 @@ class FortranBackend(HashBackend):
 
     def _bind_functions(self):
         lib = self._lib
+        lib.cnchash_version.argtypes = [
+            ctypes.POINTER(ctypes.c_int32),
+            ctypes.POINTER(ctypes.c_int32),
+            ctypes.POINTER(ctypes.c_int32),
+        ]
+        lib.cnchash_version.restype = None
+
         lib.cnchash_set_num_threads.argtypes = [ctypes.c_int32]
         lib.cnchash_set_num_threads.restype = None
         lib.cnchash_get_max_threads.argtypes = []
@@ -339,7 +350,15 @@ class FortranBackend(HashBackend):
             "compiler": "Modern Fortran (gfortran)",
             "precision": "float64",
             "library": self._lib_path,
+            "native_version": self.native_version(),
         }
+
+    @_synchronized
+    def native_version(self):
+        """Version of the native libhashhp core as 'major.minor.patch'."""
+        major, minor, patch = ctypes.c_int32(), ctypes.c_int32(), ctypes.c_int32()
+        self._lib.cnchash_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch))
+        return f"{major.value}.{minor.value}.{patch.value}"
 
     @_synchronized
     def set_num_threads(self, num_threads):
@@ -436,10 +455,27 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout, np.float64)
         sl_all = np.zeros(3 * maxout, np.float64)
         self._lib.cnchash_run_event(
-            azi, the, pol, qual, int(npol), int(nmc), float(dang), maxout,
-            float(badfrac), float(cangle), float(prob_max), int(npolmin),
-            float(max_agap), float(max_pgap), int(selection),
-            ctypes.byref(res), s_all, d_all, r_all, f_all, sl_all,
+            azi,
+            the,
+            pol,
+            qual,
+            int(npol),
+            int(nmc),
+            float(dang),
+            maxout,
+            float(badfrac),
+            float(cangle),
+            float(prob_max),
+            int(npolmin),
+            float(max_agap),
+            float(max_pgap),
+            int(selection),
+            ctypes.byref(res),
+            s_all,
+            d_all,
+            r_all,
+            f_all,
+            sl_all,
         )
         output = self._unpack_result(res, npol, 0)
         nf = output["nf"]
@@ -483,11 +519,29 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout, np.float64)
         sl_all = np.zeros(3 * maxout, np.float64)
         self._lib.cnchash_run_event_amp(
-            azi, the, pol, amp, int(npsta), int(nmc), float(dang), maxout,
-            float(badfrac), float(qbadfac), float(cangle), float(prob_max),
-            int(npolmin), float(max_agap), float(max_pgap), int(selection),
+            azi,
+            the,
+            pol,
+            amp,
+            int(npsta),
+            int(nmc),
+            float(dang),
+            maxout,
+            float(badfrac),
+            float(qbadfac),
+            float(cangle),
+            float(prob_max),
+            int(npolmin),
+            float(max_agap),
+            float(max_pgap),
+            int(selection),
             -1 if nmismax is None else int(nmismax),
-            ctypes.byref(res), s_all, d_all, r_all, f_all, sl_all,
+            ctypes.byref(res),
+            s_all,
+            d_all,
+            r_all,
+            f_all,
+            sl_all,
         )
         npol = int(np.sum(pol != 0))
         nspr = int(np.sum(amp != 0.0))
@@ -552,10 +606,30 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout * nevent, np.float64)
         sl_all = np.zeros(3 * maxout * nevent, np.float64)
         self._lib.cnchash_run_batch(
-            nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
-            pol_flat, qual_flat, float(dang), maxout, float(badfrac), float(cangle),
-            float(prob_max), int(npolmin), float(max_agap), float(max_pgap),
-            int(selection), cres, s_all, d_all, r_all, f_all, sl_all,
+            nevent,
+            npol_arr,
+            nmc_arr,
+            offsets,
+            pick_offsets,
+            azi_flat,
+            the_flat,
+            pol_flat,
+            qual_flat,
+            float(dang),
+            maxout,
+            float(badfrac),
+            float(cangle),
+            float(prob_max),
+            int(npolmin),
+            float(max_agap),
+            float(max_pgap),
+            int(selection),
+            cres,
+            s_all,
+            d_all,
+            r_all,
+            f_all,
+            sl_all,
         )
         results = []
         for i in range(nevent):
@@ -623,11 +697,32 @@ class FortranBackend(HashBackend):
         f_all = np.zeros(3 * maxout * nevent, np.float64)
         sl_all = np.zeros(3 * maxout * nevent, np.float64)
         self._lib.cnchash_run_batch_amp(
-            nevent, npol_arr, nmc_arr, offsets, pick_offsets, azi_flat, the_flat,
-            pol_flat, amp_flat, float(dang), maxout, float(badfrac), float(qbadfac),
-            float(cangle), float(prob_max), int(npolmin), float(max_agap),
-            float(max_pgap), int(selection), -1 if nmismax is None else int(nmismax),
-            cres, s_all, d_all, r_all, f_all, sl_all,
+            nevent,
+            npol_arr,
+            nmc_arr,
+            offsets,
+            pick_offsets,
+            azi_flat,
+            the_flat,
+            pol_flat,
+            amp_flat,
+            float(dang),
+            maxout,
+            float(badfrac),
+            float(qbadfac),
+            float(cangle),
+            float(prob_max),
+            int(npolmin),
+            float(max_agap),
+            float(max_pgap),
+            int(selection),
+            -1 if nmismax is None else int(nmismax),
+            cres,
+            s_all,
+            d_all,
+            r_all,
+            f_all,
+            sl_all,
         )
         results = []
         for i in range(nevent):
@@ -694,8 +789,11 @@ class FortranBackend(HashBackend):
             _as_c_double_array(p_the),
             _as_c_int32_array(p_pol),
             _as_c_int32_array(p_qual),
-            float(strike), float(dip), float(rake),
-            ctypes.byref(mfrac), ctypes.byref(stdr),
+            float(strike),
+            float(dip),
+            float(rake),
+            ctypes.byref(mfrac),
+            ctypes.byref(stdr),
         )
         return float(mfrac.value), float(stdr.value)
 
@@ -708,8 +806,12 @@ class FortranBackend(HashBackend):
             _as_c_double_array(p_the),
             _as_c_double_array(sp_amp),
             _as_c_int32_array(p_pol),
-            float(strike), float(dip), float(rake),
-            ctypes.byref(mfrac), ctypes.byref(mavg), ctypes.byref(stdr),
+            float(strike),
+            float(dip),
+            float(rake),
+            ctypes.byref(mfrac),
+            ctypes.byref(mavg),
+            ctypes.byref(stdr),
         )
         return float(mfrac.value), float(mavg.value), float(stdr.value)
 
@@ -724,8 +826,17 @@ class FortranBackend(HashBackend):
         pb = np.zeros(5, np.float64)
         rd = np.zeros((5, 2), np.float64)  # C [solution][plane]; Fortran (2,5) col-major
         self._lib.cnchash_mech_prob(
-            int(nf), f, s, float(cangle), float(prob_max),
-            ctypes.byref(nsltn), sa, da, ra, pb, rd,
+            int(nf),
+            f,
+            s,
+            float(cangle),
+            float(prob_max),
+            ctypes.byref(nsltn),
+            sa,
+            da,
+            ra,
+            pb,
+            rd,
         )
         n = int(nsltn.value)
         return {
@@ -736,6 +847,24 @@ class FortranBackend(HashBackend):
             "prob": pb[:n].copy(),
             "rms_diff": rd[:n, :].T.copy(),
         }
+
+    @_synchronized
+    def mech_rot(self, n1, s1, n2, s2):
+        """Minimum rotation angle (degrees) between two mechanisms.
+
+        Each mechanism is given by its fault-normal (n) and slip (s)
+        3-vectors; the result is the Kagan angle between the two
+        mechanisms (original MECH_ROT).
+        """
+        a1 = _as_c_double_array(np.atleast_1d(n1).ravel())
+        b1 = _as_c_double_array(np.atleast_1d(s1).ravel())
+        a2 = _as_c_double_array(np.atleast_1d(n2).ravel())
+        b2 = _as_c_double_array(np.atleast_1d(s2).ravel())
+        if not (a1.size == 3 and b1.size == 3 and a2.size == 3 and b2.size == 3):
+            raise ValueError("n1, s1, n2, s2 must be 3-vectors")
+        rota = ctypes.c_double()
+        self._lib.cnchash_mech_rot(a1, b1, a2, b2, ctypes.byref(rota))
+        return float(rota.value)
 
     @_synchronized
     def build_velocity_table(self, depth, velocity, params=None):
@@ -750,13 +879,24 @@ class FortranBackend(HashBackend):
         deptab = np.zeros(ndep_max, np.float64)
         ndel, ndep = ctypes.c_int32(), ctypes.c_int32()
         self._lib.cnchash_build_velocity_table(
-            depth, velocity, int(depth.size),
-            float(params["del1"]), float(params["del2"]), float(params["del3"]),
-            float(params["dep1"]), float(params["dep2"]), float(params["dep3"]),
-            float(params["pmin"]), int(params["nump"]),
-            table, delttab, deptab,
-            int(ndel_max), int(ndep_max),
-            ctypes.byref(ndel), ctypes.byref(ndep),
+            depth,
+            velocity,
+            int(depth.size),
+            float(params["del1"]),
+            float(params["del2"]),
+            float(params["del3"]),
+            float(params["dep1"]),
+            float(params["dep2"]),
+            float(params["dep3"]),
+            float(params["pmin"]),
+            int(params["nump"]),
+            table,
+            delttab,
+            deptab,
+            int(ndel_max),
+            int(ndep_max),
+            ctypes.byref(ndel),
+            ctypes.byref(ndep),
         )
         ndel, ndep = int(ndel.value), int(ndep.value)
         table_data = {
@@ -767,6 +907,7 @@ class FortranBackend(HashBackend):
             "ndep": ndep,
         }
         self._table_ip += 1
+        table_data["ip"] = self._table_ip
         self._tables[self._table_ip] = table_data
         return table_data
 
@@ -779,9 +920,15 @@ class FortranBackend(HashBackend):
         ndep = table["ndep"]
         tt, iflag = ctypes.c_double(), ctypes.c_int32()
         self._lib.cnchash_get_tts(
-            table["table"].ravel(order="F"), table["delttab"], table["deptab"],
-            int(ndel), int(ndep), float(del_dist), float(qdep),
-            ctypes.byref(tt), ctypes.byref(iflag),
+            table["table"].ravel(order="F"),
+            table["delttab"],
+            table["deptab"],
+            int(ndel),
+            int(ndep),
+            float(del_dist),
+            float(qdep),
+            ctypes.byref(tt),
+            ctypes.byref(iflag),
         )
         return float(tt.value), int(iflag.value)
 

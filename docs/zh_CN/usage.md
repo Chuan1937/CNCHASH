@@ -56,6 +56,44 @@ for result in results:
               f"R={result['rake_avg']:.0f}° Q={result['quality']}")
 ```
 
+输入文件末尾可以列出速度模型文件名（`vz.*` 行，如原版 HASH），
+run_hash_from_file 会自动加载并按 trial 轮换使用（对齐 hash_driver2.f）。
+也可以用 `velocity_models` 参数显式传入：
+
+```python
+from cnchash import run_hash_from_file
+
+depth = [0.0, 5.0, 20.0, 35.0]
+velocity = [5.5, 5.8, 6.2, 6.8]
+
+results = run_hash_from_file("example.inp", velocity_models=[(depth, velocity)])
+```
+
+## 用速度模型计算离源角
+
+`TakeoffTable` 封装了原生后端的离源角表（对应原版 HASH 的
+MK_TABLE + GET_TTS），提供单点与批量查询：
+
+```python
+from cnchash import TakeoffTable, compute_takeoff_angles
+import numpy as np
+
+depth = np.array([0.0, 5.0, 20.0, 35.0])   # km
+velocity = np.array([5.5, 5.8, 6.2, 6.8])  # km/s
+
+table = TakeoffTable(depth, velocity)
+angle = table.takeoff(distance=30.0, source_depth=8.0)   # 度
+angles = table.takeoff_batch([10.0, 30.0, 60.0], [8.0, 12.0, 15.0])
+
+# 便捷函数（一次建表 + 批量查询）
+angles = compute_takeoff_angles(depth, velocity, [10.0, 30.0], 8.0)
+```
+
+离源角约定与 HASH 一致：从竖直方向量起，0° = 垂直向上，90° = 水平，
+180° = 垂直向下。查询超出表深度范围会抛出 `TakeoffRangeError`
+（批量查询返回 NaN）。表参数（距离/深度范围与步长、射线参数数目）
+可通过 `params` 配置，见 `DEFAULT_TABLE_PARAMS`。
+
 ### HASH 输入文件（原始 Fortran 格式）
 
 原始 Fortran HASH 程序使用固定格式输入文件（`example.inp`），每行一个
@@ -88,11 +126,22 @@ for result in results:
 
 **其他格式变体：**
 
-| 格式 | 文件结构 |
-|------|----------|
-| 2/4 | stationfile, polfile, phasefile, out1, out2, params |
-| 3 | stationfile, polfile, statcor, amp, phasefile, out1, params |
-| 5 | polfile, simulfile, phasefile, out1, out2, params |
+| 格式 | 文件结构 | 处理方式 |
+|------|----------|----------|
+| 1 | polfile, phasefile, out1, out2, params | 文件内方位角/离源角 + 台站不确定度（driver1） |
+| 2/4 | stationfile, polfile, phasefile, out1, out2, params + vz 行 | 速度模型离源角表 + 深度扰动（driver2） |
+| 3 | stationfile, polfile, statcor, amp, phasefile, out1, params | 振幅比管线：SNR 过滤 + 台站校正 + FOCALAMP（driver3） |
+| 5 | polfile, simulfile, phasefile, out1, out2, params | SIMULPS 离源角文件 + 极性匹配（driver5） |
+
+各格式的完整处理管线均已对齐原版 HASH 驱动：
+
+- **振幅管线**：`read_amp_file` 读取 `ICUSP NIN` + 台站记录；
+  `read_statcor_file` 提供 GET_COR 台站校正（`log10(S/P) - qcor`）；
+  `ratmin`（默认 3.0）按 P/S 信噪比过滤，且仅使用清晰（I）极性。
+- **SIMULPS 离源角**：`read_simul_takeoff_file` 按事件 ID 与台站名
+  （前三字符）与极性文件匹配，逐台站不确定度（sazi/sthe，缺省 0.5）。
+- **文件内几何**：格式 1 震相文件中的距离/方位角/离源角/不确定度
+  自动解析并用于 Monte Carlo（driver1）。
 
 ### 支持的文件格式
 
@@ -162,6 +211,25 @@ depth velocity
 10.0  6.2
 20.0  6.8
 ```
+
+#### 振幅比文件（`read_amp_file`）
+
+```
+<event_id> <nrecords>
+STA  COMP NET  dist  az  p_noise  s_noise  p_amp  s_amp
+...
+```
+
+#### 台站校正文件（`read_statcor_file`）
+
+```
+STA  COMP NET  CORRECTION
+```
+
+#### SIMULPS 离源角文件（`read_simul_takeoff_file`）
+
+SIMUL2000 格式：事件头 + 固定列台站行（名称/距离/方位角/入射角/
+sazi/sthe），离源角按 HASH 约定转换为 `180 - 入射角`。
 
 ### 直接读取文件
 

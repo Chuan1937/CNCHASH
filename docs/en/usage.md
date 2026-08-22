@@ -56,6 +56,46 @@ for result in results:
               f"R={result['rake_avg']:.0f}° Q={result['quality']}")
 ```
 
+Velocity model file names can be listed at the end of the input file
+(`vz.*` lines, like the original HASH); `run_hash_from_file` loads
+them and rotates them per Monte Carlo trial (hash_driver2.f logic).
+Models can also be passed explicitly:
+
+```python
+from cnchash import run_hash_from_file
+
+depth = [0.0, 5.0, 20.0, 35.0]
+velocity = [5.5, 5.8, 6.2, 6.8]
+
+results = run_hash_from_file("example.inp", velocity_models=[(depth, velocity)])
+```
+
+## Takeoff Angles from Velocity Models
+
+`TakeoffTable` wraps the native takeoff-angle tables (the original
+HASH MK_TABLE + GET_TTS) with scalar and vectorized lookups:
+
+```python
+from cnchash import TakeoffTable, compute_takeoff_angles
+import numpy as np
+
+depth = np.array([0.0, 5.0, 20.0, 35.0])   # km
+velocity = np.array([5.5, 5.8, 6.2, 6.8])  # km/s
+
+table = TakeoffTable(depth, velocity)
+angle = table.takeoff(distance=30.0, source_depth=8.0)   # degrees
+angles = table.takeoff_batch([10.0, 30.0, 60.0], [8.0, 12.0, 15.0])
+
+# Convenience: one table build plus a batch lookup
+angles = compute_takeoff_angles(depth, velocity, [10.0, 30.0], 8.0)
+```
+
+Convention (same as HASH): degrees from the vertical, 0 = straight up,
+90 = horizontal, 180 = straight down. Lookups outside the table depth
+range raise `TakeoffRangeError` (batch lookups return NaN). Table
+ranges and steps are configurable through `params`, see
+`DEFAULT_TABLE_PARAMS`.
+
 ### HASH Input File (Original Fortran Format)
 
 The original Fortran HASH program uses a fixed-format input file (`example.inp`) with one value per line. No comments are supported.
@@ -87,11 +127,25 @@ The original Fortran HASH program uses a fixed-format input file (`example.inp`)
 
 **Other Format Variants:**
 
-| Format | File Structure |
-|--------|----------------|
-| 2/4 | stationfile, polfile, phasefile, out1, out2, params |
-| 3 | stationfile, polfile, statcor, amp, phasefile, out1, params |
-| 5 | polfile, simulfile, phasefile, out1, out2, params |
+| Format | File Structure | Handling |
+|--------|----------------|----------|
+| 1 | polfile, phasefile, out1, out2, params | File azimuths/takeoffs + per-station uncertainties (driver1) |
+| 2/4 | stationfile, polfile, phasefile, out1, out2, params + vz lines | Velocity takeoff tables + depth perturbation (driver2) |
+| 3 | stationfile, polfile, statcor, amp, phasefile, out1, params | Amplitude pipeline: SNR filtering + station corrections + FOCALAMP (driver3) |
+| 5 | polfile, simulfile, phasefile, out1, out2, params | SIMULPS takeoff file + polarity matching (driver5) |
+
+All pipelines mirror the original HASH drivers:
+
+- **Amplitudes**: `read_amp_file` reads `ICUSP NIN` + station records;
+  `read_statcor_file` provides GET_COR station corrections
+  (`log10(S/P) - qcor`); `ratmin` (default 3.0) filters on P/S
+  signal-to-noise, and only impulsive (I) picks are used.
+- **SIMULPS takeoffs**: `read_simul_takeoff_file` matches polarities by
+  event id and station name (first three characters), with per-station
+  uncertainties (sazi/sthe, default 0.5).
+- **File geometry**: format-1 phase files carry distance/azimuth/
+  takeoff/uncertainties which are used directly for the Monte Carlo
+  trials (driver1).
 
 ### Supported File Formats
 
